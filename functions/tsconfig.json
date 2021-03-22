@@ -14,12 +14,5 @@
     "baseUrl": "./",
     "incremental": true,
     "esModuleInterop": true
-  },
-  "compileOnSave": true,
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "**/*.spec.ts"
-  ]
+  }
 }

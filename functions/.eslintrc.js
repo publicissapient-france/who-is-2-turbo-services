@@ -4,26 +4,19 @@ module.exports = {
     es6: true,
     node: true,
   },
-  extends: [
-    "eslint:recommended",
-    "plugin:import/errors",
-    "plugin:import/warnings",
-    "plugin:import/typescript",
-    "google",
-  ],
-  parser: "@typescript-eslint/parser",
+  extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
+  parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: ["tsconfig.json", "tsconfig.dev.json"],
-    sourceType: "module",
+    project: ['tsconfig.json', 'tsconfig.dev.json'],
+    sourceType: 'module',
   },
   ignorePatterns: [
-    "/lib/**/*", // Ignore built files.
+    '/lib/**/*', // Ignore built files.
+    '/coverage/**/*',
+    '.eslintrc.js',
   ],
-  plugins: [
-    "@typescript-eslint",
-    "import",
-  ],
+  plugins: ['@typescript-eslint/eslint-plugin'],
   rules: {
-    quotes: ["error", "double"],
+    'max-len': ['error', { code: 100, ignoreUrls: true }],
   },
 };
