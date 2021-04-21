@@ -65,6 +65,7 @@ describe('GameService', () => {
   const mockMemberRepo: MemberRepositorySpi = {
     getAllWithPicture: jest.fn(),
     generatePrivatePictureUrl: jest.fn(),
+    loadGalleryMembers: jest.fn(),
   };
   const memberRepo: Provider<MemberRepositorySpi> = {
     provide: 'MemberRepositorySpi',

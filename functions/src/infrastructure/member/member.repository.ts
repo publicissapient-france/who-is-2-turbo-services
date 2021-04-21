@@ -1,8 +1,8 @@
 import { MemberRepositorySpi } from '../../domain/MemberRepositorySpi';
 import { Injectable } from '@nestjs/common';
-import { MemberWithPicture } from '../../domain/model/Member';
+import { Member, MemberWithPicture } from '../../domain/model/Member';
 import * as admin from 'firebase-admin';
-import { MemberConverter } from './MemberConverter'
+
 
 @Injectable()
 export class MemberRepository implements MemberRepositorySpi {
@@ -11,6 +11,24 @@ export class MemberRepository implements MemberRepositorySpi {
   async getAllWithPicture(): Promise<MemberWithPicture[]> {
     const membersWithPictures = await this.membersCollection.where('picture', '!=', '').get();
     return membersWithPictures.docs.map((member) => member.data() as MemberWithPicture);
+  }
+
+  async loadGalleryMembers(): Promise<Member[]> {
+    const documents = await this.membersCollection.limit(10).get();
+    const gallery: Member[] = [];
+    for (const doc of documents.docs) {
+      const member = doc.data() as Member;
+      let image = undefined;
+      if (member.picture != undefined) {
+        image = await this.generatePrivatePictureUrl(member.picture);
+      }
+      gallery.push({
+        firstName: member.firstName,
+        lastName: member.lastName,
+        picture: image,
+      } as Member);
+    }
+    return gallery;
   }
 
   async generatePrivatePictureUrl(pictureFile: string): Promise<string> {
