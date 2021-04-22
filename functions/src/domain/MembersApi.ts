@@ -3,5 +3,5 @@ import { Member } from './model/Member';
 export interface MembersApi {
   preload(): void;
 
-  loadGallery(): Promise<Member[]>;
+  loadGallery(offset: number, limit: number): Promise<Member[]>;
 }

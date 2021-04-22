@@ -11,7 +11,7 @@ export class MembersService implements MembersApi {
     this.memberRepositorySpi.preload();
   }
 
-  async loadGallery(): Promise<Member[]> {
-    return await this.memberRepositorySpi.loadGalleryMembers();
+  async loadGallery(offset: number, limit: number): Promise<Member[]> {
+    return await this.memberRepositorySpi.loadGalleryMembers(offset, limit);
   }
 }

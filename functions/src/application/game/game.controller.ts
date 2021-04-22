@@ -25,8 +25,8 @@ export class GameController {
     const seriesGame = await this.gameApi.generateSeriesGame(5, 4);
     return {
       id: seriesGame.id,
-      questions: seriesGame.questions
-    } as SeriesGameDto
+      questions: seriesGame.questions,
+    } as SeriesGameDto;
   }
 
   @ApiCreatedResponse({
@@ -41,11 +41,10 @@ export class GameController {
     @Param('gameId') gameId: string,
     @Body() answers: GameAnswersDto,
   ): Promise<SeriesScoreDto> {
-
     const serieScore = await this.gameApi.validateSeriesGame(gameId, answers.answers);
     return {
       correct: serieScore.correct,
-      total: serieScore.total
-    } as SeriesScoreDto
+      total: serieScore.total,
+    } as SeriesScoreDto;
   }
 }
