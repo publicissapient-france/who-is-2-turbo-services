@@ -9,9 +9,6 @@ import { Express } from 'express-serve-static-core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 admin.initializeApp();
-// // Start writing Firebase Functions
-// // https://firebase.google.com/docs/functions/typescript
-//
 
 const server = express();
 

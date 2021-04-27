@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GameController } from './game.controller';
 
-xdescribe('GameController', () => {
+describe('GameController', () => {
   let controller: GameController;
 
   beforeEach(async () => {

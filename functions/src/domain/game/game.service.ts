@@ -57,10 +57,6 @@ export class GameService implements GameApi {
     };
   }
 
-  preload(): void {
-    this.memberRepositorySpi.preload();
-  }
-
   private async generateQuestion(
     allMember: Member[],
     selectedMember: MemberWithPicture,

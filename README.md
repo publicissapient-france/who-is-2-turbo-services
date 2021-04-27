@@ -14,8 +14,9 @@ cd functions && npm run serve
 ```
 
 ### Checkout the application 
- - [swagger-ui](http://localhost:5001/who-is-2-turbo/us-central1/api/swagger/index.html)
-    - Explore `http://localhost:5001/who-is-2-turbo/us-central1/api/swagger-json`
+ - [swagger-ui](http://localhost:5001/who-is-2-turbo/europe-west1/api/swagger/index.html)
+    - Explore `http://localhost:5001/who-is-2-turbo/europe-west1/api/swagger-json`
+- The data located in folder `functions/mock` are loaded at emulator startup. 
     
 ## Security
 TBD

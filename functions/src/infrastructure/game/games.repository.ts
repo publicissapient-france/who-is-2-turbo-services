@@ -2,9 +2,8 @@ import { GameRepositorySpi } from '../../domain/GameRepositorySpi';
 import { SeriesGameSession } from '../../domain/model/SeriesGameSession';
 import { Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin';
-import { firestore } from 'firebase-admin/lib/firestore';
-import FirestoreDataConverter = firestore.FirestoreDataConverter;
 import { ContentOf } from '../../domain/model/StorageMeta';
+import { SeriesGameSessionConverter } from './SeriesGameSessionConverter'
 
 @Injectable()
 export class GamesRepository implements GameRepositorySpi {
@@ -36,26 +35,3 @@ export class GamesRepository implements GameRepositorySpi {
   }
 }
 
-class SeriesGameSessionConverter implements FirestoreDataConverter<SeriesGameSession> {
-  fromFirestore(snapshot: FirebaseFirestore.QueryDocumentSnapshot): SeriesGameSession {
-    return {
-      id: snapshot.id,
-      solutions: snapshot.get('solutions'),
-      createdAt: snapshot.createTime.toDate(),
-    };
-  }
-
-  toFirestore(modelObject: SeriesGameSession): FirebaseFirestore.DocumentData;
-  toFirestore(
-    modelObject: Partial<SeriesGameSession>,
-    options: FirebaseFirestore.SetOptions,
-  ): FirebaseFirestore.DocumentData;
-  toFirestore(
-    modelObject: SeriesGameSession | Partial<SeriesGameSession>,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    options?: FirebaseFirestore.SetOptions,
-  ): FirebaseFirestore.DocumentData {
-    const { solutions } = modelObject;
-    return { solutions };
-  }
-}
