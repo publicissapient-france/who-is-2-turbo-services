@@ -2,7 +2,7 @@ import { MemberRepositorySpi } from '../../domain/MemberRepositorySpi';
 import { Injectable } from '@nestjs/common';
 import { MemberWithPicture } from '../../domain/model/Member';
 import * as admin from 'firebase-admin';
-
+import { MemberConverter } from './MemberConverter';
 
 @Injectable()
 export class MemberRepository implements MemberRepositorySpi {
@@ -15,14 +15,14 @@ export class MemberRepository implements MemberRepositorySpi {
 
   async loadGalleryMembers(offset: number, limit: number): Promise<MemberWithPicture[]> {
     const documents = await this.membersCollection
-      .where('picture', '!=', '')
-      .orderBy('picture')
       .orderBy('firstName')
       .orderBy('lastName')
+      .orderBy('picture')
       .offset(offset)
       .limit(limit)
       .get();
-    const gallery: Member[] = [];
+
+    const gallery = [];
     for (const doc of documents.docs) {
       const { picture, firstName, lastName } = doc.data() as MemberWithPicture;
       gallery.push({
@@ -44,4 +44,3 @@ export class MemberRepository implements MemberRepositorySpi {
     return url;
   }
 }
-

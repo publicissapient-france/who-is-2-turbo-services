@@ -1,5 +1,5 @@
-import { Gender, Member } from "../../domain/model/Member";
-import { firestore } from "firebase-admin/lib/firestore";
+import { Gender, Member } from '../../domain/model/Member';
+import { firestore } from 'firebase-admin/lib/firestore';
 import FirestoreDataConverter = firestore.FirestoreDataConverter;
 
 export class MemberConverter implements FirestoreDataConverter<Member> {

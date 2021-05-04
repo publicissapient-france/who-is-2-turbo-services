@@ -1,6 +1,6 @@
-import { SeriesGameSession } from "../../domain/model/SeriesGameSession";
-import { firestore } from "firebase-admin/lib/firestore";
+import { firestore } from 'firebase-admin/lib/firestore';
 import FirestoreDataConverter = firestore.FirestoreDataConverter;
+import { SeriesGameSession } from '../../domain/model/SeriesGameSession';
 
 export class SeriesGameSessionConverter implements FirestoreDataConverter<SeriesGameSession> {
   fromFirestore(snapshot: FirebaseFirestore.QueryDocumentSnapshot): SeriesGameSession {

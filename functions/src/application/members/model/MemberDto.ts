@@ -5,8 +5,6 @@ export class MemberDto {
   firstName?: string;
   @ApiProperty()
   lastName?: string;
-  @ApiProperty({
-    nullable: true,
-  })
+  @ApiProperty()
   picture?: string;
 }
