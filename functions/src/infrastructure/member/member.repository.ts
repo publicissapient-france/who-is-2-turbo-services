@@ -15,7 +15,7 @@ export class MemberRepository implements MemberRepositorySpi {
 
   async loadGalleryMembers(offset: number, limit: number): Promise<MemberWithPicture[]> {
     const documents = await this.membersCollection
-      .orderBy('firstName')
+      .orderBy('firstName_unaccent')
       .orderBy('lastName')
       .orderBy('picture')
       .offset(offset)
