@@ -4,5 +4,5 @@ export interface MemberRepositorySpi {
   getAllWithPicture(): Promise<MemberWithPicture[]>;
   generatePrivatePictureUrl(pictureName: string): Promise<string>;
 
-  loadGalleryMembers(offset: number, limit: number): Promise<MemberWithPicture[]>;
+  loadGalleryMembers(): Promise<MemberWithPicture[]>;
 }

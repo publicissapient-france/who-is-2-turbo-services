@@ -1,10 +1,8 @@
-import { Controller, Get, Inject, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Inject } from '@nestjs/common';
 import { MembersApi } from '../../domain/MembersApi';
 import { ApiCreatedResponse, ApiResponse } from '@nestjs/swagger';
 import { MemberDto } from './model/MemberDto';
 import { MembersDto } from './model/MembersDto';
-import { GalleryParameters } from './model/GalleryParametersDto';
-import { ParseGalleryParamsPipe } from './parser/ParseGalleryParamsPipe';
 
 @Controller('members')
 export class MembersController {
@@ -18,9 +16,8 @@ export class MembersController {
   @ApiResponse({ status: 200, description: 'The gallery is returned' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiResponse({ status: 500, description: 'Internal server error.' })
-  @UsePipes(new ValidationPipe({ transform: true }), new ParseGalleryParamsPipe())
-  async loadGallery(@Query() params: GalleryParameters): Promise<MemberDto[]> {
-    const members = await this.membersApi.fetchAll(params.offset, params.limit);
+  async loadGallery(): Promise<MemberDto[]> {
+    const members = await this.membersApi.fetchAll();
     return members.map((value) => {
       return {
         firstName: value.firstName,

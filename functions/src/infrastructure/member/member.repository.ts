@@ -13,13 +13,11 @@ export class MemberRepository implements MemberRepositorySpi {
     return membersWithPictures.docs.map((member) => member.data() as MemberWithPicture);
   }
 
-  async loadGalleryMembers(offset: number, limit: number): Promise<MemberWithPicture[]> {
+  async loadGalleryMembers(): Promise<MemberWithPicture[]> {
     const documents = await this.membersCollection
       .orderBy('firstName_unaccent')
       .orderBy('lastName')
       .orderBy('picture')
-      .offset(offset)
-      .limit(limit)
       .get();
 
     const gallery = [];

@@ -7,7 +7,7 @@ import { MemberWithPicture } from '../model/Member';
 export class MembersService implements MembersApi {
   constructor(@Inject('MemberRepositorySpi') private memberRepositorySpi: MemberRepositorySpi) {}
 
-  async fetchAll(offset: number, limit: number): Promise<MemberWithPicture[]> {
-    return await this.memberRepositorySpi.loadGalleryMembers(offset, limit);
+  async fetchAll(): Promise<MemberWithPicture[]> {
+    return await this.memberRepositorySpi.loadGalleryMembers();
   }
 }
