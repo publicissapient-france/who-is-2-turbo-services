@@ -5,6 +5,7 @@ export type Member = StorageMeta & {
   lastName: string;
   gender: Gender;
   picture?: string;
+  score?: number;
 };
 
 export type MemberWithPicture = Member & { picture: string };
