@@ -44,10 +44,11 @@ export class MemberRepository implements MemberRepositorySpi {
 
   async incrementScoreForMember(newPoints: number, email: string) {
     const docs = await this.membersCollection.where('email', '==', email).get();
-    const { id, score } = docs.docs[0].data() as Member;
-
-    await this.membersCollection.doc(id).update({
-      score: newPoints + (score ?? 0),
-    });
+    if (docs.docs.length != 0) {
+      const { id, score } = docs.docs[0].data() as Member;
+      await this.membersCollection.doc(id).update({
+        score: newPoints + (score ?? 0),
+      });
+    }
   }
 }
