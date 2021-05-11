@@ -12,6 +12,4 @@ node_modules/
 # Nvm
 .nvmrc
 
-
-# preload data
-*members.json
+serviceAccountKey.json

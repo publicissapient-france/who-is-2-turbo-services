@@ -3,7 +3,7 @@ import { SeriesGameSession } from '../../domain/model/SeriesGameSession';
 import { Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin';
 import { ContentOf } from '../../domain/model/StorageMeta';
-import { SeriesGameSessionConverter } from './SeriesGameSessionConverter'
+import { SeriesGameSessionConverter } from './SeriesGameSessionConverter';
 
 @Injectable()
 export class GamesRepository implements GameRepositorySpi {
@@ -34,4 +34,3 @@ export class GamesRepository implements GameRepositorySpi {
     return { ...game, id: metadata.id };
   }
 }
-
