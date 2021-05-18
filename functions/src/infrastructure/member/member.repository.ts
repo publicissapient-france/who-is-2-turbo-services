@@ -26,7 +26,7 @@ export class MemberRepository implements MemberRepositorySpi {
       gallery.push({
         firstName,
         lastName,
-        picture: await this.generatePrivatePictureUrl(picture),
+        picture,
       } as MemberWithPicture);
     }
     return gallery;
