@@ -63,4 +63,9 @@ export class MemberRepository implements MemberRepositorySpi {
   private async getMemberByMailDocs(email: string) {
     return await this.membersCollection.where('email', '==', email).get();
   }
+
+  async getMembersScores(): Promise<Member[]> {
+    const members = await this.membersCollection.orderBy('score', 'desc').get();
+    return members.docs.map((member) => member.data() as Member);
+  }
 }
