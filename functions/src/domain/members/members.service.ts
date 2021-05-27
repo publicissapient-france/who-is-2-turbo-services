@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { MemberRepositorySpi } from '../MemberRepositorySpi';
 import { MembersApi } from '../MembersApi';
-import { Member, MemberWithPicture } from '../model/Member';
+import { MemberWithPicture, MemberWithScore } from '../model/Member';
 
 @Injectable()
 export class MembersService implements MembersApi {
@@ -11,7 +11,7 @@ export class MembersService implements MembersApi {
     return await this.memberRepositorySpi.loadGalleryMembers();
   }
 
-  async fetchLeaderboard(): Promise<Member[]> {
+  async fetchLeaderboard(): Promise<MemberWithScore[]> {
     return await this.memberRepositorySpi.getMembersScores();
   }
 }

@@ -36,12 +36,10 @@ export class MembersController {
   @ApiResponse({ status: 500, description: 'Internal server error.' })
   async loadLeaderBoard(): Promise<LeaderboardMemberDto[]> {
     const leaderboard = await this.membersApi.fetchLeaderboard();
-    return leaderboard.map((value) => {
-      return {
-        firstName: value.firstName,
-        lastName: value.lastName,
-        score: value.score,
-      };
-    });
+    return leaderboard.map(({ firstName, lastName, score }) => ({
+      firstName,
+      lastName,
+      score,
+    }));
   }
 }

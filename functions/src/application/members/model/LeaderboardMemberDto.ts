@@ -2,9 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class LeaderboardMemberDto {
   @ApiProperty()
-  firstName?: string;
+  firstName = '';
   @ApiProperty()
-  lastName?: string;
+  lastName = '';
   @ApiProperty()
-  score?: number;
+  score = 0;
 }
