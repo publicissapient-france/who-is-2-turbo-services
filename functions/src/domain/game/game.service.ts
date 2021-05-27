@@ -51,7 +51,11 @@ export class GameService implements GameApi {
         score++;
       }
     });
-    await this.memberRepositorySpi.incrementScoreForMember(score, email);
+    const memberCurrentScore = await this.memberRepositorySpi.getMemberScore(email);
+    if (memberCurrentScore != undefined) {
+      this.memberRepositorySpi.updateMemberScore(email, memberCurrentScore + score);
+    }
+
     return {
       correct: score,
       total: game.solutions.length,

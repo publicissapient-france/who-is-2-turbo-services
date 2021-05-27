@@ -42,13 +42,25 @@ export class MemberRepository implements MemberRepositorySpi {
     return url;
   }
 
-  async incrementScoreForMember(newPoints: number, email: string) {
-    const docs = await this.membersCollection.where('email', '==', email).get();
+  async getMemberScore(email: string): Promise<number | undefined> {
+    const docs = await this.getMemberByMailDocs(email);
     if (docs.docs.length != 0) {
-      const { id, score } = docs.docs[0].data() as Member;
+      const { score } = docs.docs[0].data() as Member;
+      return score ?? 0;
+    } else return undefined;
+  }
+
+  async updateMemberScore(email: string, score: number) {
+    const docs = await this.getMemberByMailDocs(email);
+    if (docs.docs.length != 0) {
+      const { id } = docs.docs[0].data() as Member;
       await this.membersCollection.doc(id).update({
-        score: newPoints + (score ?? 0),
+        score: score,
       });
     }
+  }
+
+  private async getMemberByMailDocs(email: string) {
+    return await this.membersCollection.where('email', '==', email).get();
   }
 }

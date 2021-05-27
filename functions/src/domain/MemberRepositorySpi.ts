@@ -6,5 +6,6 @@ export interface MemberRepositorySpi {
 
   loadGalleryMembers(): Promise<MemberWithPicture[]>;
 
-  incrementScoreForMember(newPoints: number, email: string): void;
+  getMemberScore(email: string): Promise<number | undefined>;
+  updateMemberScore(email: string, score: number): void;
 }
