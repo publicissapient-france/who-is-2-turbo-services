@@ -40,7 +40,11 @@ export class GameController {
     @Param('gameId') gameId: string,
     @Body() answers: GameAnswersDto,
   ): Promise<SeriesScoreDto> {
-    const serieScore = await this.gameApi.validateSeriesGame(gameId, answers.answers, answers.email);
+    const serieScore = await this.gameApi.validateSeriesGame(
+      gameId,
+      answers.answers,
+      answers.email,
+    );
     return {
       correct: serieScore.correct,
       total: serieScore.total,
