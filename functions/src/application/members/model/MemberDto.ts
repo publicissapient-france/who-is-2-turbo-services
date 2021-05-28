@@ -2,9 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class MemberDto {
   @ApiProperty()
-  firstName?: string;
+  firstName = '';
   @ApiProperty()
-  lastName?: string;
+  lastName = '';
   @ApiProperty()
-  picture?: string;
+  picture = '';
 }

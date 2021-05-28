@@ -1,6 +1,6 @@
 import { MemberRepositorySpi } from '../../domain/MemberRepositorySpi';
 import { Injectable } from '@nestjs/common';
-import { MemberWithPicture } from '../../domain/model/Member';
+import { Member, MemberWithPicture } from '../../domain/model/Member';
 import * as admin from 'firebase-admin';
 import { MemberConverter } from './MemberConverter';
 
@@ -40,5 +40,27 @@ export class MemberRepository implements MemberRepositorySpi {
       expires: Date.now() + 15 * 60 * 1000,
     });
     return url;
+  }
+
+  async getMemberScore(email: string): Promise<number | undefined> {
+    const docs = await this.getMemberByMailDocs(email);
+    if (docs.docs.length != 0) {
+      const { score } = docs.docs[0].data() as Member;
+      return score ?? 0;
+    } else return undefined;
+  }
+
+  async updateMemberScore(email: string, score: number) {
+    const docs = await this.getMemberByMailDocs(email);
+    if (docs.docs.length != 0) {
+      const { id } = docs.docs[0].data() as Member;
+      await this.membersCollection.doc(id).update({
+        score: score,
+      });
+    }
+  }
+
+  private async getMemberByMailDocs(email: string) {
+    return await this.membersCollection.where('email', '==', email).get();
   }
 }

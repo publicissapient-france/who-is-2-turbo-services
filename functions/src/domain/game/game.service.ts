@@ -43,7 +43,7 @@ export class GameService implements GameApi {
     };
   }
 
-  async validateSeriesGame(gameId: string, answers: number[]): Promise<SeriesScore> {
+  async validateSeriesGame(gameId: string, answers: number[], email: string): Promise<SeriesScore> {
     const game = await this.gameRepositorySpi.fetchSeries(gameId);
     let score = 0;
     game.solutions.forEach((answer, index) => {
@@ -51,6 +51,11 @@ export class GameService implements GameApi {
         score++;
       }
     });
+    const memberCurrentScore = await this.memberRepositorySpi.getMemberScore(email);
+    if (memberCurrentScore != undefined) {
+      this.memberRepositorySpi.updateMemberScore(email, memberCurrentScore + score);
+    }
+
     return {
       correct: score,
       total: game.solutions.length,

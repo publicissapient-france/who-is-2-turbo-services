@@ -5,4 +5,7 @@ export interface MemberRepositorySpi {
   generatePrivatePictureUrl(pictureName: string): Promise<string>;
 
   loadGalleryMembers(): Promise<MemberWithPicture[]>;
+
+  getMemberScore(email: string): Promise<number | undefined>;
+  updateMemberScore(email: string, score: number): void;
 }
