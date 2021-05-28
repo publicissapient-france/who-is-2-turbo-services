@@ -66,7 +66,8 @@ describe('GameService', () => {
     getAllWithPicture: jest.fn(),
     generatePrivatePictureUrl: jest.fn(),
     loadGalleryMembers: jest.fn(),
-    incrementScoreForMember: jest.fn(),
+    getMemberScore: jest.fn(),
+    updateMemberScore: jest.fn,
   };
   const memberRepo: Provider<MemberRepositorySpi> = {
     provide: 'MemberRepositorySpi',
