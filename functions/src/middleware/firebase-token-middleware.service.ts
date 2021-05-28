@@ -7,7 +7,6 @@ import * as admin from 'firebase-admin';
 export class FirebaseTokenMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     await FirebaseTokenMiddleware.validateIdToken(req, res, next);
-    next();
   }
 
   private static async validateIdToken(req: Request, res: Response, next: NextFunction) {
