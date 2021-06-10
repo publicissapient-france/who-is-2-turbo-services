@@ -4,5 +4,5 @@ import { ProfileDto } from '../application/members/model/ProfileDto';
 export interface MembersApi {
   fetchAll(): Promise<MemberWithPicture[]>;
   fetchLeaderboard(): Promise<MemberWithScore[]>;
-  createProfile(member: ProfileDto): void;
+  createProfile(member: ProfileDto): Promise<string>;
 }

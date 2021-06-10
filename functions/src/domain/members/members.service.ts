@@ -16,7 +16,7 @@ export class MembersService implements MembersApi {
     return await this.memberRepositorySpi.getMembersScores();
   }
 
-  createProfile(profileDto: ProfileDto) {
+  async createProfile(profileDto: ProfileDto): Promise<string> {
     let gender;
     if (profileDto.isMale) {
       gender = Gender.MALE;
@@ -30,7 +30,6 @@ export class MembersService implements MembersApi {
       email: profileDto.email,
       gender: gender,
     } as Member;
-    console.log('nw member', member);
-    this.memberRepositorySpi.addMember(member);
+    return await this.memberRepositorySpi.addMember(member);
   }
 }
