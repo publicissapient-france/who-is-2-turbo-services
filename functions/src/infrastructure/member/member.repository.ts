@@ -68,4 +68,13 @@ export class MemberRepository implements MemberRepositorySpi {
     const members = await this.membersCollection.orderBy('score', 'desc').get();
     return members.docs.map((member) => member.data() as MemberWithScore);
   }
+
+  addMember(newMember: Member) {
+    const db = admin.firestore();
+    db.settings({ ignoreUndefinedProperties: true });
+    const tmpMembersCollection = db.collection('members').withConverter(new MemberConverter());
+    tmpMembersCollection.add(newMember);
+    // console.log(newMember);
+    // const  = await this.membersCollection.add(newMember);
+  }
 }

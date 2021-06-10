@@ -12,7 +12,9 @@ const male1: Member = {
   id: 'm1',
   lastName: 'Blague',
   firstName: 'Toto',
+  firstName_unaccent: 'Toto',
   gender: Gender.MALE,
+  email: 'email@male1',
 };
 const male2: Member = {
   createdAt: new Date(),
@@ -20,7 +22,9 @@ const male2: Member = {
   id: 'm2',
   lastName: 'tutu',
   firstName: 'Lucien',
+  firstName_unaccent: 'Lucien',
   gender: Gender.MALE,
+  email: 'email@male2',
 };
 const female1: Member = {
   createdAt: new Date(),
@@ -28,7 +32,9 @@ const female1: Member = {
   id: 'f1',
   lastName: 'Ranoux',
   firstName: 'Monique',
+  firstName_unaccent: 'Monique',
   gender: Gender.FEMALE,
+  email: 'email@female1',
 };
 const female2: Member = {
   createdAt: new Date(),
@@ -36,7 +42,9 @@ const female2: Member = {
   id: 'f2',
   lastName: 'La Brouette',
   firstName: 'Gertrude',
+  firstName_unaccent: 'Gertrude',
   gender: Gender.FEMALE,
+  email: 'email@female2',
 };
 
 const findMember = (member: { firstName: string; lastName: string }) => {
@@ -69,6 +77,7 @@ describe('GameService', () => {
     getMemberScore: jest.fn(),
     updateMemberScore: jest.fn(),
     getMembersScores: jest.fn(),
+    addMember: jest.fn(),
   };
   const memberRepo: Provider<MemberRepositorySpi> = {
     provide: 'MemberRepositorySpi',

@@ -8,10 +8,12 @@ export class MemberConverter implements FirestoreDataConverter<Member> {
       id: snapshot.id,
       createdAt: snapshot.createTime.toDate(),
       firstName: snapshot.get('firstName'),
+      firstName_unaccent: snapshot.get('firstName_unaccent'),
       lastName: snapshot.get('lastName'),
       gender: Gender[snapshot.get('gender') as keyof typeof Gender],
       picture: snapshot.get('picture'),
       score: snapshot.get('score'),
+      email: snapshot.get('email'),
     };
   }
 
