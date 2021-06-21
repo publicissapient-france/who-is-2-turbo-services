@@ -21,4 +21,9 @@ cd functions && npm run serve
 ## Security
 TBD
 
+## Deploy
 
+### Environment setting
+```shell script
+firebase functions:config:set whoisturbo.baseurl="https://europe-west1-who-is-2-turbo.cloudfunctions.net/api"
+```

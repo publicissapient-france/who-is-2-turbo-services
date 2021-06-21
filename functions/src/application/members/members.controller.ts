@@ -5,6 +5,7 @@ import { ApiCreatedResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MemberDto } from './model/MemberDto';
 import { MembersDto } from './model/MembersDto';
 import PictureApi from '../../domain/PictureApi';
+import * as functions from 'firebase-functions';
 
 @Controller('members')
 export class MembersController {
@@ -23,14 +24,16 @@ export class MembersController {
   @ApiResponse({ status: 500, description: 'Internal server error.' })
   async loadGallery(@Req() request: Request): Promise<MemberDto[]> {
     const members = await this.membersApi.fetchAll();
-    const baseUrl = MembersController.getBaseUrl(request);
-    return members.map(({ firstName, lastName, picture }) => {
-      return {
-        firstName,
-        lastName,
-        picture: `${baseUrl}/members/${picture}`,
-      };
-    });
+    const baseUrl = functions.config().whoisturbo.baseurl as string;
+    if (!baseUrl) {
+      throw new Error('Missing environment parameter: whoisturbo.baseurl');
+    }
+
+    return members.map(({ firstName, lastName, picture }) => ({
+      firstName,
+      lastName,
+      picture: `${baseUrl}/members/${picture}`,
+    }));
   }
 
   @Get('/:pictureName')
@@ -39,18 +42,11 @@ export class MembersController {
     tags: ['Member', 'Picture'],
   })
   @ApiResponse({ status: 200, description: 'Picture of a member' })
-  @ApiResponse({ status: 404, description: 'Picture nt found' })
+  @ApiResponse({ status: 404, description: 'Picture not found' })
   async readFile(@Res() res: Response, @Param('pictureName') pictureName: string): Promise<void> {
     const stream = await this.pictureApi.readPicture(pictureName);
     res.setHeader('Cache-Control', 'private, max-age=2419200');
     stream.pipe(res);
     return;
-  }
-
-  private static getBaseUrl(request: Request): string {
-    const { hostname } = request;
-    return hostname === 'localhost'
-      ? 'http://localhost:5001/who-is-2-turbo/europe-west1/api'
-      : 'https://europe-west1-who-is-2-turbo.cloudfunctions.net/api';
   }
 }
