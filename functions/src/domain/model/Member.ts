@@ -10,6 +10,8 @@ export type Member = StorageMeta & {
 
 export type MemberWithPicture = Member & { picture: string };
 
+export type MemberWithScore = Member & { score: number };
+
 export enum Gender {
   MALE,
   FEMALE,

@@ -1,6 +1,6 @@
 import { MemberRepositorySpi } from '../../domain/MemberRepositorySpi';
 import { Injectable } from '@nestjs/common';
-import { Member, MemberWithPicture } from '../../domain/model/Member';
+import { Member, MemberWithPicture, MemberWithScore } from '../../domain/model/Member';
 import * as admin from 'firebase-admin';
 import { MemberConverter } from './MemberConverter';
 
@@ -62,5 +62,10 @@ export class MemberRepository implements MemberRepositorySpi {
 
   private async getMemberByMailDocs(email: string) {
     return await this.membersCollection.where('email', '==', email).get();
+  }
+
+  async getMembersScores(): Promise<MemberWithScore[]> {
+    const members = await this.membersCollection.orderBy('score', 'desc').get();
+    return members.docs.map((member) => member.data() as MemberWithScore);
   }
 }
