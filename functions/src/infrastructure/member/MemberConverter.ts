@@ -11,6 +11,7 @@ export class MemberConverter implements FirestoreDataConverter<Member> {
       lastName: snapshot.get('lastName'),
       gender: Gender[snapshot.get('gender') as keyof typeof Gender],
       picture: snapshot.get('picture'),
+      score: snapshot.get('score'),
     };
   }
 
@@ -23,12 +24,13 @@ export class MemberConverter implements FirestoreDataConverter<Member> {
     modelObject: Member | Partial<Member>,
     options?: FirebaseFirestore.SetOptions,
   ): FirebaseFirestore.DocumentData {
-    const { firstName, lastName, gender, picture } = modelObject;
+    const { firstName, lastName, gender, picture, score } = modelObject;
     return {
       firstName,
       lastName,
       gender: gender ? Gender[gender] : undefined,
       picture,
+      score,
     };
   }
 }

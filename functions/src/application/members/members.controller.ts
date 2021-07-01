@@ -29,7 +29,7 @@ export class MembersController {
   @Get('leaderboard')
   @ApiCreatedResponse({
     description: 'Leaderboard',
-    type: MembersDto,
+    type: LeaderboardMemberDto,
   })
   @ApiResponse({ status: 200, description: 'The leaderboard is returned' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
