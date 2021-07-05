@@ -5,6 +5,8 @@ import { Provider } from '@nestjs/common';
 import { MemberRepositorySpi } from '../MemberRepositorySpi';
 import { Gender, Member } from '../model/Member';
 import Mock = jest.Mock;
+import { CryptoSpi } from '../CryptoSpi';
+import { PictureStorageSpi } from '../PictureStorageSpi';
 
 const male1: Member = {
   createdAt: new Date(),
@@ -54,11 +56,27 @@ const findMember = (member: { firstName: string; lastName: string }) => {
 };
 
 const guessMember = (pictureUrl: string) => {
-  return [male1, male2, female1, female2].find((value) => value.picture === pictureUrl);
+  return [male1, male2, female1, female2].find(
+    (value) => value.picture === pictureUrl.replace('cyphered_', ''),
+  );
 };
 
 describe('GameService', () => {
   let service: GameService;
+
+  const mockCrypto: CryptoSpi = {
+    cypher: (data) => {
+      return 'cyphered_' + data;
+    },
+    decipher: (data) => {
+      return data.replace('cyphered_', '');
+    },
+  };
+
+  const crypto: Provider<CryptoSpi> = {
+    provide: 'CryptoSpi',
+    useValue: mockCrypto,
+  };
 
   const mockGameRepo: GameRepositorySpi = {
     saveSeries: jest.fn(),
@@ -85,9 +103,18 @@ describe('GameService', () => {
     useValue: mockMemberRepo,
   };
 
+  const mockedPictureStorageSpi: PictureStorageSpi = {
+    readPicture: jest.fn(),
+  };
+
+  const pictureStorageSpi: Provider<PictureStorageSpi> = {
+    provide: 'PictureStorageSpi',
+    useValue: mockedPictureStorageSpi,
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [gameRepo, memberRepo, GameService],
+      providers: [crypto, gameRepo, memberRepo, pictureStorageSpi, GameService],
     }).compile();
 
     (mockMemberRepo.getAllWithPicture as Mock).mockImplementation((size: number) => {
@@ -121,7 +148,9 @@ describe('GameService', () => {
     expect(game.id).toBe('idGame');
     expect(game.questions.length).toBe(1);
     expect(
-      game.questions.find((question) => ['m1.png', 'm2.png'].includes(question.question)),
+      game.questions.find((question) =>
+        ['cyphered_m1.png', 'cyphered_m2.png'].includes(question.question),
+      ),
     ).toBeDefined();
     expect(game.questions[0].propositions.length).toBe(2);
   });
