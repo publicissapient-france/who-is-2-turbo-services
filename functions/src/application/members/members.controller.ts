@@ -1,9 +1,12 @@
-import { Controller, Get, Inject } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Patch, Post } from '@nestjs/common';
 import { MembersApi } from '../../domain/MembersApi';
 import { ApiCreatedResponse, ApiResponse } from '@nestjs/swagger';
 import { MemberDto } from './model/MemberDto';
 import { MembersDto } from './model/MembersDto';
 import { LeaderboardMemberDto } from './model/LeaderboardMemberDto';
+import { MemberIdDto } from './model/MemberIdDto';
+import { ProfileDto } from './model/ProfileDto';
+import { MeDto } from './model/MeDto';
 
 @Controller('members')
 export class MembersController {
@@ -41,5 +44,46 @@ export class MembersController {
       lastName,
       score,
     }));
+  }
+
+  @Post('me')
+  @ApiCreatedResponse({
+    description: 'Create profile member',
+  })
+  @ApiResponse({ status: 201, description: 'The profile is created' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 500, description: 'Internal server error.' })
+  async addProfile(@Body() profile: ProfileDto): Promise<MemberIdDto> {
+    return {
+      id: 'fakeId',
+    };
+  }
+
+  @Get('me')
+  @ApiCreatedResponse({
+    description: 'Get profile member',
+  })
+  @ApiResponse({ status: 200, description: 'The profile is returned' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 500, description: 'Internal server error.' })
+  async getProfile(@Body() me: MeDto): Promise<ProfileDto> {
+    return {
+      firstName: '',
+      lastName: '',
+      gender: 'MALE',
+      picture: '',
+      email: me.email,
+    };
+  }
+
+  @Patch('me')
+  @ApiCreatedResponse({
+    description: 'Create profile member',
+  })
+  @ApiResponse({ status: 204, description: 'The profile is saved' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 500, description: 'Internal server error.' })
+  async patchProfile(@Body() me: MeDto) {
+    return;
   }
 }
