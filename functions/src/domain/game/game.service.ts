@@ -52,8 +52,8 @@ export class GameService implements GameApi {
       }
     });
     const memberCurrentScore = await this.memberRepositorySpi.getMemberScore(email);
-    if (memberCurrentScore != undefined) {
-      this.memberRepositorySpi.updateMemberScore(email, memberCurrentScore + score);
+    if (memberCurrentScore != undefined && memberCurrentScore < score) {
+      this.memberRepositorySpi.updateMemberScore(email, score);
     }
 
     return {
