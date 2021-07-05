@@ -43,6 +43,28 @@ export class MemberRepository implements MemberRepositorySpi {
     return memberWithPictureDocs.docs[0].data() as MemberWithPicture;
   }
 
+  async updateMember(member: Member) {
+    const memberWithPicture = await this.getMemberWithPictureByEmail(member.email);
+    let picture;
+    if (member.picture != undefined) {
+      await this.deleteImage(memberWithPicture.picture);
+      await this.addImage(memberWithPicture.id, member.picture);
+      picture = memberWithPicture.id;
+    } else {
+      picture = memberWithPicture.picture;
+    }
+
+    const newMember = {
+      firstName: member.firstName ?? memberWithPicture.firstName,
+      firstName_unaccent: member.firstName_unaccent ?? memberWithPicture.firstName_unaccent,
+      lastName: member.lastName ?? memberWithPicture.lastName,
+      gender: member.gender ?? memberWithPicture.gender,
+      picture: picture,
+    };
+
+    await this.membersCollection.doc(memberWithPicture.id).update(newMember);
+  }
+
   async loadGalleryMembers(): Promise<MemberWithPicture[]> {
     const documents = await this.membersCollection
       .orderBy('firstName_unaccent')
@@ -118,6 +140,11 @@ export class MemberRepository implements MemberRepositorySpi {
     const base64EncodedString = picture.replace(/^data:\w+\/\w+;base64,/, '');
     const fileBuffer = Buffer.from(base64EncodedString, 'base64');
     await file.save(fileBuffer, fileOptions);
+  }
+
+  async deleteImage(fileName: string) {
+    const file = await admin.storage().bucket().file(fileName);
+    file.delete();
   }
 
   private static base64MimeType(encoded: string): string | undefined {

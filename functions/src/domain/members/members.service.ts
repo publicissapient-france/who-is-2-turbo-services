@@ -57,4 +57,40 @@ export class MemberNotFoundException {
     this.message = 'NOT FOUND';
     this.code = 'NOTFOUND';
   }
+
+  async updateProfile(profileDto: ProfileDto) {
+    let gender = undefined;
+    if (profileDto.gender != undefined) {
+      gender = (<any>Gender)[profileDto.gender];
+    }
+
+    const member = {
+      firstName: profileDto.firstName,
+      firstName_unaccent: profileDto.firstName?.normalize('NFD')?.replace(/[\u0300-\u036f]/g, ''),
+      lastName: profileDto.lastName,
+      picture: profileDto.picture,
+      gender: gender,
+      email: profileDto.email,
+    } as MemberWithPicture;
+
+    await this.memberRepositorySpi.updateMember(member);
+  }
+
+  async updateProfile(profileDto: ProfileDto) {
+    let gender = undefined;
+    if (profileDto.gender != undefined) {
+      gender = (<any>Gender)[profileDto.gender];
+    }
+
+    const member = {
+      firstName: profileDto.firstName,
+      firstName_unaccent: profileDto.firstName?.normalize('NFD')?.replace(/[\u0300-\u036f]/g, ''),
+      lastName: profileDto.lastName,
+      picture: profileDto.picture,
+      gender: gender,
+      email: profileDto.email,
+    } as MemberWithPicture;
+
+    await this.memberRepositorySpi.updateMember(member);
+  }
 }

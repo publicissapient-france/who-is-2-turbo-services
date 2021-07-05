@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Patch, Post, UseFilters } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Inject, Patch, Post, UseFilters } from '@nestjs/common';
 import { MembersApi } from '../../domain/MembersApi';
 import { ApiCreatedResponse, ApiResponse } from '@nestjs/swagger';
 import { MemberDto } from './model/MemberDto';
@@ -75,13 +75,14 @@ export class MembersController {
   }
 
   @Patch('me')
+  @HttpCode(204)
   @ApiCreatedResponse({
     description: 'Create profile member',
   })
   @ApiResponse({ status: 204, description: 'The profile is saved' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiResponse({ status: 500, description: 'Internal server error.' })
-  async patchProfile(@Body() me: MeDto) {
-    return;
+  async patchProfile(@Body() me: Partial<ProfileDto>) {
+    return this.membersApi.updateProfile(me);
   }
 }

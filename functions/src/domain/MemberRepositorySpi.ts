@@ -12,4 +12,5 @@ export interface MemberRepositorySpi {
 
   addMember(newMember: Member): Promise<string>;
   getMemberWithPictureByEmail(email: string): Promise<MemberWithPicture>;
+  updateMember(me: Partial<Member>): void;
 }
