@@ -45,6 +45,7 @@ export class GameController {
   }
 
   @Get('picture/:cypheredPictureName')
+  @ApiResponse({ status: 200, description: 'Picture webp is returned' })
   async getPicture(
     @Res() res: Response,
     @Param('cypheredPictureName') pictureName: string,
