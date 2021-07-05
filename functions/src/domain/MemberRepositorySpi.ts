@@ -11,4 +11,5 @@ export interface MemberRepositorySpi {
   getMembersScores(): Promise<MemberWithScore[]>;
 
   addMember(newMember: Member): Promise<string>;
+  getMemberWithPictureByEmail(email: string): Promise<MemberWithPicture>;
 }

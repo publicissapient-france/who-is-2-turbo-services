@@ -7,6 +7,7 @@ import { LeaderboardMemberDto } from './model/LeaderboardMemberDto';
 import { MemberIdDto } from './model/MemberIdDto';
 import { ProfileDto } from './model/ProfileDto';
 import { MeDto } from './model/MeDto';
+import { EditableProfileDto } from './model/EditableProfileDto';
 
 @Controller('members')
 export class MembersController {
@@ -66,14 +67,8 @@ export class MembersController {
   @ApiResponse({ status: 200, description: 'The profile is returned' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiResponse({ status: 500, description: 'Internal server error.' })
-  async getProfile(@Body() me: MeDto): Promise<ProfileDto> {
-    return {
-      firstName: '',
-      lastName: '',
-      gender: 'MALE',
-      picture: '',
-      email: me.email,
-    };
+  async getProfile(@Body() me: MeDto): Promise<EditableProfileDto> {
+    return await this.membersApi.fetchProfile(me);
   }
 
   @Patch('me')

@@ -25,6 +25,11 @@ export class MemberRepository implements MemberRepositorySpi {
     return membersWithPictures.docs.map((member) => member.data() as MemberWithPicture);
   }
 
+  async getMemberWithPictureByEmail(email: string): Promise<MemberWithPicture> {
+    const memberWithPictureDocs = await this.membersCollection.where('email', '==', email).get();
+    return memberWithPictureDocs.docs[0].data() as MemberWithPicture;
+  }
+
   async loadGalleryMembers(): Promise<MemberWithPicture[]> {
     const documents = await this.membersCollection
       .orderBy('firstName_unaccent')
