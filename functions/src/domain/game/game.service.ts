@@ -8,13 +8,18 @@ import { shuffle } from 'lodash';
 import { Member, MemberWithPicture } from '../model/Member';
 import { Question } from '../model/Question';
 import { Proposition } from '../model/Proposition';
+import { CryptoSpi } from '../CryptoSpi';
+import { PictureStorageSpi } from '../PictureStorageSpi';
+import { Readable } from 'stream';
 
 @Injectable()
 export class GameService implements GameApi {
   constructor(
+    @Inject('CryptoSpi') private cryptoSpi: CryptoSpi,
     @Inject('GameRepositorySpi') private gameRepositorySpi: GameRepositorySpi,
     @Inject('MemberRepositorySpi')
     private memberRepositorySpi: MemberRepositorySpi,
+    @Inject('PictureStorageSpi') private pictureStorageSpi: PictureStorageSpi,
   ) {}
 
   async generateSeriesGame(size: number, nbPropositionsByQuestion = 4): Promise<SeriesGame> {
@@ -79,9 +84,7 @@ export class GameService implements GameApi {
       ...otherMembers.map(GameService.mapMemberToProposition),
     ]);
 
-    const questionImageUrl = await this.memberRepositorySpi.generatePrivatePictureUrl(
-      selectedMember.picture,
-    );
+    const questionImageUrl = this.cryptoSpi.cypher(selectedMember.picture);
 
     return {
       question: questionImageUrl,
@@ -92,5 +95,9 @@ export class GameService implements GameApi {
 
   private static mapMemberToProposition({ firstName, lastName }: Member): Proposition {
     return { firstName, lastName };
+  }
+
+  readPicture(cypheredId: string): Promise<Readable> {
+    return this.pictureStorageSpi.readPicture(this.cryptoSpi.decipher(cypheredId));
   }
 }

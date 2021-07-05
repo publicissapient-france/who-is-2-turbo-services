@@ -1,0 +1,7 @@
+{
+  "whoisturbo": {
+    "baseurl": "http://localhost:5001/who-is-2-turbo/europe-west1/api",
+    "keypassword": "test-password",
+    "keysalt": "key-salt"
+  }
+}

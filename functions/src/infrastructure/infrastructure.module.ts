@@ -2,13 +2,14 @@ import { Module } from '@nestjs/common';
 import { GamesRepository } from './game/games.repository';
 import { MemberRepository } from './member/member.repository';
 import { CryptoService } from './crypto/Crypto.service';
-import { ConfigService } from './firebase/function/Config.service';
+import { FirebaseConfigService } from './firebase/function/FirebaseConfig.service';
+import { FirebaseStorageService } from './firebase/storage/FirebaseStorage.service';
 
 @Module({
   providers: [
     {
       provide: 'ConfigSpi',
-      useClass: ConfigService,
+      useClass: FirebaseConfigService,
     },
     {
       provide: 'CryptoSpi',
@@ -22,7 +23,17 @@ import { ConfigService } from './firebase/function/Config.service';
       provide: 'MemberRepositorySpi',
       useClass: MemberRepository,
     },
+    {
+      provide: 'PictureStorageSpi',
+      useClass: FirebaseStorageService,
+    },
   ],
-  exports: ['ConfigSpi', 'CryptoSpi', 'GameRepositorySpi', 'MemberRepositorySpi', 'StorageSpi'],
+  exports: [
+    'ConfigSpi',
+    'CryptoSpi',
+    'GameRepositorySpi',
+    'MemberRepositorySpi',
+    'PictureStorageSpi',
+  ],
 })
 export class InfrastructureModule {}

@@ -1,13 +1,22 @@
-import { Body, Controller, Inject, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, Post, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { GameApi } from '../../domain/GameApi';
 import { GameAnswersDto } from './model/GameAnswersDto';
 import { ApiCreatedResponse, ApiResponse } from '@nestjs/swagger';
 import { SeriesScoreDto } from './model/SeriesScoreDto';
 import { SeriesGameDto } from './model/GameSerieDto';
+import { ConfigApi } from '../../domain/ConfigApi';
 
 @Controller('games')
 export class GameController {
-  constructor(@Inject('GameApi') private gameApi: GameApi) {}
+  private readonly baseUrl: string;
+
+  constructor(
+    @Inject('ConfigApi') configApi: ConfigApi,
+    @Inject('GameApi') private gameApi: GameApi,
+  ) {
+    this.baseUrl = configApi.require('baseurl');
+  }
 
   @Post()
   @ApiCreatedResponse({
@@ -24,8 +33,27 @@ export class GameController {
     const seriesGame = await this.gameApi.generateSeriesGame(5, 4);
     return {
       id: seriesGame.id,
-      questions: seriesGame.questions,
+      questions: seriesGame.questions.map(({ question, propositions }) => ({
+        question: this.getImageUrl(question),
+        propositions,
+      })),
     } as SeriesGameDto;
+  }
+
+  private getImageUrl(imageName: string): string {
+    return `${this.baseUrl}/games/picture/${imageName}`;
+  }
+
+  @Get('picture/:cypheredPictureName')
+  async getPicture(
+    @Res() res: Response,
+    @Param('cypheredPictureName') pictureName: string,
+  ): Promise<void> {
+    const stream = await this.gameApi.readPicture(pictureName);
+    res.setHeader('Cache-Control', 'private, no-cache, no-store');
+    res.setHeader('Content-Type', 'image/webp');
+    stream.pipe(res);
+    return;
   }
 
   @ApiCreatedResponse({

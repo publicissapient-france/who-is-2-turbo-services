@@ -57,4 +57,19 @@ describe('CryptoService', () => {
     // THEN
     expect(() => serviceWithDifferentKey.decipher(cyphered)).toThrowError();
   });
+
+  it('should not be sensible to instantiation', async () => {
+    // GIVEN
+    const test = 'lorem ipsum 123 !';
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [mockedConfigSpi, CryptoService],
+    }).compile();
+    const service2 = module.get<CryptoService>(CryptoService);
+
+    // WHEN
+    const cyphered = service.cypher(test);
+
+    // THEN
+    expect(service2.decipher(cyphered)).toBe(test);
+  });
 });

@@ -1,9 +1,11 @@
 import { ConfigSpi } from '../../../domain/ConfigSpi';
 import * as functions from 'firebase-functions';
+import { Injectable } from '@nestjs/common';
 
-export class ConfigService implements ConfigSpi {
+@Injectable()
+export class FirebaseConfigService implements ConfigSpi {
   get(key: string): string | undefined {
-    return functions.config().whoisturbo.get(key);
+    return functions.config().whoisturbo[key];
   }
 
   require(key: string): string {

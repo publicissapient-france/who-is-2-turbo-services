@@ -6,7 +6,15 @@ import * as admin from 'firebase-admin';
 @Injectable()
 export class FirebaseTokenMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
+    if (!FirebaseTokenMiddleware.isTokenRequired(req)) {
+      next();
+      return;
+    }
     await FirebaseTokenMiddleware.validateIdToken(req, res, next);
+  }
+
+  private static isTokenRequired(req: Request): boolean {
+    return !req.originalUrl.includes('picture');
   }
 
   private static async validateIdToken(req: Request, res: Response, next: NextFunction) {
