@@ -17,20 +17,14 @@ export class MembersService implements MembersApi {
   }
 
   async createProfile(profileDto: ProfileDto): Promise<string> {
-    console.log('profileDto', profileDto);
-    let gender;
-    if (profileDto.gender === 'MALE') {
-      gender = Gender.MALE;
-    } else {
-      gender = Gender.FEMALE;
-    }
     const member = {
       firstName: profileDto.firstName,
       firstName_unaccent: profileDto.firstName.normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
       lastName: profileDto.lastName,
       email: profileDto.email,
-      gender: gender,
+      gender: (<any>Gender)[profileDto.gender],
+      picture: profileDto.picture,
     } as Member;
-    return await this.memberRepositorySpi.addMember(member, profileDto.picture);
+    return await this.memberRepositorySpi.addMember(member);
   }
 }

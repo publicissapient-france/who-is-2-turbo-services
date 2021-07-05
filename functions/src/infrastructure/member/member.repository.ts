@@ -3,6 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { Member, MemberWithPicture, MemberWithScore } from '../../domain/model/Member';
 import * as admin from 'firebase-admin';
 import { MemberConverter } from './MemberConverter';
+import { firestore } from 'firebase-admin/lib/firestore';
+import QuerySnapshot = firestore.QuerySnapshot;
 
 @Injectable()
 export class MemberRepository implements MemberRepositorySpi {
@@ -61,7 +63,7 @@ export class MemberRepository implements MemberRepositorySpi {
     }
   }
 
-  private async getMemberByMailDocs(email: string) {
+  private async getMemberByMailDocs(email: string): Promise<QuerySnapshot<Member>> {
     return await this.membersCollection.where('email', '==', email).get();
   }
 
@@ -70,25 +72,24 @@ export class MemberRepository implements MemberRepositorySpi {
     return members.docs.map((member) => member.data() as MemberWithScore);
   }
 
-  async addMember(newMember: Member, image: string): Promise<string> {
+  async addMember(newMember: Member): Promise<string> {
     this.firebase.settings({ ignoreUndefinedProperties: true });
     const membersCollection = this.firebase
       .collection('members')
       .withConverter(new MemberConverter());
     const { id } = await membersCollection.add(newMember);
-    await this.addImage(id, image);
-    await this.membersCollection.doc(id).update({ image: id });
+    if (newMember.picture != undefined) {
+      await this.addImage(id, newMember.picture);
+      await this.membersCollection.doc(id).update({ image: id });
+    }
     return id;
   }
 
   async addImage(fileName: string, picture: string) {
     const file = await admin.storage().bucket().file(fileName);
     const fileOptions = {
-      public: true,
-      resumable: false,
       metadata: { contentType: MemberRepository.base64MimeType(picture) || 'image/webp' },
-      publicUrl: true,
-      validation: false,
+      validation: 'md5',
     };
 
     const base64EncodedString = picture.replace(/^data:\w+\/\w+;base64,/, '');
