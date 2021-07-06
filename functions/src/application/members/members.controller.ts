@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Patch, Post, UseFilters } from '@nestjs/common';
 import { MembersApi } from '../../domain/MembersApi';
 import { ApiCreatedResponse, ApiResponse } from '@nestjs/swagger';
 import { MemberDto } from './model/MemberDto';
@@ -8,6 +8,7 @@ import { MemberIdDto } from './model/MemberIdDto';
 import { ProfileDto } from './model/ProfileDto';
 import { MeDto } from './model/MeDto';
 import { EditableProfileDto } from './model/EditableProfileDto';
+import { MembersExceptionFilter } from './members.http-exception.filter';
 
 @Controller('members')
 export class MembersController {
@@ -66,7 +67,9 @@ export class MembersController {
   })
   @ApiResponse({ status: 200, description: 'The profile is returned' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: "The profile doesn't exist." })
   @ApiResponse({ status: 500, description: 'Internal server error.' })
+  @UseFilters(new MembersExceptionFilter())
   async getProfile(@Body() me: MeDto): Promise<EditableProfileDto> {
     return await this.membersApi.fetchProfile(me);
   }

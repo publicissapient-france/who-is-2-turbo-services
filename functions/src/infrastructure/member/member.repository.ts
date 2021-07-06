@@ -8,6 +8,16 @@ import QuerySnapshot = firestore.QuerySnapshot;
 import Firestore = firestore.Firestore;
 import CollectionReference = firestore.CollectionReference;
 
+export class UserNotFoundError {
+  readonly message: string;
+  readonly code: string;
+
+  constructor() {
+    this.message = 'NOT FOUND';
+    this.code = 'NOTFOUND';
+  }
+}
+
 @Injectable()
 export class MemberRepository implements MemberRepositorySpi {
   constructor() {
@@ -27,6 +37,9 @@ export class MemberRepository implements MemberRepositorySpi {
 
   async getMemberWithPictureByEmail(email: string): Promise<MemberWithPicture> {
     const memberWithPictureDocs = await this.membersCollection.where('email', '==', email).get();
+    if (!memberWithPictureDocs.docs.length) {
+      throw new UserNotFoundError();
+    }
     return memberWithPictureDocs.docs[0].data() as MemberWithPicture;
   }
 
@@ -109,7 +122,7 @@ export class MemberRepository implements MemberRepositorySpi {
 
   private static base64MimeType(encoded: string): string | undefined {
     let result;
-    let mime = encoded.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,.*/);
+    const mime = encoded.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,.*/);
     if (mime && mime.length) {
       result = mime[1];
     }
