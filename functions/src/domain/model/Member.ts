@@ -2,7 +2,9 @@ import { StorageMeta } from './StorageMeta';
 
 export type Member = StorageMeta & {
   firstName: string;
+  firstName_unaccent: string;
   lastName: string;
+  email: string;
   gender: Gender;
   picture?: string;
   score?: number;

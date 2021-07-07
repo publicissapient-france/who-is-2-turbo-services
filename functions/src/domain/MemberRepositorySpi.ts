@@ -1,4 +1,4 @@
-import { MemberWithPicture, MemberWithScore } from './model/Member';
+import { Member, MemberWithPicture, MemberWithScore } from './model/Member';
 
 export interface MemberRepositorySpi {
   getAllWithPicture(): Promise<MemberWithPicture[]>;
@@ -9,4 +9,6 @@ export interface MemberRepositorySpi {
   getMemberScore(email: string): Promise<number | undefined>;
   updateMemberScore(email: string, score: number): void;
   getMembersScores(): Promise<MemberWithScore[]>;
+
+  addMember(newMember: Member): Promise<string>;
 }

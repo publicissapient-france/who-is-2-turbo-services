@@ -55,7 +55,7 @@ export class MembersController {
   @ApiResponse({ status: 500, description: 'Internal server error.' })
   async addProfile(@Body() profile: ProfileDto): Promise<MemberIdDto> {
     return {
-      id: 'fakeId',
+      id: await this.membersApi.createProfile(profile),
     };
   }
 

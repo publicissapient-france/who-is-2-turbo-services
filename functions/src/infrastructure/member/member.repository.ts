@@ -3,10 +3,13 @@ import { Injectable } from '@nestjs/common';
 import { Member, MemberWithPicture, MemberWithScore } from '../../domain/model/Member';
 import * as admin from 'firebase-admin';
 import { MemberConverter } from './MemberConverter';
+import { firestore } from 'firebase-admin/lib/firestore';
+import QuerySnapshot = firestore.QuerySnapshot;
 
 @Injectable()
 export class MemberRepository implements MemberRepositorySpi {
-  membersCollection = admin.firestore().collection('members').withConverter(new MemberConverter());
+  firebase = admin.firestore();
+  membersCollection = this.firebase.collection('members').withConverter(new MemberConverter());
 
   async getAllWithPicture(): Promise<MemberWithPicture[]> {
     const membersWithPictures = await this.membersCollection.where('picture', '!=', '').get();
@@ -60,12 +63,46 @@ export class MemberRepository implements MemberRepositorySpi {
     }
   }
 
-  private async getMemberByMailDocs(email: string) {
+  private async getMemberByMailDocs(email: string): Promise<QuerySnapshot<Member>> {
     return await this.membersCollection.where('email', '==', email).get();
   }
 
   async getMembersScores(): Promise<MemberWithScore[]> {
     const members = await this.membersCollection.orderBy('score', 'desc').get();
     return members.docs.map((member) => member.data() as MemberWithScore);
+  }
+
+  async addMember(newMember: Member): Promise<string> {
+    this.firebase.settings({ ignoreUndefinedProperties: true });
+    const membersCollection = this.firebase
+      .collection('members')
+      .withConverter(new MemberConverter());
+    const { id } = await membersCollection.add(newMember);
+    if (newMember.picture != undefined) {
+      await this.addImage(id, newMember.picture);
+      await this.membersCollection.doc(id).update({ image: id });
+    }
+    return id;
+  }
+
+  async addImage(fileName: string, picture: string) {
+    const file = await admin.storage().bucket().file(fileName);
+    const fileOptions = {
+      metadata: { contentType: MemberRepository.base64MimeType(picture) || 'image/webp' },
+      validation: 'md5',
+    };
+
+    const base64EncodedString = picture.replace(/^data:\w+\/\w+;base64,/, '');
+    const fileBuffer = Buffer.from(base64EncodedString, 'base64');
+    await file.save(fileBuffer, fileOptions);
+  }
+
+  private static base64MimeType(encoded: string): string | undefined {
+    let result;
+    let mime = encoded.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,.*/);
+    if (mime && mime.length) {
+      result = mime[1];
+    }
+    return result;
   }
 }
