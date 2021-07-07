@@ -5,11 +5,20 @@ import * as admin from 'firebase-admin';
 import { MemberConverter } from './MemberConverter';
 import { firestore } from 'firebase-admin/lib/firestore';
 import QuerySnapshot = firestore.QuerySnapshot;
+import Firestore = firestore.Firestore;
+import CollectionReference = firestore.CollectionReference;
 
 @Injectable()
 export class MemberRepository implements MemberRepositorySpi {
-  firebase = admin.firestore();
-  membersCollection = this.firebase.collection('members').withConverter(new MemberConverter());
+  constructor() {
+    this.firebase = admin.firestore();
+    this.firebase.settings({ ignoreUndefinedProperties: true });
+    this.membersCollection = this.firebase
+      .collection('members')
+      .withConverter(new MemberConverter());
+  }
+  readonly firebase: Firestore;
+  readonly membersCollection: CollectionReference<Member>;
 
   async getAllWithPicture(): Promise<MemberWithPicture[]> {
     const membersWithPictures = await this.membersCollection.where('picture', '!=', '').get();
@@ -73,14 +82,10 @@ export class MemberRepository implements MemberRepositorySpi {
   }
 
   async addMember(newMember: Member): Promise<string> {
-    this.firebase.settings({ ignoreUndefinedProperties: true });
-    const membersCollection = this.firebase
-      .collection('members')
-      .withConverter(new MemberConverter());
-    const { id } = await membersCollection.add(newMember);
+    const { id } = await this.membersCollection.add(newMember);
     if (newMember.picture != undefined) {
       await this.addImage(id, newMember.picture);
-      await this.membersCollection.doc(id).update({ image: id });
+      await this.membersCollection.doc(id).update({ picture: id });
     }
     return id;
   }
