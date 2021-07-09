@@ -18,6 +18,16 @@ export class UserNotFoundError {
   }
 }
 
+export class UserAlreadyExistsError {
+  readonly message: string;
+  readonly code: string;
+
+  constructor() {
+    this.message = 'ALREADY EXISTS';
+    this.code = 'CONFLICT';
+  }
+}
+
 @Injectable()
 export class MemberRepository implements MemberRepositorySpi {
   constructor() {
@@ -27,6 +37,7 @@ export class MemberRepository implements MemberRepositorySpi {
       .collection('members')
       .withConverter(new MemberConverter());
   }
+
   readonly firebase: Firestore;
   readonly membersCollection: CollectionReference<Member>;
 
@@ -43,26 +54,11 @@ export class MemberRepository implements MemberRepositorySpi {
     return memberWithPictureDocs.docs[0].data() as MemberWithPicture;
   }
 
-  async updateMember(member: Member) {
-    const memberWithPicture = await this.getMemberWithPictureByEmail(member.email);
-    let picture;
-    if (member.picture != undefined) {
-      await this.deleteImage(memberWithPicture.picture);
-      await this.addImage(memberWithPicture.id, member.picture);
-      picture = memberWithPicture.id;
-    } else {
-      picture = memberWithPicture.picture;
-    }
-
-    const newMember = {
-      firstName: member.firstName ?? memberWithPicture.firstName,
-      firstName_unaccent: member.firstName_unaccent ?? memberWithPicture.firstName_unaccent,
-      lastName: member.lastName ?? memberWithPicture.lastName,
-      gender: member.gender ?? memberWithPicture.gender,
-      picture: picture,
-    };
-
-    await this.membersCollection.doc(memberWithPicture.id).update(newMember);
+  async updateMember(member: MemberWithPicture) {
+    const memberWithPictureDocs = await this.getMemberWithPictureByEmail(member.email);
+    await this.deleteImage(member.picture);
+    await this.addImage(member.id, member.picture);
+    await this.membersCollection.doc(memberWithPictureDocs.id).update(member);
   }
 
   async loadGalleryMembers(): Promise<MemberWithPicture[]> {
@@ -121,7 +117,13 @@ export class MemberRepository implements MemberRepositorySpi {
     return members.docs.map((member) => member.data() as MemberWithScore);
   }
 
-  async addMember(newMember: Member): Promise<string> {
+  async addMember(newMember: MemberWithPicture): Promise<string> {
+    const memberWithPictureDocs = await this.membersCollection
+      .where('email', '==', newMember.email)
+      .get();
+    if (memberWithPictureDocs.docs.length) {
+      throw new UserAlreadyExistsError();
+    }
     const { id } = await this.membersCollection.add(newMember);
     if (newMember.picture != undefined) {
       await this.addImage(id, newMember.picture);
