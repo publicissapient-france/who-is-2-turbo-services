@@ -3,6 +3,9 @@ import { MemberRepositorySpi } from '../MemberRepositorySpi';
 import { MembersApi } from '../MembersApi';
 import { Gender, Member, MemberWithPicture, MemberWithScore } from '../model/Member';
 import { ProfileDto } from '../../application/members/model/ProfileDto';
+import { MeDto } from '../../application/members/model/MeDto';
+import { EditableProfileDto } from '../../application/members/model/EditableProfileDto';
+import { UserNotFoundError } from '../../infrastructure/member/member.repository';
 
 @Injectable()
 export class MembersService implements MembersApi {
@@ -26,5 +29,32 @@ export class MembersService implements MembersApi {
       picture: profileDto.picture,
     } as Member;
     return await this.memberRepositorySpi.addMember(member);
+  }
+
+  async fetchProfile(meDto: MeDto): Promise<EditableProfileDto> {
+    try {
+      const member = await this.memberRepositorySpi.getMemberWithPictureByEmail(meDto.email);
+      return {
+        firstName: member.firstName,
+        lastName: member.lastName,
+        gender: Gender[member.gender.valueOf()],
+        picture: await this.memberRepositorySpi.generatePrivatePictureUrl(member.picture),
+      } as EditableProfileDto;
+    } catch (err) {
+      if (err instanceof UserNotFoundError) {
+        throw new MemberNotFoundException();
+      }
+      throw err;
+    }
+  }
+}
+
+export class MemberNotFoundException {
+  readonly message: string;
+  readonly code: string;
+
+  constructor() {
+    this.message = 'NOT FOUND';
+    this.code = 'NOTFOUND';
   }
 }
