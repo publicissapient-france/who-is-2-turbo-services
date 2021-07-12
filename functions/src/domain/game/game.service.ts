@@ -12,6 +12,9 @@ import { CryptoSpi } from '../CryptoSpi';
 import { PictureStorageSpi } from '../PictureStorageSpi';
 import { Readable } from 'stream';
 
+const ONE_HOUR_IN_MS = 3600000;
+const PICTURE_URL_EXPIRATION = ONE_HOUR_IN_MS;
+
 @Injectable()
 export class GameService implements GameApi {
   constructor(
@@ -84,7 +87,7 @@ export class GameService implements GameApi {
       ...otherMembers.map(GameService.mapMemberToProposition),
     ]);
 
-    const questionImageUrl = this.cryptoSpi.cypher(selectedMember.picture);
+    const questionImageUrl = this.cryptoSpi.cypher(`${selectedMember.picture}|${Date.now()}`);
 
     return {
       question: questionImageUrl,
@@ -97,7 +100,10 @@ export class GameService implements GameApi {
     return { firstName, lastName };
   }
 
-  readPicture(cypheredId: string): Promise<Readable> {
-    return this.pictureStorageSpi.readPicture(this.cryptoSpi.decipher(cypheredId));
+  readPicture(cypheredPictureRef: string): Promise<Readable> {
+    const [picture, release] = this.cryptoSpi.decipher(cypheredPictureRef).split('|');
+    const releaseDate = Number.parseInt(release);
+    if (Date.now() - PICTURE_URL_EXPIRATION > releaseDate) return Promise.reject('Game expired');
+    return this.pictureStorageSpi.readPicture(picture);
   }
 }

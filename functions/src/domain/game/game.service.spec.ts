@@ -8,6 +8,8 @@ import Mock = jest.Mock;
 import { CryptoSpi } from '../CryptoSpi';
 import { PictureStorageSpi } from '../PictureStorageSpi';
 
+const fixedTimestamp = 1626101112000;
+
 const male1: Member = {
   createdAt: new Date(),
   picture: 'm1.png',
@@ -57,7 +59,8 @@ const findMember = (member: { firstName: string; lastName: string }) => {
 
 const guessMember = (pictureUrl: string) => {
   return [male1, male2, female1, female2].find(
-    (value) => value.picture === pictureUrl.replace('cyphered_', ''),
+    (value) =>
+      value.picture === pictureUrl.replace('cyphered_', '').replace(`|${fixedTimestamp}`, ''),
   );
 };
 
@@ -112,6 +115,7 @@ describe('GameService', () => {
     useValue: mockedPictureStorageSpi,
   };
 
+  const savedDate = Date.now;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [crypto, gameRepo, memberRepo, pictureStorageSpi, GameService],
@@ -130,6 +134,11 @@ describe('GameService', () => {
     });
 
     service = module.get<GameService>(GameService);
+    Date.now = () => fixedTimestamp;
+  });
+
+  afterAll(() => {
+    Date.now = savedDate;
   });
 
   it('should be defined', () => {
@@ -149,7 +158,9 @@ describe('GameService', () => {
     expect(game.questions.length).toBe(1);
     expect(
       game.questions.find((question) =>
-        ['cyphered_m1.png', 'cyphered_m2.png'].includes(question.question),
+        [`cyphered_m1.png|${fixedTimestamp}`, `cyphered_m2.png|${fixedTimestamp}`].includes(
+          question.question,
+        ),
       ),
     ).toBeDefined();
     expect(game.questions[0].propositions.length).toBe(2);
@@ -205,5 +216,16 @@ describe('GameService', () => {
 
     expect(scoreSession.total).toBe(3);
     expect(scoreSession.correct).toBe(1);
+  });
+
+  it('should not be able to for a picture one hour or more later', async () => {
+    // WHEN
+    const game = await service.generateSeriesGame(1, 2);
+
+    // GIVEN
+    Date.now = () => fixedTimestamp + 3600000 + 1;
+
+    // THEN
+    await expect(service.readPicture(game.questions.pop()!.question)).rejects.toBeDefined();
   });
 });
