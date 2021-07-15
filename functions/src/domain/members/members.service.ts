@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { MemberRepositorySpi } from '../MemberRepositorySpi';
 import { MembersApi } from '../MembersApi';
-import { Gender, MemberWithPicture, MemberWithScore } from '../model/Member';
+import { MemberWithPicture, MemberWithScore } from '../model/Member';
 import { ProfileDto } from '../../application/members/model/ProfileDto';
 import { MeDto } from '../../application/members/model/MeDto';
 import { EditableProfileDto } from '../../application/members/model/EditableProfileDto';
@@ -40,7 +40,7 @@ export class MembersService implements MembersApi {
       return {
         firstName: member.firstName,
         lastName: member.lastName,
-        gender: Gender[member.gender.valueOf()],
+        gender: member.gender,
         picture: await this.memberRepositorySpi.generatePrivatePictureUrl(member.picture),
       } as EditableProfileDto;
     } catch (err) {
@@ -69,7 +69,7 @@ export class MembersService implements MembersApi {
       firstName_unaccent: profileDto.firstName.normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
       lastName: profileDto.lastName,
       email: profileDto.email,
-      gender: (<any>Gender)[profileDto.gender],
+      gender: profileDto.gender,
       picture: profileDto.picture,
     } as MemberWithPicture;
   }
