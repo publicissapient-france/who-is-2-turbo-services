@@ -10,4 +10,5 @@ export interface MembersApi {
 
   createProfile(profileDto: ProfileDto): Promise<string>;
   fetchProfile(meDto: MeDto): Promise<EditableProfileDto>;
+  updateProfile(me: ProfileDto): void;
 }

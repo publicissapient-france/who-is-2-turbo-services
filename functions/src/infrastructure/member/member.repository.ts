@@ -18,6 +18,16 @@ export class UserNotFoundError {
   }
 }
 
+export class UserAlreadyExistsError {
+  readonly message: string;
+  readonly code: string;
+
+  constructor() {
+    this.message = 'ALREADY EXISTS';
+    this.code = 'CONFLICT';
+  }
+}
+
 @Injectable()
 export class MemberRepository implements MemberRepositorySpi {
   constructor() {
@@ -27,6 +37,7 @@ export class MemberRepository implements MemberRepositorySpi {
       .collection('members')
       .withConverter(new MemberConverter());
   }
+
   readonly firebase: Firestore;
   readonly membersCollection: CollectionReference<Member>;
 
@@ -41,6 +52,13 @@ export class MemberRepository implements MemberRepositorySpi {
       throw new UserNotFoundError();
     }
     return memberWithPictureDocs.docs[0].data() as MemberWithPicture;
+  }
+
+  async updateMember(member: MemberWithPicture) {
+    const memberWithPictureDocs = await this.getMemberWithPictureByEmail(member.email);
+    await this.deleteImage(member.picture);
+    await this.addImage(member.id, member.picture);
+    await this.membersCollection.doc(memberWithPictureDocs.id).update(member);
   }
 
   async loadGalleryMembers(): Promise<MemberWithPicture[]> {
@@ -99,7 +117,13 @@ export class MemberRepository implements MemberRepositorySpi {
     return members.docs.map((member) => member.data() as MemberWithScore);
   }
 
-  async addMember(newMember: Member): Promise<string> {
+  async addMember(newMember: MemberWithPicture): Promise<string> {
+    const memberWithPictureDocs = await this.membersCollection
+      .where('email', '==', newMember.email)
+      .get();
+    if (memberWithPictureDocs.docs.length) {
+      throw new UserAlreadyExistsError();
+    }
     const { id } = await this.membersCollection.add(newMember);
     if (newMember.picture != undefined) {
       await this.addImage(id, newMember.picture);
@@ -118,6 +142,11 @@ export class MemberRepository implements MemberRepositorySpi {
     const base64EncodedString = picture.replace(/^data:\w+\/\w+;base64,/, '');
     const fileBuffer = Buffer.from(base64EncodedString, 'base64');
     await file.save(fileBuffer, fileOptions);
+  }
+
+  async deleteImage(fileName: string) {
+    const file = await admin.storage().bucket().file(fileName);
+    file.delete();
   }
 
   private static base64MimeType(encoded: string): string | undefined {

@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Inject, Patch, Post, UseFilters } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Inject,
+  Post,
+  Put,
+  UseFilters,
+} from '@nestjs/common';
 import { MembersApi } from '../../domain/MembersApi';
 import { ApiCreatedResponse, ApiResponse } from '@nestjs/swagger';
 import { MemberDto } from './model/MemberDto';
@@ -8,7 +18,10 @@ import { MemberIdDto } from './model/MemberIdDto';
 import { ProfileDto } from './model/ProfileDto';
 import { MeDto } from './model/MeDto';
 import { EditableProfileDto } from './model/EditableProfileDto';
-import { MembersExceptionFilter } from './members.http-exception.filter';
+import {
+  MemberNotFoundExceptionFilter,
+  MembersAlreadyExistsExceptionFilter,
+} from './members.http-exception.filter';
 
 @Controller('members')
 export class MembersController {
@@ -49,12 +62,15 @@ export class MembersController {
   }
 
   @Post('me')
+  @HttpCode(HttpStatus.CREATED)
   @ApiCreatedResponse({
     description: 'Create profile member',
   })
   @ApiResponse({ status: 201, description: 'The profile is created' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 409, description: 'Profile already exists.' })
   @ApiResponse({ status: 500, description: 'Internal server error.' })
+  @UseFilters(new MembersAlreadyExistsExceptionFilter())
   async addProfile(@Body() profile: ProfileDto): Promise<MemberIdDto> {
     return {
       id: await this.membersApi.createProfile(profile),
@@ -62,6 +78,7 @@ export class MembersController {
   }
 
   @Get('me')
+  @HttpCode(HttpStatus.OK)
   @ApiCreatedResponse({
     description: 'Get profile member',
   })
@@ -69,19 +86,21 @@ export class MembersController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiResponse({ status: 404, description: "The profile doesn't exist." })
   @ApiResponse({ status: 500, description: 'Internal server error.' })
-  @UseFilters(new MembersExceptionFilter())
+  @UseFilters(new MemberNotFoundExceptionFilter())
   async getProfile(@Body() me: MeDto): Promise<EditableProfileDto> {
     return await this.membersApi.fetchProfile(me);
   }
 
-  @Patch('me')
+  @Put('me')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiCreatedResponse({
     description: 'Create profile member',
   })
   @ApiResponse({ status: 204, description: 'The profile is saved' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiResponse({ status: 500, description: 'Internal server error.' })
-  async patchProfile(@Body() me: MeDto) {
-    return;
+  @UseFilters(new MemberNotFoundExceptionFilter())
+  async patchProfile(@Body() me: ProfileDto) {
+    this.membersApi.updateProfile(me);
   }
 }
