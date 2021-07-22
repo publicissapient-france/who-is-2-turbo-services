@@ -4,6 +4,7 @@ import { GameAnswersDto } from './model/GameAnswersDto';
 import { ApiCreatedResponse, ApiResponse } from '@nestjs/swagger';
 import { SeriesScoreDto } from './model/SeriesScoreDto';
 import { SeriesGameDto } from './model/GameSerieDto';
+import { GameTypeDto } from './model/GameTypeDto';
 
 @Controller('games')
 export class GameController {
@@ -20,8 +21,10 @@ export class GameController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiResponse({ status: 500, description: 'Internal server error.' })
-  async createNewGame(): Promise<SeriesGameDto> {
-    const seriesGame = await this.gameApi.generateSeriesGame(5, 4);
+  async createNewGame(@Body() gameTypeDto: GameTypeDto): Promise<SeriesGameDto> {
+    const index = gameTypeDto.type.valueOf();
+    console.log(index);
+    const seriesGame = await this.gameApi.generateSeriesGame(0, 4);
     return {
       id: seriesGame.id,
       questions: seriesGame.questions,
