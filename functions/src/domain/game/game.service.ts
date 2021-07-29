@@ -8,6 +8,8 @@ import { shuffle } from 'lodash';
 import { Member, MemberWithPicture } from '../model/Member';
 import { Question } from '../model/Question';
 import { Proposition } from '../model/Proposition';
+import { GameTypeDto } from '../../application/game/model/GameTypeDto';
+import { GameType } from '../model/GameType';
 
 @Injectable()
 export class GameService implements GameApi {
@@ -17,7 +19,20 @@ export class GameService implements GameApi {
     private memberRepositorySpi: MemberRepositorySpi,
   ) {}
 
-  async generateSeriesGame(size: number, nbPropositionsByQuestion = 4): Promise<SeriesGame> {
+  async generateGameFromGameType(gameTypeDto: GameTypeDto): Promise<SeriesGame> {
+    const gameType = GameType[gameTypeDto.gameType];
+    const size = parseInt(gameType);
+    if (isNaN(size)) {
+      throw new GameTypeException();
+    } else {
+      return await this.generateSeriesGame(size);
+    }
+  }
+
+  private async generateSeriesGame(
+    size: number,
+    nbPropositionsByQuestion = 4,
+  ): Promise<SeriesGame> {
     const members = await this.memberRepositorySpi.getAllWithPicture();
 
     const questions = await Promise.all(
@@ -92,5 +107,15 @@ export class GameService implements GameApi {
 
   private static mapMemberToProposition({ firstName, lastName }: Member): Proposition {
     return { firstName, lastName };
+  }
+}
+
+export class GameTypeException {
+  readonly message: string;
+  readonly code: string;
+
+  constructor() {
+    this.message = 'PRECONDITION FAILED';
+    this.code = 'PRECONDITION_FAILED';
   }
 }

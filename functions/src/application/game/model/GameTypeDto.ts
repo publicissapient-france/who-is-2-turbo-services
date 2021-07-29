@@ -1,11 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { GameType } from '../../../domain/model/GameType';
 
 export class GameTypeDto {
-  @ApiProperty()
-  type: GameType = GameType.SERIES_5;
-}
-
-export enum GameType {
-  SERIES_5 = 5,
-  SERIES_20 = 20,
+  @ApiProperty({ enum: GameType, enumName: 'gameType' })
+  gameType: GameType = GameType.SERIES_5;
 }
