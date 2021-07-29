@@ -1,4 +1,5 @@
 import { StorageMeta } from './StorageMeta';
+import { Gender } from './Gender';
 
 export type Member = StorageMeta & {
   firstName: string;
@@ -13,8 +14,3 @@ export type Member = StorageMeta & {
 export type MemberWithPicture = Member & { picture: string };
 
 export type MemberWithScore = Member & { score: number };
-
-export enum Gender {
-  MALE = 'MALE',
-  FEMALE = 'FEMALE',
-}

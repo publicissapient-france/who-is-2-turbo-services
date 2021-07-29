@@ -9,6 +9,7 @@ import {
   UserAlreadyExistsError,
   UserNotFoundError,
 } from '../../infrastructure/member/member.repository';
+import { Profile } from '../model/Profile';
 
 @Injectable()
 export class MembersService implements MembersApi {
@@ -24,8 +25,8 @@ export class MembersService implements MembersApi {
 
   async createProfile(profileDto: ProfileDto): Promise<string> {
     try {
-      const member = MembersService.profileDtoToMemberWithPicture(profileDto);
-      return await this.memberRepositorySpi.addMember(member);
+      const profile = this.profileDtoToProfileWithPicture(profileDto);
+      return await this.memberRepositorySpi.addProfile(profile);
     } catch (err) {
       if (err instanceof UserAlreadyExistsError) {
         throw new MemberAlreadyExistsException();
@@ -53,8 +54,8 @@ export class MembersService implements MembersApi {
 
   async updateProfile(profileDto: ProfileDto) {
     try {
-      const member = MembersService.profileDtoToMemberWithPicture(profileDto);
-      await this.memberRepositorySpi.updateMember(member);
+      const profile = this.profileDtoToProfileWithPicture(profileDto);
+      await this.memberRepositorySpi.updateProfile(profile);
     } catch (err) {
       if (err instanceof UserNotFoundError) {
         throw new MemberNotFoundException();
@@ -63,15 +64,14 @@ export class MembersService implements MembersApi {
     }
   }
 
-  private static profileDtoToMemberWithPicture(profileDto: ProfileDto): MemberWithPicture {
+  private profileDtoToProfileWithPicture(profileDto: ProfileDto): Profile {
     return {
       firstName: profileDto.firstName,
-      firstName_unaccent: profileDto.firstName.normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
       lastName: profileDto.lastName,
       email: profileDto.email,
       gender: profileDto.gender,
-      picture: profileDto.picture,
-    } as MemberWithPicture;
+      pictureBase64: profileDto.picture,
+    } as Profile;
   }
 }
 

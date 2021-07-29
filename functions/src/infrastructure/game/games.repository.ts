@@ -2,8 +2,8 @@ import { GameRepositorySpi } from '../../domain/GameRepositorySpi';
 import { SeriesGameSession } from '../../domain/model/SeriesGameSession';
 import { Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin';
-import { ContentOf } from '../../domain/model/StorageMeta';
 import { SeriesGameSessionConverter } from './SeriesGameSessionConverter';
+import { ContentOf } from '../../domain/model/StorageMeta';
 
 @Injectable()
 export class GamesRepository implements GameRepositorySpi {
