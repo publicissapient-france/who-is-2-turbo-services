@@ -58,20 +58,29 @@ export class MemberRepository implements MemberRepositorySpi {
   async updateProfile(profile: Profile) {
     const memberWithPictureDocs = await this.getMemberWithPictureByEmail(profile.email);
 
-    await this.deleteImage(memberWithPictureDocs.picture);
-    await this.addImage(memberWithPictureDocs.id, profile.pictureBase64);
-
     const updatedMember = {
       id: memberWithPictureDocs.id,
       firstName: profile.firstName,
       firstName_unaccent: profile.firstName.normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
       lastName: profile.lastName,
       gender: profile.gender,
-      picture: memberWithPictureDocs.id,
+      picture: memberWithPictureDocs.picture,
       score: memberWithPictureDocs.score,
     };
-
     await this.membersCollection.doc(memberWithPictureDocs.id).update(updatedMember);
+    await this.updatePicture(
+      memberWithPictureDocs.id,
+      memberWithPictureDocs.picture,
+      profile.pictureBase64,
+    );
+  }
+
+  private async updatePicture(id: string, fileName: string, pictureBase64: string) {
+    if (pictureBase64 != undefined) {
+      await this.deleteImage(fileName);
+      await this.addImage(id, pictureBase64);
+      await this.membersCollection.doc(id).update({ picture: id });
+    }
   }
 
   async loadGalleryMembers(): Promise<MemberWithPicture[]> {

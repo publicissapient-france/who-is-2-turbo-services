@@ -65,12 +65,16 @@ export class MembersService implements MembersApi {
   }
 
   private profileDtoToProfileWithPicture(profileDto: ProfileDto): Profile {
+    let picture64 = undefined;
+    if (!profileDto.picture.startsWith('http')) {
+      picture64 = profileDto.picture;
+    }
     return {
       firstName: profileDto.firstName,
       lastName: profileDto.lastName,
       email: profileDto.email,
       gender: profileDto.gender,
-      pictureBase64: profileDto.picture,
+      pictureBase64: picture64,
     } as Profile;
   }
 }
