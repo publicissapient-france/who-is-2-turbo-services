@@ -10,6 +10,7 @@ import {
   UserNotFoundError,
 } from '../../infrastructure/member/member.repository';
 import { Profile } from '../model/Profile';
+import { Gender } from '../model/Gender';
 
 @Injectable()
 export class MembersService implements MembersApi {
@@ -73,7 +74,7 @@ export class MembersService implements MembersApi {
       firstName: profileDto.firstName,
       lastName: profileDto.lastName,
       email: profileDto.email,
-      gender: profileDto.gender,
+      gender: Gender[profileDto.gender as keyof typeof Gender],
       pictureBase64: picture64,
     } as Profile;
   }
