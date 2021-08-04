@@ -7,6 +7,7 @@ import { firestore } from 'firebase-admin/lib/firestore';
 import QuerySnapshot = firestore.QuerySnapshot;
 import Firestore = firestore.Firestore;
 import CollectionReference = firestore.CollectionReference;
+import { Profile } from '../../domain/model/Profile';
 
 export class UserNotFoundError {
   readonly message: string;
@@ -54,11 +55,32 @@ export class MemberRepository implements MemberRepositorySpi {
     return memberWithPictureDocs.docs[0].data() as MemberWithPicture;
   }
 
-  async updateMember(member: MemberWithPicture) {
-    const memberWithPictureDocs = await this.getMemberWithPictureByEmail(member.email);
-    await this.deleteImage(member.picture);
-    await this.addImage(member.id, member.picture);
-    await this.membersCollection.doc(memberWithPictureDocs.id).update(member);
+  async updateProfile(profile: Profile) {
+    const memberWithPictureDocs = await this.getMemberWithPictureByEmail(profile.email);
+
+    const updatedMember = {
+      id: memberWithPictureDocs.id,
+      firstName: profile.firstName,
+      firstName_unaccent: profile.firstName.normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
+      lastName: profile.lastName,
+      gender: profile.gender,
+      picture: memberWithPictureDocs.picture,
+      score: memberWithPictureDocs.score,
+    };
+    await this.membersCollection.doc(memberWithPictureDocs.id).update(updatedMember);
+    await this.updatePicture(
+      memberWithPictureDocs.id,
+      memberWithPictureDocs.picture,
+      profile.pictureBase64,
+    );
+  }
+
+  private async updatePicture(id: string, fileName: string, pictureBase64: string) {
+    if (pictureBase64 != undefined) {
+      await this.deleteImage(fileName);
+      await this.addImage(id, pictureBase64);
+      await this.membersCollection.doc(id).update({ picture: id });
+    }
   }
 
   async loadGalleryMembers(): Promise<MemberWithPicture[]> {
@@ -117,16 +139,25 @@ export class MemberRepository implements MemberRepositorySpi {
     return members.docs.map((member) => member.data() as MemberWithScore);
   }
 
-  async addMember(newMember: MemberWithPicture): Promise<string> {
+  async addProfile(newProfile: Profile): Promise<string> {
     const memberWithPictureDocs = await this.membersCollection
-      .where('email', '==', newMember.email)
+      .where('email', '==', newProfile.email)
       .get();
     if (memberWithPictureDocs.docs.length) {
       throw new UserAlreadyExistsError();
     }
-    const { id } = await this.membersCollection.add(newMember);
-    if (newMember.picture != undefined) {
-      await this.addImage(id, newMember.picture);
+
+    const member = {
+      firstName: newProfile.firstName,
+      firstName_unaccent: newProfile.firstName.normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
+      lastName: newProfile.lastName,
+      email: newProfile.email,
+      gender: newProfile.gender,
+    } as MemberWithPicture;
+
+    const { id } = await this.membersCollection.add(member);
+    if (newProfile.pictureBase64 != undefined) {
+      await this.addImage(id, newProfile.pictureBase64);
       await this.membersCollection.doc(id).update({ picture: id });
     }
     return id;

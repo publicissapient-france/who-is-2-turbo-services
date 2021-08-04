@@ -3,8 +3,9 @@ import { GameService } from './game.service';
 import { GameRepositorySpi } from '../GameRepositorySpi';
 import { Provider } from '@nestjs/common';
 import { MemberRepositorySpi } from '../MemberRepositorySpi';
-import { Gender, Member } from '../model/Member';
+import { Member } from '../model/Member';
 import Mock = jest.Mock;
+import { Gender } from '../model/Gender';
 
 const male1: Member = {
   createdAt: new Date(),
@@ -77,9 +78,9 @@ describe('GameService', () => {
     getMemberScore: jest.fn(),
     updateMemberScore: jest.fn(),
     getMembersScores: jest.fn(),
-    addMember: jest.fn(),
+    addProfile: jest.fn(),
     getMemberWithPictureByEmail: jest.fn(),
-    updateMember: jest.fn,
+    updateProfile: jest.fn,
   };
   const memberRepo: Provider<MemberRepositorySpi> = {
     provide: 'MemberRepositorySpi',
