@@ -1,4 +1,13 @@
-import { Body, Controller, Inject, Param, Post, UseFilters } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Inject,
+  Param,
+  Post,
+  UseFilters,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { GameApi } from '../../domain/GameApi';
 import { GameAnswersDto } from './model/GameAnswersDto';
 import { ApiCreatedResponse, ApiResponse } from '@nestjs/swagger';
@@ -23,8 +32,12 @@ export class GameController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiResponse({ status: 412, description: 'GameType not found' })
   @ApiResponse({ status: 500, description: 'Internal server error.' })
+  @UsePipes(new ValidationPipe({ transform: true }))
   @UseFilters(GameTypeExceptionFilter)
-  async createNewGame(@Body() gameTypeDto: GameTypeDto): Promise<SeriesGameDto> {
+  async createNewGame(
+    @Body()
+    gameTypeDto: GameTypeDto,
+  ): Promise<SeriesGameDto> {
     const seriesGame = await this.gameApi.generateGameFromGameType(gameTypeDto);
     return {
       id: seriesGame.id,

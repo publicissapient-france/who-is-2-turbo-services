@@ -4,9 +4,9 @@ import { GameRepositorySpi } from '../GameRepositorySpi';
 import { Provider } from '@nestjs/common';
 import { MemberRepositorySpi } from '../MemberRepositorySpi';
 import { Member } from '../model/Member';
-import Mock = jest.Mock;
-import { GameType } from '../model/GameType';
 import { Gender } from '../model/Gender';
+import { GameTypeDto } from '../../application/game/model/GameTypeDto';
+import Mock = jest.Mock;
 
 const male1: Member = {
   createdAt: new Date(),
@@ -117,7 +117,7 @@ describe('GameService', () => {
       return [male1, male2];
     });
 
-    const game = await service.generateGameFromGameType({ gameType: GameType.SERIES_5 });
+    const game = await service.generateGameFromGameType(new GameTypeDto());
 
     console.log(JSON.stringify(game));
 
@@ -131,7 +131,7 @@ describe('GameService', () => {
 
   it('solution should be in the propositions', async () => {
     // WHEN
-    const game = await service.generateGameFromGameType({ gameType: GameType.SERIES_5 });
+    const game = await service.generateGameFromGameType(new GameTypeDto());
 
     // THEN
     const solution = guessMember(game.questions[0].question);
@@ -150,7 +150,7 @@ describe('GameService', () => {
       return [male1, male2, female1, female2];
     });
 
-    const game = await service.generateGameFromGameType({ gameType: GameType.SERIES_5 });
+    const game = await service.generateGameFromGameType(new GameTypeDto());
 
     const questionMember = guessMember(game.questions[0].question);
     expect(questionMember).toBeDefined();

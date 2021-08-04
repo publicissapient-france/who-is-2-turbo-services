@@ -10,6 +10,7 @@ import { Question } from '../model/Question';
 import { Proposition } from '../model/Proposition';
 import { GameTypeDto } from '../../application/game/model/GameTypeDto';
 import { GameType } from '../model/GameType';
+import { isUndefined } from '@nestjs/common/utils/shared.utils';
 
 @Injectable()
 export class GameService implements GameApi {
@@ -20,13 +21,11 @@ export class GameService implements GameApi {
   ) {}
 
   async generateGameFromGameType(gameTypeDto: GameTypeDto): Promise<SeriesGame> {
-    const gameType = GameType[gameTypeDto.gameType];
-    const size = parseInt(gameType);
-    if (isNaN(size)) {
+    const gameType = GameType[gameTypeDto.gameType as keyof typeof GameType];
+    if (isUndefined(gameType)) {
       throw new GameTypeException();
-    } else {
-      return await this.generateSeriesGame(size);
     }
+    return await this.generateSeriesGame(gameType);
   }
 
   private async generateSeriesGame(

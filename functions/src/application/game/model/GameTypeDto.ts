@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { GameType } from '../../../domain/model/GameType';
+import { IsString } from 'class-validator';
 
 export class GameTypeDto {
   @ApiProperty({ enum: GameType, enumName: 'gameType' })
-  gameType: GameType = GameType.SERIES_5;
+  @IsString()
+  gameType: string = 'SERIES_5';
 }
