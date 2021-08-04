@@ -4,9 +4,8 @@ import { GameRepositorySpi } from '../GameRepositorySpi';
 import { Provider } from '@nestjs/common';
 import { MemberRepositorySpi } from '../MemberRepositorySpi';
 import { Member } from '../model/Member';
-import { Gender } from '../model/Gender';
-import { GameTypeDto } from '../../application/game/model/GameTypeDto';
 import Mock = jest.Mock;
+import { Gender } from '../model/Gender';
 
 const male1: Member = {
   createdAt: new Date(),
@@ -117,7 +116,7 @@ describe('GameService', () => {
       return [male1, male2];
     });
 
-    const game = await service.generateGameFromGameType(new GameTypeDto());
+    const game = await service.generateSeriesGame(1, 2);
 
     console.log(JSON.stringify(game));
 
@@ -131,7 +130,7 @@ describe('GameService', () => {
 
   it('solution should be in the propositions', async () => {
     // WHEN
-    const game = await service.generateGameFromGameType(new GameTypeDto());
+    const game = await service.generateSeriesGame(1, 2);
 
     // THEN
     const solution = guessMember(game.questions[0].question);
@@ -150,7 +149,7 @@ describe('GameService', () => {
       return [male1, male2, female1, female2];
     });
 
-    const game = await service.generateGameFromGameType(new GameTypeDto());
+    const game = await service.generateSeriesGame(1, 2);
 
     const questionMember = guessMember(game.questions[0].question);
     expect(questionMember).toBeDefined();
