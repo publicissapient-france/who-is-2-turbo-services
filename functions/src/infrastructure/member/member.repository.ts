@@ -58,16 +58,14 @@ export class MemberRepository implements MemberRepositorySpi {
   async updateProfile(profile: Profile) {
     const memberWithPictureDocs = await this.getMemberWithPictureByEmail(profile.email);
 
-    const updatedMember = {
+    await this.membersCollection.doc(memberWithPictureDocs.id).update({
       id: memberWithPictureDocs.id,
       firstName: profile.firstName,
       firstName_unaccent: profile.firstName.normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
       lastName: profile.lastName,
       gender: profile.gender,
       picture: memberWithPictureDocs.picture,
-      score: memberWithPictureDocs.score,
-    };
-    await this.membersCollection.doc(memberWithPictureDocs.id).update(updatedMember);
+    });
     await this.updatePicture(
       memberWithPictureDocs.id,
       memberWithPictureDocs.picture,
@@ -112,20 +110,21 @@ export class MemberRepository implements MemberRepositorySpi {
     return url;
   }
 
-  async getMemberScore(email: string): Promise<number | undefined> {
+  async getMemberScoreByGameType(email: string, gameType: string): Promise<number | undefined> {
     const docs = await this.getMemberByMailDocs(email);
     if (docs.docs.length != 0) {
       const { score } = docs.docs[0].data() as Member;
-      return score ?? 0;
+      return score?.get(gameType) ?? 0;
     } else return undefined;
   }
 
-  async updateMemberScore(email: string, score: number) {
+  async updateMemberScore(email: string, gameScore: number, gameType: string) {
     const docs = await this.getMemberByMailDocs(email);
     if (docs.docs.length != 0) {
-      const { id } = docs.docs[0].data() as Member;
+      const { id, score } = docs.docs[0].data() as Member;
+      score?.set(gameType, gameScore);
       await this.membersCollection.doc(id).update({
-        score: score,
+        score: JSON.stringify(score),
       });
     }
   }

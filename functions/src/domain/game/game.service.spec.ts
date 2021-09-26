@@ -76,7 +76,7 @@ describe('GameService', () => {
     getAllWithPicture: jest.fn(),
     generatePrivatePictureUrl: jest.fn(),
     loadGalleryMembers: jest.fn(),
-    getMemberScore: jest.fn(),
+    getMemberScoreByGameType: jest.fn(),
     updateMemberScore: jest.fn(),
     getMembersScores: jest.fn(),
     addProfile: jest.fn(),

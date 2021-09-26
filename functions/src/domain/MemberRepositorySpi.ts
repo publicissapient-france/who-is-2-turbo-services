@@ -7,8 +7,8 @@ export interface MemberRepositorySpi {
 
   loadGalleryMembers(): Promise<MemberWithPicture[]>;
 
-  getMemberScore(email: string): Promise<number | undefined>;
-  updateMemberScore(email: string, score: number): void;
+  getMemberScoreByGameType(email: string, gameType: string): Promise<number | undefined>;
+  updateMemberScore(email: string, score: number, gameType: string): void;
   getMembersScores(): Promise<MemberWithScore[]>;
 
   addProfile(newProfile: Profile): Promise<string>;

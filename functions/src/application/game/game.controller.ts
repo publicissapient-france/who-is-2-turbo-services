@@ -53,6 +53,7 @@ export class GameController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiResponse({ status: 500, description: 'Internal server error.' })
   @Post(':gameId/score')
+  @UseFilters(GameTypeExceptionFilter)
   async validateGame(
     @Param('gameId') gameId: string,
     @Body() answers: GameAnswersDto,

@@ -59,15 +59,22 @@ export class GameService implements GameApi {
 
   async validateSeriesGame(gameId: string, answers: number[], email: string): Promise<SeriesScore> {
     const game = await this.gameRepositorySpi.fetchSeries(gameId);
+    const gameType = GameType[answers.length];
     let score = 0;
     game.solutions.forEach((answer, index) => {
       if (answer == answers[index]) {
         score++;
       }
     });
-    const memberCurrentScore = await this.memberRepositorySpi.getMemberScore(email);
+    if (isUndefined(gameType)) {
+      throw new GameTypeException();
+    }
+    const memberCurrentScore = await this.memberRepositorySpi.getMemberScoreByGameType(
+      email,
+      gameType,
+    );
     if (memberCurrentScore != undefined && memberCurrentScore < score) {
-      this.memberRepositorySpi.updateMemberScore(email, score);
+      this.memberRepositorySpi.updateMemberScore(email, score, gameType);
     }
 
     return {

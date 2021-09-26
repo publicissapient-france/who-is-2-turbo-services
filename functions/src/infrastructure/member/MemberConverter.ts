@@ -12,8 +12,16 @@ export class MemberConverter implements FirestoreDataConverter<Member> {
       lastName: snapshot.get('lastName'),
       gender: Gender[snapshot.get('gender') as keyof typeof Gender],
       picture: snapshot.get('picture'),
-      score: snapshot.get('score'),
+      score: this.toScoreMap(snapshot.get('score')),
     } as Member;
+  }
+
+  toScoreMap(snapshot: any): Map<string, number> | undefined {
+    if (snapshot != undefined) {
+      return new Map(Object.entries(snapshot));
+    } else {
+      return undefined;
+    }
   }
 
   toFirestore(modelObject: Member): FirebaseFirestore.DocumentData;
