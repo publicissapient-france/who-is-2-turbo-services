@@ -1,7 +1,7 @@
 import { Member } from '../../domain/model/Member';
 import { firestore } from 'firebase-admin/lib/firestore';
-import FirestoreDataConverter = firestore.FirestoreDataConverter;
 import { Gender } from '../../domain/model/Gender';
+import FirestoreDataConverter = firestore.FirestoreDataConverter;
 
 export class MemberConverter implements FirestoreDataConverter<Member> {
   fromFirestore(snapshot: FirebaseFirestore.QueryDocumentSnapshot): Member {
@@ -12,16 +12,8 @@ export class MemberConverter implements FirestoreDataConverter<Member> {
       lastName: snapshot.get('lastName'),
       gender: Gender[snapshot.get('gender') as keyof typeof Gender],
       picture: snapshot.get('picture'),
-      score: this.toScoreMap(snapshot.get('score')),
+      score: snapshot.get('score'),
     } as Member;
-  }
-
-  toScoreMap(snapshot: any): Map<string, number> | undefined {
-    if (snapshot != undefined) {
-      return new Map(Object.entries(snapshot));
-    } else {
-      return undefined;
-    }
   }
 
   toFirestore(modelObject: Member): FirebaseFirestore.DocumentData;

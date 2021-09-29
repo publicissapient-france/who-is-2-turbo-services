@@ -8,9 +8,13 @@ export type Member = StorageMeta & {
   email: string;
   gender: Gender;
   picture?: string;
-  score?: Map<string, number>;
+  score?: Score;
 };
 
 export type MemberWithPicture = Member & { picture: string };
 
-export type MemberWithScore = Member & { score: Map<string, number> };
+export type MemberWithScore = Member & { score: Score };
+
+export type MemberWithGameTypeScore = Member & { score: number };
+
+export type Score = { [id: string]: number };

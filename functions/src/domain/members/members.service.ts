@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { MemberRepositorySpi } from '../MemberRepositorySpi';
 import { MembersApi } from '../MembersApi';
-import { MemberWithPicture, MemberWithScore } from '../model/Member';
+import { MemberWithGameTypeScore, MemberWithPicture, MemberWithScore } from '../model/Member';
 import { ProfileDto } from '../../application/members/model/ProfileDto';
 import { MeDto } from '../../application/members/model/MeDto';
 import { EditableProfileDto } from '../../application/members/model/EditableProfileDto';
@@ -11,6 +11,7 @@ import {
 } from '../../infrastructure/member/member.repository';
 import { Profile } from '../model/Profile';
 import { Gender } from '../model/Gender';
+import { GameType } from '../model/GameType';
 
 @Injectable()
 export class MembersService implements MembersApi {
@@ -20,8 +21,17 @@ export class MembersService implements MembersApi {
     return await this.memberRepositorySpi.loadGalleryMembers();
   }
 
-  async fetchLeaderboard(): Promise<MemberWithScore[]> {
-    return await this.memberRepositorySpi.getMembersScores();
+  async fetchLeaderboard(gameType: GameType): Promise<MemberWithGameTypeScore[]> {
+    const membersScore: MemberWithScore[] = await this.memberRepositorySpi.getMembersScores(
+      gameType,
+    );
+    return membersScore.map(
+      (member) =>
+        ({
+          ...member,
+          score: member.score[gameType] || 0,
+        } as MemberWithGameTypeScore),
+    );
   }
 
   async createProfile(profileDto: ProfileDto): Promise<string> {

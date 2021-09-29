@@ -1,13 +1,14 @@
 import { MemberRepositorySpi } from '../../domain/MemberRepositorySpi';
 import { Injectable } from '@nestjs/common';
-import { Member, MemberWithPicture, MemberWithScore } from '../../domain/model/Member';
+import { Member, MemberWithPicture, MemberWithScore, Score } from '../../domain/model/Member';
 import * as admin from 'firebase-admin';
 import { MemberConverter } from './MemberConverter';
 import { firestore } from 'firebase-admin/lib/firestore';
+import { Profile } from '../../domain/model/Profile';
+import { GameType } from '../../domain/model/GameType';
 import QuerySnapshot = firestore.QuerySnapshot;
 import Firestore = firestore.Firestore;
 import CollectionReference = firestore.CollectionReference;
-import { Profile } from '../../domain/model/Profile';
 
 export class UserNotFoundError {
   readonly message: string;
@@ -110,21 +111,22 @@ export class MemberRepository implements MemberRepositorySpi {
     return url;
   }
 
-  async getMemberScoreByGameType(email: string, gameType: string): Promise<number | undefined> {
+  async getMemberScoreByGameType(email: string, gameType: GameType): Promise<number> {
     const docs = await this.getMemberByMailDocs(email);
     if (docs.docs.length != 0) {
       const { score } = docs.docs[0].data() as Member;
-      return score?.get(gameType) ?? 0;
-    } else return undefined;
+      return score ? score[gameType.valueOf()] : 0;
+    } else return 0;
   }
 
-  async updateMemberScore(email: string, gameScore: number, gameType: string) {
+  async updateMemberScore(email: string, gameScore: number, gameType: GameType) {
     const docs = await this.getMemberByMailDocs(email);
     if (docs.docs.length != 0) {
       const { id, score } = docs.docs[0].data() as Member;
-      score?.set(gameType, gameScore);
+      const updatedScore: Score = score ? { ...score } : {};
+      updatedScore[gameType.valueOf()] = gameScore;
       await this.membersCollection.doc(id).update({
-        score: JSON.stringify(score),
+        score: updatedScore,
       });
     }
   }
@@ -133,9 +135,10 @@ export class MemberRepository implements MemberRepositorySpi {
     return await this.membersCollection.where('email', '==', email).get();
   }
 
-  async getMembersScores(): Promise<MemberWithScore[]> {
-    const members = await this.membersCollection.orderBy('score', 'desc').get();
-    return members.docs.map((member) => member.data() as MemberWithScore);
+  async getMembersScores(gameType: GameType): Promise<MemberWithScore[]> {
+    const members = await this.membersCollection.where('score', '!=', '').get();
+    const membersScore = members.docs.map((member) => member.data() as MemberWithScore);
+    return membersScore.filter((member) => member.score[gameType] != undefined);
   }
 
   async addProfile(newProfile: Profile): Promise<string> {

@@ -6,5 +6,5 @@ export class LeaderboardMemberDto {
   @ApiProperty()
   lastName = '';
   @ApiProperty()
-  score: Map<string, number> | undefined;
+  score = 0;
 }
