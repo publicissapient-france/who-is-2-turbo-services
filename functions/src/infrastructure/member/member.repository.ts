@@ -9,6 +9,7 @@ import { GameType } from '../../domain/model/GameType';
 import QuerySnapshot = firestore.QuerySnapshot;
 import Firestore = firestore.Firestore;
 import CollectionReference = firestore.CollectionReference;
+import FieldValue = firestore.FieldValue;
 
 export class UserNotFoundError {
   readonly message: string;
@@ -139,6 +140,29 @@ export class MemberRepository implements MemberRepositorySpi {
     const members = await this.membersCollection.where('score', '!=', '').get();
     const membersScore = members.docs.map((member) => member.data() as MemberWithScore);
     return membersScore.filter((member) => member.score[gameType] != undefined);
+  }
+
+  async deleteScores(): Promise<number> {
+    const members = await this.membersCollection.where('score', '!=', '').get();
+    await this.deleteScoreBatch(members);
+    return members.size;
+  }
+
+  async deleteScoreBatch(members: FirebaseFirestore.QuerySnapshot<Member>): Promise<void> {
+    const batchSize = members.size;
+    if (batchSize === 0) {
+      return;
+    }
+
+    const batch = this.firebase.batch();
+    members.docs.forEach((doc) => {
+      batch.update(doc.ref, { score: FieldValue.delete() });
+    });
+    await batch.commit();
+
+    process.nextTick(() => {
+      this.deleteScoreBatch(members);
+    });
   }
 
   async addProfile(newProfile: Profile): Promise<string> {

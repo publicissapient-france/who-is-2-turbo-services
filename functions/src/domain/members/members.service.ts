@@ -36,7 +36,7 @@ export class MembersService implements MembersApi {
 
   async createProfile(profileDto: ProfileDto): Promise<string> {
     try {
-      const profile = this.profileDtoToProfileWithPicture(profileDto);
+      const profile = MembersService.profileDtoToProfileWithPicture(profileDto);
       return await this.memberRepositorySpi.addProfile(profile);
     } catch (err) {
       if (err instanceof UserAlreadyExistsError) {
@@ -65,7 +65,7 @@ export class MembersService implements MembersApi {
 
   async updateProfile(profileDto: ProfileDto) {
     try {
-      const profile = this.profileDtoToProfileWithPicture(profileDto);
+      const profile = MembersService.profileDtoToProfileWithPicture(profileDto);
       await this.memberRepositorySpi.updateProfile(profile);
     } catch (err) {
       if (err instanceof UserNotFoundError) {
@@ -75,9 +75,13 @@ export class MembersService implements MembersApi {
     }
   }
 
-  private profileDtoToProfileWithPicture(profileDto: ProfileDto): Profile {
+  async resetLeaderboard(): Promise<number> {
+    return await this.memberRepositorySpi.deleteScores();
+  }
+
+  private static profileDtoToProfileWithPicture(profileDto: ProfileDto): Profile {
     let picture64 = undefined;
-    if (!profileDto.picture.startsWith('http')) {
+    if (!profileDto.picture.startsWith("http")) {
       picture64 = profileDto.picture;
     }
     return {
@@ -85,7 +89,7 @@ export class MembersService implements MembersApi {
       lastName: profileDto.lastName,
       email: profileDto.email,
       gender: Gender[profileDto.gender as keyof typeof Gender],
-      pictureBase64: picture64,
+      pictureBase64: picture64
     } as Profile;
   }
 }

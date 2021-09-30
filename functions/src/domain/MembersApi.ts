@@ -10,6 +10,10 @@ export interface MembersApi {
   fetchLeaderboard(gameType: GameType): Promise<MemberWithGameTypeScore[]>;
 
   createProfile(profileDto: ProfileDto): Promise<string>;
+
   fetchProfile(meDto: MeDto): Promise<EditableProfileDto>;
+
   updateProfile(me: ProfileDto): void;
+
+  resetLeaderboard(): Promise<number>;
 }
