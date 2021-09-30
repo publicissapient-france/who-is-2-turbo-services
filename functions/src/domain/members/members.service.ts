@@ -12,6 +12,7 @@ import {
 import { Profile } from '../model/Profile';
 import { Gender } from '../model/Gender';
 import { GameType } from '../model/GameType';
+import { Role } from '../model/Role';
 
 @Injectable()
 export class MembersService implements MembersApi {
@@ -75,13 +76,17 @@ export class MembersService implements MembersApi {
     }
   }
 
-  async resetLeaderboard(): Promise<number> {
+  async resetLeaderboard(email: string): Promise<number> {
+    const role = await this.memberRepositorySpi.getMemberRole(email);
+    if (role != Role.ADMIN) {
+      throw new NotAllowedException();
+    }
     return await this.memberRepositorySpi.deleteScores();
   }
 
   private static profileDtoToProfileWithPicture(profileDto: ProfileDto): Profile {
     let picture64 = undefined;
-    if (!profileDto.picture.startsWith("http")) {
+    if (!profileDto.picture.startsWith('http')) {
       picture64 = profileDto.picture;
     }
     return {
@@ -89,7 +94,7 @@ export class MembersService implements MembersApi {
       lastName: profileDto.lastName,
       email: profileDto.email,
       gender: Gender[profileDto.gender as keyof typeof Gender],
-      pictureBase64: picture64
+      pictureBase64: picture64,
     } as Profile;
   }
 }
@@ -111,5 +116,15 @@ export class MemberAlreadyExistsException {
   constructor() {
     this.message = 'CONFLICT';
     this.code = 'CONFLICT';
+  }
+}
+
+export class NotAllowedException {
+  readonly message: string;
+  readonly code: string;
+
+  constructor() {
+    this.message = 'NOT ALLOWED';
+    this.code = 'NOTALLOWED';
   }
 }

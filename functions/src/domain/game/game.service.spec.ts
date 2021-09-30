@@ -83,6 +83,7 @@ describe('GameService', () => {
     getMemberWithPictureByEmail: jest.fn(),
     updateProfile: jest.fn,
     deleteScores: jest.fn(),
+    getMemberRole: jest.fn(),
   };
   const memberRepo: Provider<MemberRepositorySpi> = {
     provide: 'MemberRepositorySpi',

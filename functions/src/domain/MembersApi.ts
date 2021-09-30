@@ -15,5 +15,5 @@ export interface MembersApi {
 
   updateProfile(me: ProfileDto): void;
 
-  resetLeaderboard(): Promise<number>;
+  resetLeaderboard(email: string): Promise<number>;
 }

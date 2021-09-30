@@ -23,6 +23,7 @@ import { EditableProfileDto } from './model/EditableProfileDto';
 import {
   MemberNotFoundExceptionFilter,
   MembersAlreadyExistsExceptionFilter,
+  NotAllowedExceptionFilter,
 } from './members.http-exception.filter';
 import { GameTypeDto } from '../game/model/GameTypeDto';
 import { GameTypeExceptionFilter } from '../game/game.http-exception.filter';
@@ -77,12 +78,13 @@ export class MembersController {
     }));
   }
 
-  @Post('leaderboard/reset')
-  @ApiResponse({ status: 200, description: 'The score leaderboard is reset' })
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @ApiResponse({ status: 500, description: 'Internal server error.' })
-  async resetLeaderboard(): Promise<number> {
-    return await this.membersApi.resetLeaderboard();
+  @Post"leaderboard/reset"')
+  @ApiResponse({ status: 200, description:"The score leaderboard is reset"' })
+  @ApiResponse({ status: 403, description:"Forbidden."' })
+  @ApiResponse({ status: 500, description:"Internal server error."' })
+  @UseFilters(new NotAllowedExceptionFilter())
+  async resetLeaderboard(@Body() me: MeDto): Promise<number> {
+    return await this.membersApi.resetLeaderboard(me.email);
   }
 
   @Post('me')

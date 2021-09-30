@@ -1,5 +1,6 @@
 import { StorageMeta } from './StorageMeta';
 import { Gender } from './Gender';
+import { Role } from './Role';
 
 export type Member = StorageMeta & {
   firstName: string;
@@ -9,6 +10,7 @@ export type Member = StorageMeta & {
   gender: Gender;
   picture?: string;
   score?: Score;
+  role?: Role;
 };
 
 export type MemberWithPicture = Member & { picture: string };

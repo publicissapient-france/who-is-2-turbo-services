@@ -10,6 +10,7 @@ import QuerySnapshot = firestore.QuerySnapshot;
 import Firestore = firestore.Firestore;
 import CollectionReference = firestore.CollectionReference;
 import FieldValue = firestore.FieldValue;
+import { Role } from '../../domain/model/Role';
 
 export class UserNotFoundError {
   readonly message: string;
@@ -143,9 +144,17 @@ export class MemberRepository implements MemberRepositorySpi {
   }
 
   async deleteScores(): Promise<number> {
-    const members = await this.membersCollection.where('score', '!=', '').get();
+    const members = await this.membersCollection.where("score", "!=", "").get();
     await this.deleteScoreBatch(members);
     return members.size;
+  }
+
+  async getMemberRole(email: string): Promise<Role | undefined> {
+    const docs = await this.getMemberByMailDocs(email);
+    if (docs.docs.length != 0) {
+      const { role } = docs.docs[0].data() as Member;
+      return role;
+    } else return undefined;
   }
 
   async deleteScoreBatch(members: FirebaseFirestore.QuerySnapshot<Member>): Promise<void> {

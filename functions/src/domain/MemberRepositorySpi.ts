@@ -1,6 +1,7 @@
 import { MemberWithPicture, MemberWithScore } from './model/Member';
 import { Profile } from './model/Profile';
 import { GameType } from './model/GameType';
+import { Role } from './model/Role';
 
 export interface MemberRepositorySpi {
   getAllWithPicture(): Promise<MemberWithPicture[]>;
@@ -21,4 +22,6 @@ export interface MemberRepositorySpi {
   updateProfile(me: Profile): void;
 
   deleteScores(): Promise<number>;
+
+  getMemberRole(email: string): Promise<Role | undefined>;
 }
