@@ -10,7 +10,7 @@ Who Is 2 Turbo Services
 ## How to run locally 
 
 ```shell script
-cd functions && npm run serve
+cd functions && npm run dev
 ```
 
 ### Checkout the application 
