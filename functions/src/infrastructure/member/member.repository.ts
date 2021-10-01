@@ -126,7 +126,7 @@ export class MemberRepository implements MemberRepositorySpi {
     if (docs.docs.length != 0) {
       const { id, score } = docs.docs[0].data() as Member;
       const updatedScore: Score = score ? { ...score } : {};
-      updatedScore[gameType.valueOf()] = gameScore;
+      updatedScore[`${gameType}`] = gameScore;
       await this.membersCollection.doc(id).update({
         score: updatedScore,
       });
@@ -140,7 +140,7 @@ export class MemberRepository implements MemberRepositorySpi {
   async getMembersScores(gameType: GameType): Promise<MemberWithScore[]> {
     const members = await this.membersCollection.where('score', '!=', '').get();
     const membersScore = members.docs.map((member) => member.data() as MemberWithScore);
-    return membersScore.filter((member) => member.score[gameType] != undefined);
+    return membersScore.filter((member) => member.score[`${gameType}`] != undefined);
   }
 
   async deleteScores(): Promise<number> {

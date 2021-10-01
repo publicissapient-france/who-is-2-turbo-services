@@ -6,5 +6,5 @@ export class LeaderboardMemberDto {
   @ApiProperty()
   lastName = '';
   @ApiProperty()
-  score = 0;
+  score = {};
 }
