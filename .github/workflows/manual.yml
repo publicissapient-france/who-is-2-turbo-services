@@ -16,11 +16,7 @@ jobs:
           node-version: '14'
       - name: Download dependencies
         run: npm install
-      - name: Archive Production Artifact
-        uses: actions/upload-artifact@master
-        with:
-          name: public
-          path: public
+    
   deploy:
     name: Deploy
     needs: build
@@ -28,11 +24,7 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@master
-      - name: Download Artifact
-        uses: actions/download-artifact@master
-        with:
-          name: public
-          path: public
+
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
