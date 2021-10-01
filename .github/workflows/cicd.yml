@@ -1,10 +1,16 @@
 name: ci-cd
+
+defaults:
+  run:
+    working-directory: functions
+
 on:
   push:
     branches:
       - main
+      - build/cli
 jobs:
-  build:
+  cicd:
     name: Build
     runs-on: ubuntu-latest
     steps:
@@ -16,12 +22,8 @@ jobs:
           node-version: '14'
       - name: Download dependencies
         run: npm install
-    
-  deploy:
-    name: Deploy
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
+      - name: Build application
+        run: npm run build
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
