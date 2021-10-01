@@ -11,7 +11,7 @@ on:
       - build/cli
 jobs:
   cicd:
-    name: Build
+    name: CI/CD
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
