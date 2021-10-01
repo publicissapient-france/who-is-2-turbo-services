@@ -34,7 +34,7 @@ export class MemberConverter implements FirestoreDataConverter<Member> {
       score,
       email,
       firstName_unaccent,
-      rol,
+      role,
     } = modelObject;
     return {
       firstName,
@@ -44,7 +44,7 @@ export class MemberConverter implements FirestoreDataConverter<Member> {
       score,
       email,
       firstName_unaccent,
-      rol,
+      role,
     };
   }
 }

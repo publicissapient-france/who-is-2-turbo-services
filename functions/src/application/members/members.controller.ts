@@ -78,10 +78,10 @@ export class MembersController {
     }));
   }
 
-  @Post"leaderboard/reset"')
-  @ApiResponse({ status: 200, description:"The score leaderboard is reset"' })
-  @ApiResponse({ status: 403, description:"Forbidden."' })
-  @ApiResponse({ status: 500, description:"Internal server error."' })
+  @Post('leaderboard/reset')
+  @ApiResponse({ status: 200, description: 'The score leaderboard is reset' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 500, description: 'Internal server error.' })
   @UseFilters(new NotAllowedExceptionFilter())
   async resetLeaderboard(@Body() me: MeDto): Promise<number> {
     return await this.membersApi.resetLeaderboard(me.email);

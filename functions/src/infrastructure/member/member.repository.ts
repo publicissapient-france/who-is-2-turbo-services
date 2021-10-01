@@ -6,11 +6,11 @@ import { MemberConverter } from './MemberConverter';
 import { firestore } from 'firebase-admin/lib/firestore';
 import { Profile } from '../../domain/model/Profile';
 import { GameType } from '../../domain/model/GameType';
+import { Role } from '../../domain/model/Role';
 import QuerySnapshot = firestore.QuerySnapshot;
 import Firestore = firestore.Firestore;
 import CollectionReference = firestore.CollectionReference;
 import FieldValue = firestore.FieldValue;
-import { Role } from '../../domain/model/Role';
 
 export class UserNotFoundError {
   readonly message: string;
@@ -144,7 +144,7 @@ export class MemberRepository implements MemberRepositorySpi {
   }
 
   async deleteScores(): Promise<number> {
-    const members = await this.membersCollection.where("score", "!=", "").get();
+    const members = await this.membersCollection.where('score', '!=', '').get();
     await this.deleteScoreBatch(members);
     return members.size;
   }
