@@ -7,6 +7,7 @@ import {
   Inject,
   Post,
   Put,
+  Query,
   UseFilters,
   UsePipes,
   ValidationPipe,
@@ -26,10 +27,7 @@ import {
   NotAllowedExceptionFilter,
 } from './members.http-exception.filter';
 import { GameTypeDto } from '../game/model/GameTypeDto';
-import { GameTypeExceptionFilter } from '../game/game.http-exception.filter';
 import { GameType } from '../../domain/model/GameType';
-import { GameTypeException } from '../../domain/game/game.service';
-import { isUndefined } from '@nestjs/common/utils/shared.utils';
 
 @Controller('members')
 export class MembersController {
@@ -61,15 +59,10 @@ export class MembersController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiResponse({ status: 500, description: 'Internal server error.' })
   @UsePipes(new ValidationPipe({ transform: true }))
-  @UseFilters(GameTypeExceptionFilter)
   async loadLeaderBoard(
-    @Body()
-    gameTypeDto: GameTypeDto,
+    @Query('gameTypeDto') gameTypeDto?: GameTypeDto,
   ): Promise<LeaderboardMemberDto[]> {
-    const gameType = GameType[gameTypeDto.gameType as keyof typeof GameType];
-    if (isUndefined(gameType)) {
-      throw new GameTypeException();
-    }
+    const gameType = GameType[gameTypeDto?.gameType as keyof typeof GameType] || GameType.SERIES_5;
     const leaderboard = await this.membersApi.fetchLeaderboard(gameType);
     return leaderboard.map(({ firstName, lastName, score }) => ({
       firstName,
