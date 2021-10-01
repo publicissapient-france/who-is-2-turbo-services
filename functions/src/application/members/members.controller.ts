@@ -8,6 +8,8 @@ import {
   Post,
   Put,
   UseFilters,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { MembersApi } from '../../domain/MembersApi';
 import { ApiCreatedResponse, ApiResponse } from '@nestjs/swagger';
@@ -21,7 +23,13 @@ import { EditableProfileDto } from './model/EditableProfileDto';
 import {
   MemberNotFoundExceptionFilter,
   MembersAlreadyExistsExceptionFilter,
+  NotAllowedExceptionFilter,
 } from './members.http-exception.filter';
+import { GameTypeDto } from '../game/model/GameTypeDto';
+import { GameTypeExceptionFilter } from '../game/game.http-exception.filter';
+import { GameType } from '../../domain/model/GameType';
+import { GameTypeException } from '../../domain/game/game.service';
+import { isUndefined } from '@nestjs/common/utils/shared.utils';
 
 @Controller('members')
 export class MembersController {
@@ -52,13 +60,31 @@ export class MembersController {
   @ApiResponse({ status: 200, description: 'The leaderboard is returned' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiResponse({ status: 500, description: 'Internal server error.' })
-  async loadLeaderBoard(): Promise<LeaderboardMemberDto[]> {
-    const leaderboard = await this.membersApi.fetchLeaderboard();
+  @UsePipes(new ValidationPipe({ transform: true }))
+  @UseFilters(GameTypeExceptionFilter)
+  async loadLeaderBoard(
+    @Body()
+    gameTypeDto: GameTypeDto,
+  ): Promise<LeaderboardMemberDto[]> {
+    const gameType = GameType[gameTypeDto.gameType as keyof typeof GameType];
+    if (isUndefined(gameType)) {
+      throw new GameTypeException();
+    }
+    const leaderboard = await this.membersApi.fetchLeaderboard(gameType);
     return leaderboard.map(({ firstName, lastName, score }) => ({
       firstName,
       lastName,
       score,
     }));
+  }
+
+  @Post"leaderboard/reset"')
+  @ApiResponse({ status: 200, description:"The score leaderboard is reset"' })
+  @ApiResponse({ status: 403, description:"Forbidden."' })
+  @ApiResponse({ status: 500, description:"Internal server error."' })
+  @UseFilters(new NotAllowedExceptionFilter())
+  async resetLeaderboard(@Body() me: MeDto): Promise<number> {
+    return await this.membersApi.resetLeaderboard(me.email);
   }
 
   @Post('me')

@@ -15,6 +15,7 @@ import { SeriesScoreDto } from './model/SeriesScoreDto';
 import { SeriesGameDto } from './model/GameSerieDto';
 import { GameTypeDto } from './model/GameTypeDto';
 import { GameTypeExceptionFilter } from './game.http-exception.filter';
+import { GameType } from '../../domain/model/GameType';
 
 @Controller('games')
 export class GameController {
@@ -38,7 +39,8 @@ export class GameController {
     @Body()
     gameTypeDto: GameTypeDto,
   ): Promise<SeriesGameDto> {
-    const seriesGame = await this.gameApi.generateGameFromGameType(gameTypeDto);
+    const gameType = GameType[gameTypeDto.gameType as keyof typeof GameType];
+    const seriesGame = await this.gameApi.generateGameFromGameType(gameType);
     return {
       id: seriesGame.id,
       questions: seriesGame.questions,
@@ -53,6 +55,7 @@ export class GameController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiResponse({ status: 500, description: 'Internal server error.' })
   @Post(':gameId/score')
+  @UseFilters(GameTypeExceptionFilter)
   async validateGame(
     @Param('gameId') gameId: string,
     @Body() answers: GameAnswersDto,

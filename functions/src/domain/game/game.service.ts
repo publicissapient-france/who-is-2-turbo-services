@@ -8,7 +8,6 @@ import { shuffle } from 'lodash';
 import { Member, MemberWithPicture } from '../model/Member';
 import { Question } from '../model/Question';
 import { Proposition } from '../model/Proposition';
-import { GameTypeDto } from '../../application/game/model/GameTypeDto';
 import { GameType } from '../model/GameType';
 import { isUndefined } from '@nestjs/common/utils/shared.utils';
 
@@ -20,8 +19,7 @@ export class GameService implements GameApi {
     private memberRepositorySpi: MemberRepositorySpi,
   ) {}
 
-  async generateGameFromGameType(gameTypeDto: GameTypeDto): Promise<SeriesGame> {
-    const gameType = GameType[gameTypeDto.gameType as keyof typeof GameType];
+  async generateGameFromGameType(gameType: GameType): Promise<SeriesGame> {
     if (isUndefined(gameType)) {
       throw new GameTypeException();
     }
@@ -59,15 +57,22 @@ export class GameService implements GameApi {
 
   async validateSeriesGame(gameId: string, answers: number[], email: string): Promise<SeriesScore> {
     const game = await this.gameRepositorySpi.fetchSeries(gameId);
+    const gameType = GameType[GameType[answers.length] as keyof typeof GameType];
     let score = 0;
     game.solutions.forEach((answer, index) => {
       if (answer == answers[index]) {
         score++;
       }
     });
-    const memberCurrentScore = await this.memberRepositorySpi.getMemberScore(email);
-    if (memberCurrentScore != undefined && memberCurrentScore < score) {
-      this.memberRepositorySpi.updateMemberScore(email, score);
+    if (isUndefined(gameType)) {
+      throw new GameTypeException();
+    }
+    const memberCurrentScore = await this.memberRepositorySpi.getMemberScoreByGameType(
+      email,
+      gameType,
+    );
+    if (memberCurrentScore < score) {
+      this.memberRepositorySpi.updateMemberScore(email, score, gameType);
     }
 
     return {

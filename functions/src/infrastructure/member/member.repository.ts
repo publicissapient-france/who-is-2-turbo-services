@@ -1,13 +1,16 @@
 import { MemberRepositorySpi } from '../../domain/MemberRepositorySpi';
 import { Injectable } from '@nestjs/common';
-import { Member, MemberWithPicture, MemberWithScore } from '../../domain/model/Member';
+import { Member, MemberWithPicture, MemberWithScore, Score } from '../../domain/model/Member';
 import * as admin from 'firebase-admin';
 import { MemberConverter } from './MemberConverter';
 import { firestore } from 'firebase-admin/lib/firestore';
+import { Profile } from '../../domain/model/Profile';
+import { GameType } from '../../domain/model/GameType';
 import QuerySnapshot = firestore.QuerySnapshot;
 import Firestore = firestore.Firestore;
 import CollectionReference = firestore.CollectionReference;
-import { Profile } from '../../domain/model/Profile';
+import FieldValue = firestore.FieldValue;
+import { Role } from '../../domain/model/Role';
 
 export class UserNotFoundError {
   readonly message: string;
@@ -58,16 +61,14 @@ export class MemberRepository implements MemberRepositorySpi {
   async updateProfile(profile: Profile) {
     const memberWithPictureDocs = await this.getMemberWithPictureByEmail(profile.email);
 
-    const updatedMember = {
+    await this.membersCollection.doc(memberWithPictureDocs.id).update({
       id: memberWithPictureDocs.id,
       firstName: profile.firstName,
       firstName_unaccent: profile.firstName.normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
       lastName: profile.lastName,
       gender: profile.gender,
       picture: memberWithPictureDocs.picture,
-      score: memberWithPictureDocs.score,
-    };
-    await this.membersCollection.doc(memberWithPictureDocs.id).update(updatedMember);
+    });
     await this.updatePicture(
       memberWithPictureDocs.id,
       memberWithPictureDocs.picture,
@@ -112,20 +113,22 @@ export class MemberRepository implements MemberRepositorySpi {
     return url;
   }
 
-  async getMemberScore(email: string): Promise<number | undefined> {
+  async getMemberScoreByGameType(email: string, gameType: GameType): Promise<number> {
     const docs = await this.getMemberByMailDocs(email);
     if (docs.docs.length != 0) {
       const { score } = docs.docs[0].data() as Member;
-      return score ?? 0;
-    } else return undefined;
+      return score ? score[gameType.valueOf()] : 0;
+    } else return 0;
   }
 
-  async updateMemberScore(email: string, score: number) {
+  async updateMemberScore(email: string, gameScore: number, gameType: GameType) {
     const docs = await this.getMemberByMailDocs(email);
     if (docs.docs.length != 0) {
-      const { id } = docs.docs[0].data() as Member;
+      const { id, score } = docs.docs[0].data() as Member;
+      const updatedScore: Score = score ? { ...score } : {};
+      updatedScore[gameType.valueOf()] = gameScore;
       await this.membersCollection.doc(id).update({
-        score: score,
+        score: updatedScore,
       });
     }
   }
@@ -134,9 +137,41 @@ export class MemberRepository implements MemberRepositorySpi {
     return await this.membersCollection.where('email', '==', email).get();
   }
 
-  async getMembersScores(): Promise<MemberWithScore[]> {
-    const members = await this.membersCollection.orderBy('score', 'desc').get();
-    return members.docs.map((member) => member.data() as MemberWithScore);
+  async getMembersScores(gameType: GameType): Promise<MemberWithScore[]> {
+    const members = await this.membersCollection.where('score', '!=', '').get();
+    const membersScore = members.docs.map((member) => member.data() as MemberWithScore);
+    return membersScore.filter((member) => member.score[gameType] != undefined);
+  }
+
+  async deleteScores(): Promise<number> {
+    const members = await this.membersCollection.where("score", "!=", "").get();
+    await this.deleteScoreBatch(members);
+    return members.size;
+  }
+
+  async getMemberRole(email: string): Promise<Role | undefined> {
+    const docs = await this.getMemberByMailDocs(email);
+    if (docs.docs.length != 0) {
+      const { role } = docs.docs[0].data() as Member;
+      return role;
+    } else return undefined;
+  }
+
+  async deleteScoreBatch(members: FirebaseFirestore.QuerySnapshot<Member>): Promise<void> {
+    const batchSize = members.size;
+    if (batchSize === 0) {
+      return;
+    }
+
+    const batch = this.firebase.batch();
+    members.docs.forEach((doc) => {
+      batch.update(doc.ref, { score: FieldValue.delete() });
+    });
+    await batch.commit();
+
+    process.nextTick(() => {
+      this.deleteScoreBatch(members);
+    });
   }
 
   async addProfile(newProfile: Profile): Promise<string> {

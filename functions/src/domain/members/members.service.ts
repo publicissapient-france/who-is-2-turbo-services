@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { MemberRepositorySpi } from '../MemberRepositorySpi';
 import { MembersApi } from '../MembersApi';
-import { MemberWithPicture, MemberWithScore } from '../model/Member';
+import { MemberWithGameTypeScore, MemberWithPicture, MemberWithScore } from '../model/Member';
 import { ProfileDto } from '../../application/members/model/ProfileDto';
 import { MeDto } from '../../application/members/model/MeDto';
 import { EditableProfileDto } from '../../application/members/model/EditableProfileDto';
@@ -11,6 +11,8 @@ import {
 } from '../../infrastructure/member/member.repository';
 import { Profile } from '../model/Profile';
 import { Gender } from '../model/Gender';
+import { GameType } from '../model/GameType';
+import { Role } from '../model/Role';
 
 @Injectable()
 export class MembersService implements MembersApi {
@@ -20,13 +22,22 @@ export class MembersService implements MembersApi {
     return await this.memberRepositorySpi.loadGalleryMembers();
   }
 
-  async fetchLeaderboard(): Promise<MemberWithScore[]> {
-    return await this.memberRepositorySpi.getMembersScores();
+  async fetchLeaderboard(gameType: GameType): Promise<MemberWithGameTypeScore[]> {
+    const membersScore: MemberWithScore[] = await this.memberRepositorySpi.getMembersScores(
+      gameType,
+    );
+    return membersScore.map(
+      (member) =>
+        ({
+          ...member,
+          score: member.score[gameType] || 0,
+        } as MemberWithGameTypeScore),
+    );
   }
 
   async createProfile(profileDto: ProfileDto): Promise<string> {
     try {
-      const profile = this.profileDtoToProfileWithPicture(profileDto);
+      const profile = MembersService.profileDtoToProfileWithPicture(profileDto);
       return await this.memberRepositorySpi.addProfile(profile);
     } catch (err) {
       if (err instanceof UserAlreadyExistsError) {
@@ -55,7 +66,7 @@ export class MembersService implements MembersApi {
 
   async updateProfile(profileDto: ProfileDto) {
     try {
-      const profile = this.profileDtoToProfileWithPicture(profileDto);
+      const profile = MembersService.profileDtoToProfileWithPicture(profileDto);
       await this.memberRepositorySpi.updateProfile(profile);
     } catch (err) {
       if (err instanceof UserNotFoundError) {
@@ -65,7 +76,15 @@ export class MembersService implements MembersApi {
     }
   }
 
-  private profileDtoToProfileWithPicture(profileDto: ProfileDto): Profile {
+  async resetLeaderboard(email: string): Promise<number> {
+    const role = await this.memberRepositorySpi.getMemberRole(email);
+    if (role != Role.ADMIN) {
+      throw new NotAllowedException();
+    }
+    return await this.memberRepositorySpi.deleteScores();
+  }
+
+  private static profileDtoToProfileWithPicture(profileDto: ProfileDto): Profile {
     let picture64 = undefined;
     if (!profileDto.picture.startsWith('http')) {
       picture64 = profileDto.picture;
@@ -97,5 +116,15 @@ export class MemberAlreadyExistsException {
   constructor() {
     this.message = 'CONFLICT';
     this.code = 'CONFLICT';
+  }
+}
+
+export class NotAllowedException {
+  readonly message: string;
+  readonly code: string;
+
+  constructor() {
+    this.message = 'NOT ALLOWED';
+    this.code = 'NOTALLOWED';
   }
 }

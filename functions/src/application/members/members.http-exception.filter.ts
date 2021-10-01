@@ -3,6 +3,7 @@ import { Response } from 'express';
 import {
   MemberAlreadyExistsException,
   MemberNotFoundException,
+  NotAllowedException,
 } from '../../domain/members/members.service';
 
 @Catch(MemberNotFoundException)
@@ -24,6 +25,19 @@ export class MembersAlreadyExistsExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const status = HttpStatus.CONFLICT;
+
+    response.status(status).json({
+      statusCode: status,
+    });
+  }
+}
+
+@Catch(NotAllowedException)
+export class NotAllowedExceptionFilter implements ExceptionFilter {
+  catch(exception: MemberAlreadyExistsException, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
+    const status = HttpStatus.FORBIDDEN;
 
     response.status(status).json({
       statusCode: status,

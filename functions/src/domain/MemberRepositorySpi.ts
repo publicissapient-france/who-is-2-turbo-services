@@ -1,5 +1,7 @@
 import { MemberWithPicture, MemberWithScore } from './model/Member';
 import { Profile } from './model/Profile';
+import { GameType } from './model/GameType';
+import { Role } from './model/Role';
 
 export interface MemberRepositorySpi {
   getAllWithPicture(): Promise<MemberWithPicture[]>;
@@ -7,11 +9,19 @@ export interface MemberRepositorySpi {
 
   loadGalleryMembers(): Promise<MemberWithPicture[]>;
 
-  getMemberScore(email: string): Promise<number | undefined>;
-  updateMemberScore(email: string, score: number): void;
-  getMembersScores(): Promise<MemberWithScore[]>;
+  getMemberScoreByGameType(email: string, gameType: GameType): Promise<number>;
+
+  updateMemberScore(email: string, score: number, gameType: GameType): void;
+
+  getMembersScores(gameType: GameType): Promise<MemberWithScore[]>;
 
   addProfile(newProfile: Profile): Promise<string>;
+
   getMemberWithPictureByEmail(email: string): Promise<MemberWithPicture>;
+
   updateProfile(me: Profile): void;
+
+  deleteScores(): Promise<number>;
+
+  getMemberRole(email: string): Promise<Role | undefined>;
 }

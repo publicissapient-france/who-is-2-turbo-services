@@ -1,9 +1,9 @@
 import { SeriesGame } from './model/SeriesGame';
 import { SeriesScore } from './model/SeriesScore';
-import { GameTypeDto } from '../application/game/model/GameTypeDto';
+import { GameType } from './model/GameType';
 
 export interface GameApi {
-  generateGameFromGameType(gameTypeDto: GameTypeDto): Promise<SeriesGame>;
+  generateGameFromGameType(gameType: GameType): Promise<SeriesGame>;
 
   validateSeriesGame(gameId: string, answers: number[], email: string): Promise<SeriesScore>;
 }
