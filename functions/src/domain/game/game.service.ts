@@ -55,12 +55,7 @@ export class GameService implements GameApi {
     };
   }
 
-  async validateSeriesGame(
-    gameId: string,
-    answers: number[],
-    email: string,
-    resultDate: Date,
-  ): Promise<SeriesScore> {
+  async validateSeriesGame(gameId: string, answers: number[], email: string): Promise<SeriesScore> {
     const game = await this.gameRepositorySpi.fetchSeries(gameId);
     const gameType = GameType[GameType[answers.length] as keyof typeof GameType];
     let scoreCount = 0;
@@ -72,10 +67,8 @@ export class GameService implements GameApi {
     if (isUndefined(gameType)) {
       throw new GameTypeException();
     }
-    if (!isUndefined(game.createdAt)) {
-      const diffTime = Math.abs(
-        resultDate.getUTCMilliseconds() - game.createdAt.getUTCMilliseconds(),
-      );
+    if (!isUndefined(game.createdAt) && !isUndefined(game.readAt)) {
+      const gameDuration = Math.abs(game.readAt.getTime() - game.createdAt.getTime());
       const memberCurrentScore = await this.memberRepositorySpi.getMemberScoreByGameType(
         email,
         gameType,
@@ -83,14 +76,14 @@ export class GameService implements GameApi {
 
       const isNewScoreBetter = memberCurrentScore.count < scoreCount;
       const isNewTimeWithSameScoreBetter =
-        memberCurrentScore.count === scoreCount && memberCurrentScore.time > diffTime;
+        memberCurrentScore.count === scoreCount && memberCurrentScore.time > gameDuration;
 
       if (isNewScoreBetter && isNewTimeWithSameScoreBetter) {
-        this.memberRepositorySpi.updateMemberScore(email, scoreCount, diffTime, gameType);
+        this.memberRepositorySpi.updateMemberScore(email, scoreCount, gameDuration, gameType);
       }
 
       return {
-        time: diffTime,
+        time: gameDuration,
         correct: scoreCount,
         total: game.solutions.length,
       };

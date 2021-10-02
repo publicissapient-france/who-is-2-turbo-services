@@ -10,6 +10,7 @@ import Mock = jest.Mock;
 
 const male1: Member = {
   createdAt: new Date(),
+  readAt: new Date(),
   picture: 'm1.png',
   id: 'm1',
   lastName: 'Blague',
@@ -20,6 +21,7 @@ const male1: Member = {
 };
 const male2: Member = {
   createdAt: new Date(),
+  readAt: new Date(),
   picture: 'm2.png',
   id: 'm2',
   lastName: 'tutu',
@@ -30,6 +32,7 @@ const male2: Member = {
 };
 const female1: Member = {
   createdAt: new Date(),
+  readAt: new Date(),
   picture: 'f1.png',
   id: 'f1',
   lastName: 'Ranoux',
@@ -40,6 +43,7 @@ const female1: Member = {
 };
 const female2: Member = {
   createdAt: new Date(),
+  readAt: new Date(),
   picture: 'f2.png',
   id: 'f2',
   lastName: 'La Brouette',
@@ -166,7 +170,7 @@ describe('GameService', () => {
       return { id: 'id', solutions: [0, 2, 3] };
     });
 
-    const scoreSession = await service.validateSeriesGame('id', [0, 2, 1], 'email', new Date());
+    const scoreSession = await service.validateSeriesGame('id', [0, 2, 1], 'email');
 
     expect(scoreSession.total).toBe(3);
     expect(scoreSession.correct).toBe(2);
@@ -177,7 +181,7 @@ describe('GameService', () => {
       return Promise.resolve({ id: 'id', solutions: [0, 1, 2] });
     });
 
-    const scoreSession = await service.validateSeriesGame('id', [0, 2, 1], 'email', new Date());
+    const scoreSession = await service.validateSeriesGame('id', [0, 2, 1], 'email');
 
     expect(scoreSession.total).toBe(3);
     expect(scoreSession.correct).toBe(1);
