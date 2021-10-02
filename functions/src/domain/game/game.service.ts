@@ -78,7 +78,7 @@ export class GameService implements GameApi {
       const isNewTimeWithSameScoreBetter =
         memberCurrentScore.count === scoreCount && memberCurrentScore.time > gameDuration;
 
-      if (isNewScoreBetter && isNewTimeWithSameScoreBetter) {
+      if (isNewScoreBetter || isNewTimeWithSameScoreBetter) {
         this.memberRepositorySpi.updateMemberScore(email, scoreCount, gameDuration, gameType);
       }
 
