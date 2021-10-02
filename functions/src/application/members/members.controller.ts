@@ -13,7 +13,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { MembersApi } from '../../domain/MembersApi';
-import { ApiCreatedResponse, ApiResponse } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { MemberDto } from './model/MemberDto';
 import { MembersDto } from './model/MembersDto';
 import { LeaderboardMemberDto } from './model/LeaderboardMemberDto';
@@ -26,7 +26,6 @@ import {
   MembersAlreadyExistsExceptionFilter,
   NotAllowedExceptionFilter,
 } from './members.http-exception.filter';
-import { GameTypeDto } from '../game/model/GameTypeDto';
 import { GameType } from '../../domain/model/GameType';
 
 @Controller('members')
@@ -51,6 +50,7 @@ export class MembersController {
   }
 
   @Get('leaderboard')
+  @ApiQuery({ name: 'gameType', enum: GameType })
   @ApiCreatedResponse({
     description: 'Leaderboard',
     type: LeaderboardMemberDto,
@@ -60,9 +60,9 @@ export class MembersController {
   @ApiResponse({ status: 500, description: 'Internal server error.' })
   @UsePipes(new ValidationPipe({ transform: true }))
   async loadLeaderBoard(
-    @Query('gameTypeDto') gameTypeDto?: GameTypeDto,
+    @Query('gameType') gameTypeQuery = GameType[GameType.SERIES_5].toString(),
   ): Promise<LeaderboardMemberDto[]> {
-    const gameType = GameType[gameTypeDto?.gameType as keyof typeof GameType] || GameType.SERIES_5;
+    const gameType = (<never>GameType)[gameTypeQuery];
     const leaderboard = await this.membersApi.fetchLeaderboard(gameType);
     return leaderboard.map(({ firstName, lastName, score }) => ({
       firstName,
