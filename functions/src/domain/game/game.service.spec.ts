@@ -166,7 +166,7 @@ describe('GameService', () => {
       return { id: 'id', solutions: [0, 2, 3] };
     });
 
-    const scoreSession = await service.validateSeriesGame('id', [0, 2, 1], '');
+    const scoreSession = await service.validateSeriesGame('id', [0, 2, 1], 'email', new Date());
 
     expect(scoreSession.total).toBe(3);
     expect(scoreSession.correct).toBe(2);
@@ -177,7 +177,7 @@ describe('GameService', () => {
       return Promise.resolve({ id: 'id', solutions: [0, 1, 2] });
     });
 
-    const scoreSession = await service.validateSeriesGame('id', [0, 2, 1], '');
+    const scoreSession = await service.validateSeriesGame('id', [0, 2, 1], 'email', new Date());
 
     expect(scoreSession.total).toBe(3);
     expect(scoreSession.correct).toBe(1);

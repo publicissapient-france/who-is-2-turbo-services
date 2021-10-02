@@ -60,10 +60,12 @@ export class GameController {
     @Param('gameId') gameId: string,
     @Body() answers: GameAnswersDto,
   ): Promise<SeriesScoreDto> {
+    const resultDate = new Date();
     const serieScore = await this.gameApi.validateSeriesGame(
       gameId,
       answers.answers,
       answers.email,
+      resultDate,
     );
     return {
       correct: serieScore.correct,

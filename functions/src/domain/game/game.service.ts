@@ -55,30 +55,52 @@ export class GameService implements GameApi {
     };
   }
 
-  async validateSeriesGame(gameId: string, answers: number[], email: string): Promise<SeriesScore> {
+  async validateSeriesGame(
+    gameId: string,
+    answers: number[],
+    email: string,
+    resultDate: Date,
+  ): Promise<SeriesScore> {
     const game = await this.gameRepositorySpi.fetchSeries(gameId);
     const gameType = GameType[GameType[answers.length] as keyof typeof GameType];
-    let score = 0;
+    let scoreCount = 0;
     game.solutions.forEach((answer, index) => {
       if (answer == answers[index]) {
-        score++;
+        scoreCount++;
       }
     });
     if (isUndefined(gameType)) {
       throw new GameTypeException();
     }
-    const memberCurrentScore = await this.memberRepositorySpi.getMemberScoreByGameType(
-      email,
-      gameType,
-    );
-    if (memberCurrentScore < score) {
-      this.memberRepositorySpi.updateMemberScore(email, score, gameType);
-    }
+    if (!isUndefined(game.createdAt)) {
+      const diffTime = Math.abs(
+        resultDate.getUTCMilliseconds() - game.createdAt.getUTCMilliseconds(),
+      );
+      const memberCurrentScore = await this.memberRepositorySpi.getMemberScoreByGameType(
+        email,
+        gameType,
+      );
 
-    return {
-      correct: score,
-      total: game.solutions.length,
-    };
+      const isNewScoreBetter = memberCurrentScore.count < scoreCount;
+      const isNewTimeWithSameScoreBetter =
+        memberCurrentScore.count === scoreCount && memberCurrentScore.time > diffTime;
+
+      if (isNewScoreBetter && isNewTimeWithSameScoreBetter) {
+        this.memberRepositorySpi.updateMemberScore(email, scoreCount, diffTime, gameType);
+      }
+
+      return {
+        time: diffTime,
+        correct: scoreCount,
+        total: game.solutions.length,
+      };
+    } else {
+      return {
+        time: -1,
+        correct: scoreCount,
+        total: game.solutions.length,
+      };
+    }
   }
 
   private async generateQuestion(

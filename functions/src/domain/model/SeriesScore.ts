@@ -5,4 +5,6 @@ export class SeriesScore {
   correct = 0;
   @ApiProperty()
   total = 0;
+  @ApiProperty()
+  time = 0;
 }

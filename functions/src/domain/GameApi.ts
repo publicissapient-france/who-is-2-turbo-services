@@ -5,5 +5,10 @@ import { GameType } from './model/GameType';
 export interface GameApi {
   generateGameFromGameType(gameType: GameType): Promise<SeriesGame>;
 
-  validateSeriesGame(gameId: string, answers: number[], email: string): Promise<SeriesScore>;
+  validateSeriesGame(
+    gameId: string,
+    answers: number[],
+    email: string,
+    resultDate: Date,
+  ): Promise<SeriesScore>;
 }

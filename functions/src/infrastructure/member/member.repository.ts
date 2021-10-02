@@ -1,6 +1,12 @@
 import { MemberRepositorySpi } from '../../domain/MemberRepositorySpi';
 import { Injectable } from '@nestjs/common';
-import { Member, MemberWithPicture, MemberWithScore, Score } from '../../domain/model/Member';
+import {
+  Member,
+  MemberWithPicture,
+  MemberWithScore,
+  Score,
+  ScoreResult,
+} from '../../domain/model/Member';
 import * as admin from 'firebase-admin';
 import { MemberConverter } from './MemberConverter';
 import { firestore } from 'firebase-admin/lib/firestore';
@@ -113,20 +119,27 @@ export class MemberRepository implements MemberRepositorySpi {
     return url;
   }
 
-  async getMemberScoreByGameType(email: string, gameType: GameType): Promise<number> {
+  async getMemberScoreByGameType(email: string, gameType: GameType): Promise<ScoreResult> {
+    const defaultScore = {
+      count: 0,
+      time: -1,
+    } as ScoreResult;
     const docs = await this.getMemberByMailDocs(email);
     if (docs.docs.length != 0) {
       const { score } = docs.docs[0].data() as Member;
-      return score ? score[gameType.valueOf()] : 0;
-    } else return 0;
+      return score ? score[gameType.valueOf()] : defaultScore;
+    } else return defaultScore;
   }
 
-  async updateMemberScore(email: string, gameScore: number, gameType: GameType) {
+  async updateMemberScore(email: string, gameScore: number, gameTime: number, gameType: GameType) {
     const docs = await this.getMemberByMailDocs(email);
     if (docs.docs.length != 0) {
       const { id, score } = docs.docs[0].data() as Member;
       const updatedScore: Score = score ? { ...score } : {};
-      updatedScore[`${gameType}`] = gameScore;
+      updatedScore[`${gameType}`] = {
+        count: gameScore,
+        time: gameTime,
+      };
       await this.membersCollection.doc(id).update({
         score: updatedScore,
       });
