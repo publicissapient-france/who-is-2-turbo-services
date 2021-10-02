@@ -17,6 +17,11 @@ export type MemberWithPicture = Member & { picture: string };
 
 export type MemberWithScore = Member & { score: Score };
 
-export type MemberWithGameTypeScore = Member & { score: number };
+export type MemberWithGameTypeScore = Member & { score: ScoreResult };
 
-export type Score = { [id: string]: number };
+export type Score = { [id: string]: ScoreResult };
+
+export type ScoreResult = {
+  count: number;
+  time: number;
+};

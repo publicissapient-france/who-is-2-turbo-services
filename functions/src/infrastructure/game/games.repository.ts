@@ -24,13 +24,20 @@ export class GamesRepository implements GameRepositorySpi {
     }
     return {
       id: id,
-      createdAt: documentSnapshot.get('createdAt'),
+      createdAt: documentSnapshot.createTime?.toDate(),
+      readAt: documentSnapshot.readTime?.toDate(),
       solutions: documentSnapshot.get('solutions'),
     };
   }
 
   async saveSeries(game: ContentOf<SeriesGameSession>): Promise<SeriesGameSession> {
     const metadata = await this.gamesCollection.add(game);
-    return { ...game, id: metadata.id };
+    const documentSnapshot = await metadata.get();
+    return {
+      id: metadata.id,
+      createdAt: documentSnapshot.createTime?.toDate(),
+      readAt: documentSnapshot.readTime?.toDate(),
+      solutions: documentSnapshot.get('solutions'),
+    };
   }
 }
