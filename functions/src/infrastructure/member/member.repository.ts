@@ -127,7 +127,11 @@ export class MemberRepository implements MemberRepositorySpi {
     const docs = await this.getMemberByMailDocs(email);
     if (docs.docs.length != 0) {
       const { score } = docs.docs[0].data() as Member;
-      return score ? score[gameType.valueOf()] : defaultScore;
+      if (!score) {
+        return defaultScore;
+      } else {
+        return score[`${gameType}`] || defaultScore;
+      }
     } else return defaultScore;
   }
 
