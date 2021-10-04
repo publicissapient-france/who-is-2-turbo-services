@@ -155,7 +155,10 @@ export class MemberRepository implements MemberRepositorySpi {
   }
 
   async getMembersScores(gameType: GameType): Promise<MemberWithScore[]> {
-    const members = await this.membersCollection.where('score', '!=', '').get();
+    const members = await this.membersCollection
+      .orderBy('score.' + gameType + '.count', 'desc')
+      .orderBy('score.' + gameType + '.time', 'asc')
+      .get();
     const membersScore = members.docs.map((member) => member.data() as MemberWithScore);
     return membersScore.filter((member) => member.score[`${gameType}`] != undefined);
   }
