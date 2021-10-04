@@ -23,7 +23,7 @@
     "@nestjs/common": "^7.6.14",
     "@nestjs/core": "^7.6.14",
     "@nestjs/platform-express": "^7.6.14",
-    "@types/lodash": "^4.14.168",
+    "@nestjs/swagger": "^4.8.2",
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
     "express": "^4.17.1",
@@ -33,10 +33,12 @@
     "prettify": "^0.1.7",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.6.6",
-    "@nestjs/swagger": "^4.8.2",
+    "sharp": "^0.29.1",
     "swagger-ui-express": "^4.1.6"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.168",
+    "@types/sharp": "^0.29.2",
     "@nestjs/cli": "^8.1.2",
     "@nestjs/schematics": "^7.2.7",
     "@nestjs/testing": "^7.6.13",
