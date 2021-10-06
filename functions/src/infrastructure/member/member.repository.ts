@@ -17,6 +17,7 @@ import QuerySnapshot = firestore.QuerySnapshot;
 import Firestore = firestore.Firestore;
 import CollectionReference = firestore.CollectionReference;
 import FieldValue = firestore.FieldValue;
+import sharp from 'sharp';
 
 export class UserNotFoundError {
   readonly message: string;
@@ -85,8 +86,8 @@ export class MemberRepository implements MemberRepositorySpi {
   private async updatePicture(id: string, fileName: string, pictureBase64: string) {
     if (pictureBase64 != undefined) {
       await this.deleteImage(fileName);
-      await this.addImage(id, pictureBase64);
-      await this.membersCollection.doc(id).update({ picture: id });
+      const newFileName = await this.addImage(fileName, pictureBase64);
+      await this.membersCollection.doc(id).update({ picture: newFileName });
     }
   }
 
@@ -212,22 +213,28 @@ export class MemberRepository implements MemberRepositorySpi {
 
     const { id } = await this.membersCollection.add(member);
     if (newProfile.pictureBase64 != undefined) {
-      await this.addImage(id, newProfile.pictureBase64);
-      await this.membersCollection.doc(id).update({ picture: id });
+      const fileName = await this.addImage(id, newProfile.pictureBase64);
+      await this.membersCollection.doc(id).update({ picture: fileName });
     }
     return id;
   }
 
-  async addImage(fileName: string, picture: string) {
+  async addImage(id: string, picture: string) {
+    const contentType = MemberRepository.base64MimeType(picture) || 'image/webp';
+    const fileName = `${id}.${contentType.split('/')[1]}`;
     const file = await admin.storage().bucket().file(fileName);
     const fileOptions = {
-      metadata: { contentType: MemberRepository.base64MimeType(picture) || 'image/webp' },
+      metadata: { contentType: contentType },
       validation: 'md5',
     };
-
-    const base64EncodedString = picture.replace(/^data:\w+\/\w+;base64,/, '');
-    const fileBuffer = Buffer.from(base64EncodedString, 'base64');
-    await file.save(fileBuffer, fileOptions);
+    const pictureBase64 = picture.replace(/^data:\w+\/\w+;base64,/, '');
+    const pictureBuffered = Buffer.from(pictureBase64, 'base64');
+    const pictureResized = await sharp(pictureBuffered)
+      .resize(450, 600)
+      .webp()
+      .toBuffer();
+    await file.save(pictureResized, fileOptions);
+    return fileName;
   }
 
   async deleteImage(fileName: string) {
