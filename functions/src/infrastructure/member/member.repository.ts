@@ -125,14 +125,15 @@ export class MemberRepository implements MemberRepositorySpi {
       count: 0,
       time: -1,
     } as ScoreResult;
-    const docs = await this.getMemberByMailDocs(email);
+
+    const docs = await this.membersCollection
+      .where('email', '==', email)
+      .where('score.' + gameType, '!=', '')
+      .get();
+
     if (docs.docs.length != 0) {
       const { score } = docs.docs[0].data() as Member;
-      if (!score) {
-        return defaultScore;
-      } else {
-        return score[`${gameType}`] || defaultScore;
-      }
+      return score ? score[`${gameType}`] : defaultScore;
     } else return defaultScore;
   }
 
