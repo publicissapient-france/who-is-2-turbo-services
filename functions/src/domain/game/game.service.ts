@@ -10,6 +10,7 @@ import { Question } from '../model/Question';
 import { Proposition } from '../model/Proposition';
 import { GameType } from '../model/GameType';
 import { isUndefined } from '@nestjs/common/utils/shared.utils';
+import { ScoreResult } from '../../../lib/domain/model/Member';
 
 @Injectable()
 export class GameService implements GameApi {
@@ -58,42 +59,48 @@ export class GameService implements GameApi {
   async validateSeriesGame(gameId: string, answers: number[], email: string): Promise<SeriesScore> {
     const game = await this.gameRepositorySpi.fetchSeries(gameId);
     const gameType = GameType[GameType[answers.length] as keyof typeof GameType];
-    let scoreCount = 0;
-    game.solutions.forEach((answer, index) => {
-      if (answer == answers[index]) {
-        scoreCount++;
-      }
-    });
-    if (isUndefined(gameType)) {
+    if (isUndefined(gameType) || isUndefined(game.createdAt) || isUndefined(game.readAt)) {
       throw new GameTypeException();
     }
-    if (!isUndefined(game.createdAt) && !isUndefined(game.readAt)) {
-      const gameDuration = Math.abs(game.readAt.getTime() - game.createdAt.getTime());
-      const memberCurrentScore = await this.memberRepositorySpi.getMemberScoreByGameType(
+    const currentGameScoreCount = game.solutions.filter((solution, index) => {
+      return solution === answers[index];
+    }).length;
+    const currentGameDuration = game.readAt.getTime() - game.createdAt.getTime();
+    const currentScore = {
+      count: currentGameScoreCount,
+      time: currentGameDuration,
+    } as ScoreResult;
+
+    const betterScoresInLeaderboard = await this.memberRepositorySpi.getBetterScoreMembersCount(
+      currentScore,
+      gameType,
+    );
+    const memberPreviousBestScore = await this.memberRepositorySpi.getMemberScoreByGameType(
+      email,
+      gameType,
+    );
+
+    const isNewScoreBetter: boolean =
+      memberPreviousBestScore !== null && memberPreviousBestScore.count < currentGameScoreCount;
+    const isNewTimeWithSameScoreBetter: boolean =
+      memberPreviousBestScore !== null &&
+      memberPreviousBestScore.count === currentGameScoreCount &&
+      memberPreviousBestScore.time > currentGameDuration;
+
+    if (memberPreviousBestScore == null || isNewScoreBetter || isNewTimeWithSameScoreBetter) {
+      this.memberRepositorySpi.updateMemberScore(
         email,
+        currentGameScoreCount,
+        currentGameDuration,
         gameType,
       );
-
-      const isNewScoreBetter = memberCurrentScore.count < scoreCount;
-      const isNewTimeWithSameScoreBetter =
-        memberCurrentScore.count === scoreCount && memberCurrentScore.time > gameDuration;
-
-      if (isNewScoreBetter || isNewTimeWithSameScoreBetter) {
-        this.memberRepositorySpi.updateMemberScore(email, scoreCount, gameDuration, gameType);
-      }
-
-      return {
-        time: gameDuration,
-        correct: scoreCount,
-        total: game.solutions.length,
-      };
-    } else {
-      return {
-        time: -1,
-        correct: scoreCount,
-        total: game.solutions.length,
-      };
     }
+    return {
+      solutions: game.solutions,
+      previousBestScore: memberPreviousBestScore,
+      currentScore: currentScore,
+      betterScoresInLeaderboard: betterScoresInLeaderboard,
+    } as SeriesScore;
   }
 
   private async generateQuestion(

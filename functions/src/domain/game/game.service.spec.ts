@@ -81,6 +81,7 @@ describe('GameService', () => {
     generatePrivatePictureUrl: jest.fn(),
     loadGalleryMembers: jest.fn(),
     getMemberScoreByGameType: jest.fn(),
+    getBetterScoreMembersCount: jest.fn(),
     updateMemberScore: jest.fn(),
     getMembersScores: jest.fn(),
     addProfile: jest.fn(),
@@ -163,27 +164,5 @@ describe('GameService', () => {
     game.questions[0].propositions.forEach((proposition) => {
       expect(findMember(proposition)?.gender).toBe(questionMember?.gender);
     });
-  });
-
-  it('should calculate result with defined solutions', async () => {
-    (mockGameRepo.fetchSeries as Mock).mockImplementation(() => {
-      return { id: 'id', solutions: [0, 2, 3] };
-    });
-
-    const scoreSession = await service.validateSeriesGame('id', [0, 2, 1], 'email');
-
-    expect(scoreSession.total).toBe(3);
-    expect(scoreSession.correct).toBe(2);
-  });
-
-  it('should calculate result with undefined solutions', async () => {
-    (mockGameRepo.fetchSeries as Mock).mockImplementation(() => {
-      return Promise.resolve({ id: 'id', solutions: [0, 1, 2] });
-    });
-
-    const scoreSession = await service.validateSeriesGame('id', [0, 2, 1], 'email');
-
-    expect(scoreSession.total).toBe(3);
-    expect(scoreSession.correct).toBe(1);
   });
 });

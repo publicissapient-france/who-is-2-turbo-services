@@ -9,7 +9,9 @@ export interface MemberRepositorySpi {
 
   loadGalleryMembers(): Promise<MemberWithPicture[]>;
 
-  getMemberScoreByGameType(email: string, gameType: GameType): Promise<ScoreResult>;
+  getMemberScoreByGameType(email: string, gameType: GameType): Promise<ScoreResult | null>;
+
+  getBetterScoreMembersCount(score: ScoreResult, gameType: GameType): Promise<number>;
 
   updateMemberScore(email: string, score: number, gameTime: number, gameType: GameType): void;
 

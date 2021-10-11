@@ -123,12 +123,7 @@ export class MemberRepository implements MemberRepositorySpi {
     return url;
   }
 
-  async getMemberScoreByGameType(email: string, gameType: GameType): Promise<ScoreResult> {
-    const defaultScore = {
-      count: 0,
-      time: -1,
-    } as ScoreResult;
-
+  async getMemberScoreByGameType(email: string, gameType: GameType): Promise<ScoreResult | null> {
     const docs = await this.membersCollection
       .where('email', '==', email)
       .where('score.' + gameType, '!=', '')
@@ -136,8 +131,20 @@ export class MemberRepository implements MemberRepositorySpi {
 
     if (docs.docs.length != 0) {
       const { score } = docs.docs[0].data() as Member;
-      return score ? score[`${gameType}`] : defaultScore;
-    } else return defaultScore;
+      return score ? score[`${gameType}`] : null;
+    } else return null;
+  }
+
+  async getBetterScoreMembersCount(score: ScoreResult, gameType: GameType): Promise<number> {
+    const membersWithMorePoints = await this.membersCollection
+      .where('score.' + gameType + '.count', '>', score.count)
+      .get();
+    const membersWithBetterTime = await this.membersCollection
+      .where('score.' + gameType + '.count', '==', score.count)
+      .where('score.' + gameType + '.time', '<', score.time)
+      .get();
+
+    return membersWithMorePoints.docs.length + membersWithBetterTime.docs.length;
   }
 
   async updateMemberScore(email: string, gameScore: number, gameTime: number, gameType: GameType) {
@@ -235,10 +242,7 @@ export class MemberRepository implements MemberRepositorySpi {
     };
     const pictureBase64 = picture.replace(/^data:\w+\/\w+;base64,/, '');
     const pictureBuffered = Buffer.from(pictureBase64, 'base64');
-    const pictureResized = await sharp(pictureBuffered)
-      .resize(450, 600)
-      .webp()
-      .toBuffer();
+    const pictureResized = await sharp(pictureBuffered).resize(450, 600).webp().toBuffer();
     await file.save(pictureResized, fileOptions);
     return fileName;
   }

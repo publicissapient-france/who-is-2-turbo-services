@@ -1,10 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ScoreResult } from '../../../lib/domain/model/Member';
 
-export class SeriesScore {
-  @ApiProperty()
-  correct = 0;
-  @ApiProperty()
-  total = 0;
-  @ApiProperty()
-  time = 0;
-}
+export type SeriesScore = {
+  solutions: number[];
+  previousBestScore?: ScoreResult;
+  currentScore: ScoreResult;
+  betterScoresInLeaderboard: number;
+};

@@ -60,14 +60,18 @@ export class GameController {
     @Param('gameId') gameId: string,
     @Body() answers: GameAnswersDto,
   ): Promise<SeriesScoreDto> {
-    const serieScore = await this.gameApi.validateSeriesGame(
+    const seriesScore = await this.gameApi.validateSeriesGame(
       gameId,
       answers.answers,
       answers.email,
     );
     return {
-      correct: serieScore.correct,
-      total: serieScore.total,
+      correct: seriesScore.currentScore.count,
+      total: seriesScore.solutions.length,
+      solutions: seriesScore.solutions,
+      previousBestScore: seriesScore.previousBestScore,
+      currentScore: seriesScore.currentScore,
+      betterScoresInLeaderboard: seriesScore.betterScoresInLeaderboard,
     } as SeriesScoreDto;
   }
 }
