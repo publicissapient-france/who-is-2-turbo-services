@@ -10,7 +10,7 @@ import { Question } from '../model/Question';
 import { Proposition } from '../model/Proposition';
 import { GameType } from '../model/GameType';
 import { isUndefined } from '@nestjs/common/utils/shared.utils';
-import { ScoreResult } from '../../../lib/domain/model/Member';
+import { ScoreResult } from '../model/Member';
 
 @Injectable()
 export class GameService implements GameApi {
