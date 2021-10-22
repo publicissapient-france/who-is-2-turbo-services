@@ -123,25 +123,28 @@ export class MemberRepository implements MemberRepositorySpi {
     return url;
   }
 
-  async getMemberScoreByGameType(email: string, gameType: GameType): Promise<ScoreResult | null> {
+  async getMemberScoreByGameType(
+    email: string,
+    gameType: GameType,
+  ): Promise<ScoreResult | undefined> {
     const docs = await this.membersCollection
       .where('email', '==', email)
-      .where('score.' + gameType, '!=', '')
+      .where(`score.${gameType}`, '!=', '')
       .get();
 
     if (docs.docs.length != 0) {
       const { score } = docs.docs[0].data() as Member;
-      return score ? score[`${gameType}`] : null;
-    } else return null;
+      return score ? score[`${gameType}`] : undefined;
+    } else return undefined;
   }
 
   async getBetterScoreMembersCount(score: ScoreResult, gameType: GameType): Promise<number> {
     const membersWithMorePoints = await this.membersCollection
-      .where('score.' + gameType + '.count', '>', score.count)
+      .where(`score.${gameType}.count`, '>', score.count)
       .get();
     const membersWithBetterTime = await this.membersCollection
-      .where('score.' + gameType + '.count', '==', score.count)
-      .where('score.' + gameType + '.time', '<', score.time)
+      .where(`score.${gameType}.count`, '==', score.count)
+      .where(`score.${gameType}.time`, '<', score.time)
       .get();
 
     return membersWithMorePoints.docs.length + membersWithBetterTime.docs.length;
@@ -168,8 +171,8 @@ export class MemberRepository implements MemberRepositorySpi {
 
   async getMembersScores(gameType: GameType): Promise<MemberWithScore[]> {
     const members = await this.membersCollection
-      .orderBy('score.' + gameType + '.count', 'desc')
-      .orderBy('score.' + gameType + '.time', 'asc')
+      .orderBy(`score.${gameType}.count`, 'desc')
+      .orderBy(`score.${gameType}.time`, 'asc')
       .get();
     const membersScore = members.docs.map((member) => member.data() as MemberWithScore);
     return membersScore.filter((member) => member.score[`${gameType}`] != undefined);

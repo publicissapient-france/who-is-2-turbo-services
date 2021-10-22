@@ -9,7 +9,7 @@ export class SeriesScoreDto {
   @ApiProperty()
   solutions: number[] = [];
   @ApiProperty({ type: ScoreResultDto })
-  previousBestScore?: ScoreResultDto;
+  previousBestScore: ScoreResultDto | undefined;
   @ApiProperty({ type: ScoreResultDto })
   currentScore: ScoreResultDto = new ScoreResultDto();
   @ApiProperty()

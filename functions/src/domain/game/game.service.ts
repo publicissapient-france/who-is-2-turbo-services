@@ -10,7 +10,6 @@ import { Question } from '../model/Question';
 import { Proposition } from '../model/Proposition';
 import { GameType } from '../model/GameType';
 import { isUndefined } from '@nestjs/common/utils/shared.utils';
-import { ScoreResult } from '../model/Member';
 
 @Injectable()
 export class GameService implements GameApi {
@@ -62,14 +61,14 @@ export class GameService implements GameApi {
     if (isUndefined(gameType) || isUndefined(game.createdAt) || isUndefined(game.readAt)) {
       throw new GameTypeException();
     }
-    const currentGameScoreCount = game.solutions.filter((solution, index) => {
-      return solution === answers[index];
-    }).length;
+    const currentGameScoreCount = game.solutions.filter(
+      (solution, index) => solution === answers[index],
+    ).length;
     const currentGameDuration = game.readAt.getTime() - game.createdAt.getTime();
     const currentScore = {
       count: currentGameScoreCount,
       time: currentGameDuration,
-    } as ScoreResult;
+    };
 
     const betterScoresInLeaderboard = await this.memberRepositorySpi.getBetterScoreMembersCount(
       currentScore,
@@ -81,13 +80,14 @@ export class GameService implements GameApi {
     );
 
     const isNewScoreBetter: boolean =
-      memberPreviousBestScore !== null && memberPreviousBestScore.count < currentGameScoreCount;
+      !isUndefined(memberPreviousBestScore) &&
+      memberPreviousBestScore.count < currentGameScoreCount;
     const isNewTimeWithSameScoreBetter: boolean =
-      memberPreviousBestScore !== null &&
+      !isUndefined(memberPreviousBestScore) &&
       memberPreviousBestScore.count === currentGameScoreCount &&
       memberPreviousBestScore.time > currentGameDuration;
 
-    if (memberPreviousBestScore == null || isNewScoreBetter || isNewTimeWithSameScoreBetter) {
+    if (isUndefined(memberPreviousBestScore) || isNewScoreBetter || isNewTimeWithSameScoreBetter) {
       this.memberRepositorySpi.updateMemberScore(
         email,
         currentGameScoreCount,
@@ -100,7 +100,7 @@ export class GameService implements GameApi {
       previousBestScore: memberPreviousBestScore,
       currentScore: currentScore,
       betterScoresInLeaderboard: betterScoresInLeaderboard,
-    } as SeriesScore;
+    };
   }
 
   private async generateQuestion(
