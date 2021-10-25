@@ -1,15 +1,23 @@
 
 #
-export_entitiesŸ‰“éÇ©ó°—ŠøÇ©ó±
-membersoutput-0output-1‘
+export_entities„Ñ«„¤æóµéĞ‡¤æó
+membersoutput-0output-1á
 members
 lastName
 gender
 firstName_unaccent
 	firstName
 email
-picture
-score
+picture[
+scoreRP%
+5
+count
+
+timed_5'
+20
+count
+
+timed_20
 id
 
 role

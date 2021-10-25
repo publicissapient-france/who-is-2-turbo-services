@@ -79,11 +79,10 @@ export class GameService implements GameApi {
       gameType,
     );
 
-    const isNewScoreBetter: boolean =
-      !isUndefined(memberPreviousBestScore) &&
-      memberPreviousBestScore.count < currentGameScoreCount;
-    const isNewTimeWithSameScoreBetter: boolean =
-      !isUndefined(memberPreviousBestScore) &&
+    const isNewScoreBetter =
+      memberPreviousBestScore && memberPreviousBestScore.count < currentGameScoreCount;
+    const isNewTimeWithSameScoreBetter =
+      memberPreviousBestScore &&
       memberPreviousBestScore.count === currentGameScoreCount &&
       memberPreviousBestScore.time > currentGameDuration;
 

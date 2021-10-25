@@ -1,8 +1,8 @@
-import { ScoreResult } from '../../../lib/domain/model/Member';
+import { ScoreResult } from './Member';
 
 export type SeriesScore = {
   solutions: number[];
-  previousBestScore: ScoreResult | undefined;
+  previousBestScore?: ScoreResult;
   currentScore: ScoreResult;
   betterScoresInLeaderboard: number;
 };
