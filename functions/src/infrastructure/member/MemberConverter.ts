@@ -16,6 +16,7 @@ export class MemberConverter implements FirestoreDataConverter<Member> {
       score: snapshot.get('score'),
       role: snapshot.get('role'),
       capability: snapshot.get('capability') && Capability[snapshot.get('capability')],
+      arrivalDate: snapshot.get('arrivalDate'),
     } as unknown as Member;
   }
 
@@ -38,6 +39,7 @@ export class MemberConverter implements FirestoreDataConverter<Member> {
       firstName_unaccent,
       role,
       capability,
+      arrivalDate,
     } = modelObject;
     return {
       firstName,
@@ -49,6 +51,7 @@ export class MemberConverter implements FirestoreDataConverter<Member> {
       firstName_unaccent,
       role,
       capability,
+      arrivalDate,
     };
   }
 }

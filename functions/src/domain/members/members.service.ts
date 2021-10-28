@@ -58,6 +58,7 @@ export class MembersService implements MembersApi {
         gender: member.gender,
         picture: await this.memberRepositorySpi.generatePrivatePictureUrl(member.picture),
         capability: member.capability && Capability[member.capability],
+        arrivalDate: member.arrivalDate,
       } as EditableProfileDto;
     } catch (err) {
       if (err instanceof UserNotFoundError) {
@@ -98,7 +99,8 @@ export class MembersService implements MembersApi {
       email: profileDto.email,
       gender: Gender[profileDto.gender as keyof typeof Gender],
       pictureBase64: picture64,
-      capability: profileDto.capability && Capability[profileDto.capability]
+      capability: profileDto.capability && Capability[profileDto.capability],
+      arrivalDate: profileDto.arrivalDate,
     }
   }
 }
