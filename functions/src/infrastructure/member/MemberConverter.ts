@@ -2,6 +2,7 @@ import { Member } from '../../domain/model/Member';
 import { firestore } from 'firebase-admin/lib/firestore';
 import { Gender } from '../../domain/model/Gender';
 import FirestoreDataConverter = firestore.FirestoreDataConverter;
+import { Capability } from "../../domain/model/Capability";
 
 export class MemberConverter implements FirestoreDataConverter<Member> {
   fromFirestore(snapshot: FirebaseFirestore.QueryDocumentSnapshot): Member {
@@ -14,7 +15,8 @@ export class MemberConverter implements FirestoreDataConverter<Member> {
       picture: snapshot.get('picture'),
       score: snapshot.get('score'),
       role: snapshot.get('role'),
-    } as Member;
+      capability: snapshot.get('capability') && Capability[snapshot.get('capability')],
+    } as unknown as Member;
   }
 
   toFirestore(modelObject: Member): FirebaseFirestore.DocumentData;
@@ -35,6 +37,7 @@ export class MemberConverter implements FirestoreDataConverter<Member> {
       email,
       firstName_unaccent,
       role,
+      capability,
     } = modelObject;
     return {
       firstName,
@@ -45,6 +48,7 @@ export class MemberConverter implements FirestoreDataConverter<Member> {
       email,
       firstName_unaccent,
       role,
+      capability,
     };
   }
 }

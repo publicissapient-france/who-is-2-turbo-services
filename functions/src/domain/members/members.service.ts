@@ -13,10 +13,12 @@ import { Profile } from '../model/Profile';
 import { Gender } from '../model/Gender';
 import { GameType } from '../model/GameType';
 import { Role } from '../model/Role';
+import { Capability } from "../model/Capability";
 
 @Injectable()
 export class MembersService implements MembersApi {
-  constructor(@Inject('MemberRepositorySpi') private memberRepositorySpi: MemberRepositorySpi) {}
+  constructor(@Inject('MemberRepositorySpi') private memberRepositorySpi: MemberRepositorySpi) {
+  }
 
   async fetchAll(): Promise<MemberWithPicture[]> {
     return await this.memberRepositorySpi.loadGalleryMembers();
@@ -55,6 +57,7 @@ export class MembersService implements MembersApi {
         lastName: member.lastName,
         gender: member.gender,
         picture: await this.memberRepositorySpi.generatePrivatePictureUrl(member.picture),
+        capability: member.capability && Capability[member.capability],
       } as EditableProfileDto;
     } catch (err) {
       if (err instanceof UserNotFoundError) {
@@ -95,7 +98,8 @@ export class MembersService implements MembersApi {
       email: profileDto.email,
       gender: Gender[profileDto.gender as keyof typeof Gender],
       pictureBase64: picture64,
-    } as Profile;
+      capability: profileDto.capability && Capability[profileDto.capability]
+    }
   }
 }
 

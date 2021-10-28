@@ -119,7 +119,7 @@ export class MembersController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiResponse({ status: 500, description: 'Internal server error.' })
   @UseFilters(new MemberNotFoundExceptionFilter())
-  async patchProfile(@Body() me: ProfileDto) {
+  async putProfile(@Body() me: ProfileDto) {
     this.membersApi.updateProfile(me);
   }
 }
