@@ -77,6 +77,7 @@ export class MemberRepository implements MemberRepositorySpi {
       gender: profile.gender,
       capability: profile.capability && Capability[profile.capability],
       picture: memberWithPictureDocs.picture,
+      arrivalDate: profile.arrivalDate,
     });
     await this.updatePicture(
       memberWithPictureDocs.id,
@@ -213,6 +214,7 @@ export class MemberRepository implements MemberRepositorySpi {
       email: newProfile.email,
       gender: newProfile.gender,
       capability: newProfile.capability && Capability[newProfile.capability],
+      arrivalDate: newProfile.arrivalDate,
     } as MemberWithPicture;
 
     const { id } = await this.membersCollection.add(member);

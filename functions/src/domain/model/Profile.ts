@@ -8,4 +8,5 @@ export type Profile = {
   gender: Gender;
   pictureBase64?: string;
   capability?: Capability;
+  arrivalDate?: Date;
 };

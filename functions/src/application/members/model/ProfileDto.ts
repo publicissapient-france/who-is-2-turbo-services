@@ -12,6 +12,8 @@ export class ProfileDto {
   picture = '';
   @ApiProperty()
   capability?: keyof typeof Capability;
+  @ApiProperty()
+  arrivalDate?: Date;
 
   email = '';
 }

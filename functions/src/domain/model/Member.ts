@@ -13,6 +13,7 @@ export type Member = StorageMeta & {
   score?: Score;
   role?: Role;
   capability?: Capability;
+  arrivalDate?: Date;
 };
 
 export type MemberWithPicture = Member & { picture: string };
