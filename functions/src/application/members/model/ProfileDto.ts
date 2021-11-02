@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Capability } from "../../../domain/model/Capability";
 
 export class ProfileDto {
   @ApiProperty()
@@ -9,5 +10,8 @@ export class ProfileDto {
   gender = 'MALE';
   @ApiProperty()
   picture = '';
+  @ApiProperty()
+  capability?: keyof typeof Capability;
+
   email = '';
 }

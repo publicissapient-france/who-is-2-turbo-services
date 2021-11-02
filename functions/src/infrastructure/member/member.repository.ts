@@ -18,6 +18,7 @@ import Firestore = firestore.Firestore;
 import CollectionReference = firestore.CollectionReference;
 import FieldValue = firestore.FieldValue;
 import sharp from 'sharp';
+import { Capability } from "../../domain/model/Capability";
 
 export class UserNotFoundError {
   readonly message: string;
@@ -74,6 +75,7 @@ export class MemberRepository implements MemberRepositorySpi {
       firstName_unaccent: profile.firstName.normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
       lastName: profile.lastName,
       gender: profile.gender,
+      capability: profile.capability && Capability[profile.capability],
       picture: memberWithPictureDocs.picture,
     });
     await this.updatePicture(
@@ -83,7 +85,7 @@ export class MemberRepository implements MemberRepositorySpi {
     );
   }
 
-  private async updatePicture(id: string, fileName: string, pictureBase64: string) {
+  private async updatePicture(id: string, fileName: string, pictureBase64?: string) {
     if (pictureBase64 != undefined) {
       await this.deleteImage(fileName);
       const newFileName = await this.addImage(fileName, pictureBase64);
@@ -210,6 +212,7 @@ export class MemberRepository implements MemberRepositorySpi {
       lastName: newProfile.lastName,
       email: newProfile.email,
       gender: newProfile.gender,
+      capability: newProfile.capability && Capability[newProfile.capability],
     } as MemberWithPicture;
 
     const { id } = await this.membersCollection.add(member);
