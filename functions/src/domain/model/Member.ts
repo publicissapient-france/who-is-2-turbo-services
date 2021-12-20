@@ -2,6 +2,7 @@ import { StorageMeta } from './StorageMeta';
 import { Gender } from './Gender';
 import { Role } from './Role';
 import { Capability } from './Capability';
+import {GameResult} from "../../../lib/domain/model/Member";
 
 export type Member = StorageMeta & {
   firstName: string;
@@ -18,9 +19,9 @@ export type Member = StorageMeta & {
 
 export type MemberWithPicture = Member & { picture: string };
 
-export type MemberWithScore = Member & { score: Score };
+export type MemberWithScore = MemberWithPicture & { score: Score };
 
-export type MemberWithGameTypeScore = Member & { score: GameResult };
+export type MemberWithGameTypeScore = MemberWithPicture & { score: GameResult };
 
 export type Score = { [id: string]: GameResult };
 

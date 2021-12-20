@@ -147,7 +147,11 @@ export class MemberRepository implements MemberRepositorySpi {
     return membersWithMorePoints.docs.length + membersWithBetterTime.docs.length + 1;
   }
 
-  async updateMemberScore(email: string, gameResult: GameResult, gameType: GameType): Promise<void> {
+  async updateMemberScore(
+    email: string,
+    gameResult: GameResult,
+    gameType: GameType,
+  ): Promise<void> {
     const docs = await this.getMemberByMailDocs(email);
     if (docs.docs.length != 0) {
       const { id, score } = docs.docs[0].data() as Member;
@@ -171,8 +175,20 @@ export class MemberRepository implements MemberRepositorySpi {
       .orderBy(`score.${gameType}.count`, 'desc')
       .orderBy(`score.${gameType}.time`, 'asc')
       .get();
-    const membersScore = members.docs.map((member) => member.data() as MemberWithScore);
-    return membersScore.filter((member) => member.score[`${gameType}`] != undefined);
+    const membersScore = members.docs
+      .map((member) => member.data() as MemberWithScore)
+      .filter((member) => member.score[`${gameType}`] != undefined);
+    const leaderboard = [];
+    for (const member of membersScore) {
+      const { firstName, lastName, picture, score } = member as MemberWithScore;
+      leaderboard.push({
+        firstName,
+        lastName,
+        picture: picture ? await this.generatePrivatePictureUrl(picture) : '',
+        score,
+      } as MemberWithScore);
+    }
+    return leaderboard;
   }
 
   async deleteScores(): Promise<number> {

@@ -32,6 +32,7 @@ export class MembersService implements MembersApi {
         ({
           ...member,
           score: member.score[gameType] || 0,
+          picture: member.picture,
         } as MemberWithGameTypeScore),
     );
   }
