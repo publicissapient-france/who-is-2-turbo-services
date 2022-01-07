@@ -13,12 +13,11 @@ import { Profile } from '../model/Profile';
 import { Gender } from '../model/Gender';
 import { GameType } from '../model/GameType';
 import { Role } from '../model/Role';
-import { Capability } from "../model/Capability";
+import { Capability } from '../model/Capability';
 
 @Injectable()
 export class MembersService implements MembersApi {
-  constructor(@Inject('MemberRepositorySpi') private memberRepositorySpi: MemberRepositorySpi) {
-  }
+  constructor(@Inject('MemberRepositorySpi') private memberRepositorySpi: MemberRepositorySpi) {}
 
   async fetchAll(): Promise<MemberWithPicture[]> {
     return await this.memberRepositorySpi.loadGalleryMembers();
@@ -101,7 +100,7 @@ export class MembersService implements MembersApi {
       pictureBase64: picture64,
       capability: profileDto.capability && Capability[profileDto.capability],
       arrivalDate: profileDto.arrivalDate,
-    }
+    };
   }
 }
 

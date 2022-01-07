@@ -5,7 +5,7 @@ import { SeriesScore } from '../model/SeriesScore';
 import { GameRepositorySpi } from '../GameRepositorySpi';
 import { MemberRepositorySpi } from '../MemberRepositorySpi';
 import { shuffle } from 'lodash';
-import { Member, MemberWithPicture } from '../model/Member';
+import { isScoreBetter, Member, MemberWithPicture } from '../model/Member';
 import { Question } from '../model/Question';
 import { Proposition } from '../model/Proposition';
 import { GameType } from '../model/GameType';
@@ -61,45 +61,29 @@ export class GameService implements GameApi {
     if (isUndefined(gameType) || isUndefined(game.createdAt) || isUndefined(game.readAt)) {
       throw new GameTypeException();
     }
-    const currentGameScoreCount = game.solutions.filter(
+    const gameCorrectAnswers = game.solutions.filter(
       (solution, index) => solution === answers[index],
     ).length;
-    const currentGameDuration = game.readAt.getTime() - game.createdAt.getTime();
-    const currentScore = {
-      count: currentGameScoreCount,
-      time: currentGameDuration,
-    };
+    const gameDuration = game.readAt.getTime() - game.createdAt.getTime();
 
-    const betterScoresInLeaderboard = await this.memberRepositorySpi.getBetterScoreMembersCount(
-      currentScore,
-      gameType,
-    );
-    const memberPreviousBestScore = await this.memberRepositorySpi.getMemberScoreByGameType(
-      email,
-      gameType,
-    );
-
-    const isNewScoreBetter =
-      memberPreviousBestScore && memberPreviousBestScore.count < currentGameScoreCount;
-    const isNewTimeWithSameScoreBetter =
-      memberPreviousBestScore &&
-      memberPreviousBestScore.count === currentGameScoreCount &&
-      memberPreviousBestScore.time > currentGameDuration;
-
-    if (isUndefined(memberPreviousBestScore) || isNewScoreBetter || isNewTimeWithSameScoreBetter) {
-      this.memberRepositorySpi.updateMemberScore(
-        email,
-        currentGameScoreCount,
-        currentGameDuration,
-        gameType,
-      );
+    const currentScore = { count: gameCorrectAnswers, time: gameDuration };
+    const currentRank = await this.memberRepositorySpi.getRank(currentScore, gameType);
+    const memberBestScore = await this.memberRepositorySpi.getMemberScore(email, gameType);
+    const isCurrentScoreBetter =
+      memberBestScore !== undefined && isScoreBetter(currentScore, memberBestScore);
+    if (isUndefined(memberBestScore) || isCurrentScoreBetter) {
+      this.memberRepositorySpi.updateMemberScore(email, currentScore, gameType);
     }
-    return {
-      solutions: game.solutions,
-      previousBestScore: memberPreviousBestScore,
-      currentScore: currentScore,
-      betterScoresInLeaderboard: betterScoresInLeaderboard,
-    };
+
+    const baseSeriesScore = { solutions: game.solutions, score: currentScore, rank: currentRank };
+    if (isUndefined(memberBestScore)) {
+      return baseSeriesScore;
+    } else if (isCurrentScoreBetter) {
+      return { ...baseSeriesScore, bestScore: currentScore, bestRank: currentRank };
+    } else {
+      const memberBestRank = await this.memberRepositorySpi.getRank(memberBestScore, gameType);
+      return { ...baseSeriesScore, bestScore: memberBestScore, bestRank: memberBestRank };
+    }
   }
 
   private async generateQuestion(

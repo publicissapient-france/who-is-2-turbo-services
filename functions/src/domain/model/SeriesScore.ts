@@ -2,7 +2,8 @@ import { ScoreResult } from './Member';
 
 export type SeriesScore = {
   solutions: number[];
-  previousBestScore?: ScoreResult;
-  currentScore: ScoreResult;
-  betterScoresInLeaderboard: number;
+  score: ScoreResult;
+  rank: number;
+  bestScore?: ScoreResult;
+  bestRank?: number;
 };

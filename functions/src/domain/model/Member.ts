@@ -1,7 +1,7 @@
 import { StorageMeta } from './StorageMeta';
 import { Gender } from './Gender';
 import { Role } from './Role';
-import { Capability } from "./Capability";
+import { Capability } from './Capability';
 
 export type Member = StorageMeta & {
   firstName: string;
@@ -28,3 +28,9 @@ export type ScoreResult = {
   count: number;
   time: number;
 };
+
+export function isScoreBetter(score: ScoreResult, other: ScoreResult): boolean {
+  const hasBetterCount = score.count > other.count;
+  const hasSameCountButBetterTime = score.count === other.count && score.time < other.time;
+  return hasBetterCount || hasSameCountButBetterTime;
+}

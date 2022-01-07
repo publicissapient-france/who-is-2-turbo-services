@@ -9,11 +9,11 @@ export interface MemberRepositorySpi {
 
   loadGalleryMembers(): Promise<MemberWithPicture[]>;
 
-  getMemberScoreByGameType(email: string, gameType: GameType): Promise<ScoreResult | undefined>;
+  getMemberScore(email: string, gameType: GameType): Promise<ScoreResult | undefined>;
 
-  getBetterScoreMembersCount(score: ScoreResult, gameType: GameType): Promise<number>;
+  getRank(score: ScoreResult, gameType: GameType): Promise<number>;
 
-  updateMemberScore(email: string, score: number, gameTime: number, gameType: GameType): void;
+  updateMemberScore(email: string, score: ScoreResult, gameType: GameType): void;
 
   getMembersScores(gameType: GameType): Promise<MemberWithScore[]>;
 
