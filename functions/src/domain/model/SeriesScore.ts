@@ -1,9 +1,9 @@
-import { ScoreResult } from './Member';
+import { GameResult } from './Member';
 
 export type SeriesScore = {
   solutions: number[];
-  score: ScoreResult;
+  score: GameResult;
   rank: number;
-  bestScore?: ScoreResult;
+  bestScore?: GameResult;
   bestRank?: number;
 };

@@ -20,17 +20,11 @@ export type MemberWithPicture = Member & { picture: string };
 
 export type MemberWithScore = Member & { score: Score };
 
-export type MemberWithGameTypeScore = Member & { score: ScoreResult };
+export type MemberWithGameTypeScore = Member & { score: GameResult };
 
-export type Score = { [id: string]: ScoreResult };
+export type Score = { [id: string]: GameResult };
 
-export type ScoreResult = {
+export type GameResult = {
   count: number;
   time: number;
 };
-
-export function isScoreBetter(score: ScoreResult, other: ScoreResult): boolean {
-  const hasBetterCount = score.count > other.count;
-  const hasSameCountButBetterTime = score.count === other.count && score.time < other.time;
-  return hasBetterCount || hasSameCountButBetterTime;
-}

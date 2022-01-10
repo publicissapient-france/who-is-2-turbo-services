@@ -5,7 +5,7 @@ import {
   MemberWithPicture,
   MemberWithScore,
   Score,
-  ScoreResult,
+  GameResult,
 } from '../../domain/model/Member';
 import * as admin from 'firebase-admin';
 import { MemberConverter } from './MemberConverter';
@@ -123,7 +123,7 @@ export class MemberRepository implements MemberRepositorySpi {
     return url;
   }
 
-  async getMemberScore(email: string, gameType: GameType): Promise<ScoreResult | undefined> {
+  async getMemberScore(email: string, gameType: GameType): Promise<GameResult | undefined> {
     const docs = await this.membersCollection
       .where('email', '==', email)
       .where(`score.${gameType}`, '!=', '')
@@ -135,26 +135,26 @@ export class MemberRepository implements MemberRepositorySpi {
     } else return undefined;
   }
 
-  async getRank(score: ScoreResult, gameType: GameType): Promise<number> {
+  async getRank(gameResult: GameResult, gameType: GameType): Promise<number> {
     const membersWithMorePoints = await this.membersCollection
-      .where(`score.${gameType}.count`, '>', score.count)
+      .where(`score.${gameType}.count`, '>', gameResult.count)
       .get();
     const membersWithBetterTime = await this.membersCollection
-      .where(`score.${gameType}.count`, '==', score.count)
-      .where(`score.${gameType}.time`, '<', score.time)
+      .where(`score.${gameType}.count`, '==', gameResult.count)
+      .where(`score.${gameType}.time`, '<', gameResult.time)
       .get();
 
     return membersWithMorePoints.docs.length + membersWithBetterTime.docs.length + 1;
   }
 
-  async updateMemberScore(email: string, gameScore: ScoreResult, type: GameType): Promise<void> {
+  async updateMemberScore(email: string, gameResult: GameResult, gameType: GameType): Promise<void> {
     const docs = await this.getMemberByMailDocs(email);
     if (docs.docs.length != 0) {
       const { id, score } = docs.docs[0].data() as Member;
       const updatedScore: Score = score ? { ...score } : {};
-      updatedScore[`${type}`] = {
-        count: gameScore.count,
-        time: gameScore.time,
+      updatedScore[`${gameType}`] = {
+        count: gameResult.count,
+        time: gameResult.time,
       };
       await this.membersCollection.doc(id).update({
         score: updatedScore,

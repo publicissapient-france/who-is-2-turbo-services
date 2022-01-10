@@ -5,7 +5,7 @@ import { SeriesScore } from '../model/SeriesScore';
 import { GameRepositorySpi } from '../GameRepositorySpi';
 import { MemberRepositorySpi } from '../MemberRepositorySpi';
 import { shuffle } from 'lodash';
-import { isScoreBetter, Member, MemberWithPicture } from '../model/Member';
+import { GameResult, Member, MemberWithPicture } from '../model/Member';
 import { Question } from '../model/Question';
 import { Proposition } from '../model/Proposition';
 import { GameType } from '../model/GameType';
@@ -118,6 +118,12 @@ export class GameService implements GameApi {
     return { firstName, lastName };
   }
 }
+
+export const isScoreBetter = (gameResult: GameResult, otherGameResult: GameResult) => {
+  const hasBetterCount = gameResult.count > otherGameResult.count;
+  const hasSameCountButBetterTime = gameResult.count === otherGameResult.count && gameResult.time < otherGameResult.time;
+  return hasBetterCount || hasSameCountButBetterTime;
+};
 
 export class GameTypeException {
   readonly message: string;
