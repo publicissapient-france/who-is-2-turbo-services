@@ -5,7 +5,7 @@ import {
   MemberWithPicture,
   MemberWithScore,
   Score,
-  ScoreResult,
+  GameResult,
 } from '../../domain/model/Member';
 import * as admin from 'firebase-admin';
 import { MemberConverter } from './MemberConverter';
@@ -18,7 +18,7 @@ import Firestore = firestore.Firestore;
 import CollectionReference = firestore.CollectionReference;
 import FieldValue = firestore.FieldValue;
 import sharp from 'sharp';
-import { Capability } from "../../domain/model/Capability";
+import { Capability } from '../../domain/model/Capability';
 
 export class UserNotFoundError {
   readonly message: string;
@@ -66,7 +66,7 @@ export class MemberRepository implements MemberRepositorySpi {
     return memberWithPictureDocs.docs[0].data() as MemberWithPicture;
   }
 
-  async updateProfile(profile: Profile) {
+  async updateProfile(profile: Profile): Promise<void> {
     const memberWithPictureDocs = await this.getMemberWithPictureByEmail(profile.email);
 
     await this.membersCollection.doc(memberWithPictureDocs.id).update({
@@ -123,10 +123,7 @@ export class MemberRepository implements MemberRepositorySpi {
     return url;
   }
 
-  async getMemberScoreByGameType(
-    email: string,
-    gameType: GameType,
-  ): Promise<ScoreResult | undefined> {
+  async getMemberScore(email: string, gameType: GameType): Promise<GameResult | undefined> {
     const docs = await this.membersCollection
       .where('email', '==', email)
       .where(`score.${gameType}`, '!=', '')
@@ -138,26 +135,26 @@ export class MemberRepository implements MemberRepositorySpi {
     } else return undefined;
   }
 
-  async getBetterScoreMembersCount(score: ScoreResult, gameType: GameType): Promise<number> {
+  async getRank(gameResult: GameResult, gameType: GameType): Promise<number> {
     const membersWithMorePoints = await this.membersCollection
-      .where(`score.${gameType}.count`, '>', score.count)
+      .where(`score.${gameType}.count`, '>', gameResult.count)
       .get();
     const membersWithBetterTime = await this.membersCollection
-      .where(`score.${gameType}.count`, '==', score.count)
-      .where(`score.${gameType}.time`, '<', score.time)
+      .where(`score.${gameType}.count`, '==', gameResult.count)
+      .where(`score.${gameType}.time`, '<', gameResult.time)
       .get();
 
-    return membersWithMorePoints.docs.length + membersWithBetterTime.docs.length;
+    return membersWithMorePoints.docs.length + membersWithBetterTime.docs.length + 1;
   }
 
-  async updateMemberScore(email: string, gameScore: number, gameTime: number, gameType: GameType) {
+  async updateMemberScore(email: string, gameResult: GameResult, gameType: GameType): Promise<void> {
     const docs = await this.getMemberByMailDocs(email);
     if (docs.docs.length != 0) {
       const { id, score } = docs.docs[0].data() as Member;
       const updatedScore: Score = score ? { ...score } : {};
       updatedScore[`${gameType}`] = {
-        count: gameScore,
-        time: gameTime,
+        count: gameResult.count,
+        time: gameResult.time,
       };
       await this.membersCollection.doc(id).update({
         score: updatedScore,
@@ -235,7 +232,7 @@ export class MemberRepository implements MemberRepositorySpi {
     return id;
   }
 
-  async addImage(id: string, picture: string) {
+  async addImage(id: string, picture: string): Promise<string> {
     const contentType = MemberRepository.base64MimeType(picture) || 'image/webp';
     const fileName = `${id}.${contentType.split('/')[1]}`;
     const file = await admin.storage().bucket().file(fileName);

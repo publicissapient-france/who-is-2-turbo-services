@@ -1,4 +1,4 @@
-import { MemberWithPicture, MemberWithScore, ScoreResult } from './model/Member';
+import { MemberWithPicture, MemberWithScore, GameResult } from './model/Member';
 import { Profile } from './model/Profile';
 import { GameType } from './model/GameType';
 import { Role } from './model/Role';
@@ -9,11 +9,11 @@ export interface MemberRepositorySpi {
 
   loadGalleryMembers(): Promise<MemberWithPicture[]>;
 
-  getMemberScoreByGameType(email: string, gameType: GameType): Promise<ScoreResult | undefined>;
+  getMemberScore(email: string, gameType: GameType): Promise<GameResult | undefined>;
 
-  getBetterScoreMembersCount(score: ScoreResult, gameType: GameType): Promise<number>;
+  getRank(score: GameResult, gameType: GameType): Promise<number>;
 
-  updateMemberScore(email: string, score: number, gameTime: number, gameType: GameType): void;
+  updateMemberScore(email: string, score: GameResult, gameType: GameType): void;
 
   getMembersScores(gameType: GameType): Promise<MemberWithScore[]>;
 

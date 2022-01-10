@@ -66,12 +66,13 @@ export class GameController {
       answers.email,
     );
     return {
-      correct: seriesScore.currentScore.count,
+      correct: seriesScore.score.count,
       total: seriesScore.solutions.length,
       solutions: seriesScore.solutions,
-      previousBestScore: seriesScore.previousBestScore,
-      currentScore: seriesScore.currentScore,
-      betterScoresInLeaderboard: seriesScore.betterScoresInLeaderboard,
+      rank: seriesScore.rank,
+      score: seriesScore.score,
+      bestRank: seriesScore.bestRank,
+      bestScore: seriesScore.bestScore,
     } as SeriesScoreDto;
   }
 }

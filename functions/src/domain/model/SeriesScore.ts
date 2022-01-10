@@ -1,8 +1,9 @@
-import { ScoreResult } from './Member';
+import { GameResult } from './Member';
 
 export type SeriesScore = {
   solutions: number[];
-  previousBestScore?: ScoreResult;
-  currentScore: ScoreResult;
-  betterScoresInLeaderboard: number;
+  score: GameResult;
+  rank: number;
+  bestScore?: GameResult;
+  bestRank?: number;
 };

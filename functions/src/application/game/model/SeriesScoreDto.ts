@@ -8,10 +8,12 @@ export class SeriesScoreDto {
   total = 0;
   @ApiProperty()
   solutions: number[] = [];
-  @ApiProperty({ type: ScoreResultDto })
-  previousBestScore?: ScoreResultDto;
-  @ApiProperty({ type: ScoreResultDto })
-  currentScore: ScoreResultDto = new ScoreResultDto();
   @ApiProperty()
-  betterScoresInLeaderboard = 0;
+  rank = 0;
+  @ApiProperty({ type: ScoreResultDto })
+  score: ScoreResultDto = new ScoreResultDto();
+  @ApiProperty()
+  bestRank?: number;
+  @ApiProperty({ type: ScoreResultDto })
+  bestScore?: ScoreResultDto;
 }
