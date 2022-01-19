@@ -108,3 +108,6 @@ dist
 
 # Env
 .envrc
+
+# nodenv
+.node-version

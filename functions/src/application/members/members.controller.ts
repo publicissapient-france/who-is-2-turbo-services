@@ -64,9 +64,10 @@ export class MembersController {
   ): Promise<LeaderboardMemberDto[]> {
     const gameType = (<never>GameType)[gameTypeQuery];
     const leaderboard = await this.membersApi.fetchLeaderboard(gameType);
-    return leaderboard.map(({ firstName, lastName, score }) => ({
+    return leaderboard.map(({ firstName, lastName, picture, score }) => ({
       firstName,
       lastName,
+      picture,
       score,
     }));
   }
