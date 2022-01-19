@@ -2,7 +2,6 @@ import { StorageMeta } from './StorageMeta';
 import { Gender } from './Gender';
 import { Role } from './Role';
 import { Capability } from './Capability';
-import {GameResult} from "../../../lib/domain/model/Member";
 
 export type Member = StorageMeta & {
   firstName: string;
