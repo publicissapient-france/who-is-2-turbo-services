@@ -1,14 +1,18 @@
 
 #
-export_entities„Ñ«„¤æóµéĞ‡¤æó
-membersoutput-0output-1á
+export_entities±­„ğ£×õÔæÅ‘¤×õ°
+membersoutput-0output-1output-2†
 members
 lastName
 gender
-firstName_unaccent
-	firstName
+firstName_unaccent
+arrivalDate
+	firstName
+
+capability
 email
-picture[
+picture
+id[
 scoreRP%
 5
 count
@@ -17,7 +21,6 @@
 20
 count
 
-timed_20
-id
+timed_20
 
 role

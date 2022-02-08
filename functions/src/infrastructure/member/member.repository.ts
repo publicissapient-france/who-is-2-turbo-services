@@ -103,11 +103,12 @@ export class MemberRepository implements MemberRepositorySpi {
 
     const gallery = [];
     for (const doc of documents.docs) {
-      const { picture, firstName, lastName } = doc.data() as MemberWithPicture;
+      const { picture, firstName, lastName, capability } = doc.data() as MemberWithPicture;
       gallery.push({
         firstName,
         lastName,
         picture: await this.generatePrivatePictureUrl(picture),
+        capability: capability && Capability[capability],
       } as MemberWithPicture);
     }
     return gallery;
