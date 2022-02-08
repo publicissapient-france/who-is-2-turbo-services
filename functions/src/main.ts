@@ -19,6 +19,7 @@ const createNestServer = async (expressInstance: Express) => {
     origin: process.env.CORS_ORIGINS?.split(',') || [
       'http://localhost:8000',
       'https://whois.publicissapient.fr',
+      '/^https:\/\/who-is-2-turbo--preview-.*\.web\.app$/'
     ],
   });
 
