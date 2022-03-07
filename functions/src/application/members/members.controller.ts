@@ -42,11 +42,12 @@ export class MembersController {
   @ApiResponse({ status: 500, description: 'Internal server error.' })
   async loadGallery(): Promise<MemberDto[]> {
     const members = await this.membersApi.fetchAll();
-    return members.map(({ firstName, lastName, picture, capability }) => ({
+    return members.map(({ firstName, lastName, picture, capability, arrivalDate }) => ({
       firstName,
       lastName,
       picture,
       capability,
+      arrivalDate,
     }));
   }
 
