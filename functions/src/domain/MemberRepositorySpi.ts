@@ -5,6 +5,7 @@ import { Role } from './model/Role';
 
 export interface MemberRepositorySpi {
   getAllWithPicture(): Promise<MemberWithPicture[]>;
+
   generatePrivatePictureUrl(pictureName: string): Promise<string>;
 
   loadGalleryMembers(): Promise<MemberWithPicture[]>;
@@ -26,4 +27,8 @@ export interface MemberRepositorySpi {
   deleteScores(): Promise<number>;
 
   getMemberRole(email: string): Promise<Role | undefined>;
+
+  findUserByPictureGalleryToken(token: string): Promise<MemberWithPicture | undefined>;
+
+  findUserByGameGalleryToken(token: string): Promise<MemberWithPicture | undefined>;
 }

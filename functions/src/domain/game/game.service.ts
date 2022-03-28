@@ -103,9 +103,7 @@ export class GameService implements GameApi {
       ...otherMembers.map(GameService.mapMemberToProposition),
     ]);
 
-    const questionImageUrl = await this.memberRepositorySpi.generatePrivatePictureUrl(
-      selectedMember.picture,
-    );
+    const questionImageUrl = `/members/pictures/${selectedMember.pictureGame}`;
 
     return {
       question: questionImageUrl,

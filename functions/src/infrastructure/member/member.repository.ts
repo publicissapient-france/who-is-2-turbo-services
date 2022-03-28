@@ -19,6 +19,7 @@ import CollectionReference = firestore.CollectionReference;
 import FieldValue = firestore.FieldValue;
 import sharp from 'sharp';
 import { Capability } from '../../domain/model/Capability';
+import uuid from "short-uuid";
 
 export class UserNotFoundError {
   readonly message: string;
@@ -90,7 +91,11 @@ export class MemberRepository implements MemberRepositorySpi {
     if (pictureBase64 != undefined) {
       await this.deleteImage(fileName);
       const newFileName = await this.addImage(fileName, pictureBase64);
-      await this.membersCollection.doc(id).update({ picture: newFileName });
+      await this.membersCollection.doc(id).update({
+        picture: newFileName,
+        pictureGallery: uuid.generate(),
+        pictureGame: uuid.generate(),
+      });
     }
   }
 
@@ -103,11 +108,17 @@ export class MemberRepository implements MemberRepositorySpi {
 
     const gallery = [];
     for (const doc of documents.docs) {
-      const { picture, firstName, lastName, capability, arrivalDate } = doc.data() as MemberWithPicture;
+      const {
+        pictureGallery,
+        firstName,
+        lastName,
+        capability,
+        arrivalDate
+      } = doc.data() as MemberWithPicture;
       gallery.push({
         firstName,
         lastName,
-        picture: await this.generatePrivatePictureUrl(picture),
+        picture: `/members/pictures/${pictureGallery}`,
         capability: capability && Capability[capability],
         arrivalDate,
       } as MemberWithPicture);
@@ -182,11 +193,11 @@ export class MemberRepository implements MemberRepositorySpi {
       .filter((member) => member.score[`${gameType}`] != undefined);
     const leaderboard = [];
     for (const member of membersScore) {
-      const { firstName, lastName, picture, score } = member as MemberWithScore;
+      const { firstName, lastName, pictureGallery, score } = member as MemberWithScore;
       leaderboard.push({
         firstName,
         lastName,
-        picture: picture ? await this.generatePrivatePictureUrl(picture) : '',
+        picture: pictureGallery ? `/members/pictures/${pictureGallery}` : undefined,
         score,
       } as MemberWithScore);
     }
@@ -267,7 +278,7 @@ export class MemberRepository implements MemberRepositorySpi {
 
   async deleteImage(fileName: string) {
     const file = await admin.storage().bucket().file(fileName);
-    file.delete();
+    await file.delete();
   }
 
   private static base64MimeType(encoded: string): string | undefined {
@@ -277,5 +288,23 @@ export class MemberRepository implements MemberRepositorySpi {
       result = mime[1];
     }
     return result;
+  }
+
+  async findUserByGameGalleryToken(token: string): Promise<MemberWithPicture | undefined> {
+    return this.findUserByPictureToken('pictureGame', token);
+  }
+
+  async findUserByPictureGalleryToken(token: string): Promise<MemberWithPicture | undefined> {
+    return this.findUserByPictureToken('pictureGallery', token);
+  }
+
+  private async findUserByPictureToken(tokenName: string, token: string) {
+    const members = (await this.membersCollection.where(tokenName, '==', token).limit(1).get())
+      .docs
+      .map((member) => member.data() as MemberWithPicture);
+    if (members.length) {
+      return members[0];
+    }
+    return undefined;
   }
 }

@@ -4,10 +4,10 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Inject,
+  Inject, Param,
   Post,
   Put,
-  Query,
+  Query, Res,
   UseFilters,
   UsePipes,
   ValidationPipe,
@@ -27,10 +27,12 @@ import {
   NotAllowedExceptionFilter,
 } from './members.http-exception.filter';
 import { GameType } from '../../domain/model/GameType';
+import { Response } from "express";
 
 @Controller('members')
 export class MembersController {
-  constructor(@Inject('MembersApi') private membersApi: MembersApi) {}
+  constructor(@Inject('MembersApi') private membersApi: MembersApi) {
+  }
 
   @Get()
   @ApiCreatedResponse({
@@ -124,5 +126,28 @@ export class MembersController {
   @UseFilters(new MemberNotFoundExceptionFilter())
   async putProfile(@Body() me: ProfileDto) {
     this.membersApi.updateProfile(me);
+  }
+
+  @Get('pictures/:id')
+  @HttpCode(HttpStatus.OK)
+  @ApiCreatedResponse({
+    description: 'Get member picture by token',
+  })
+  @ApiResponse({ status: 404, description: 'User\'s picture not found.' })
+  @ApiResponse({ status: 500, description: 'Internal server error.' })
+  async getPicture(@Param() params: { id: string }, @Res() res: Response) {
+    const picture = await this.membersApi.getPicture(params.id);
+    if (picture) {
+      res.set({
+        'Content-Type': picture.params.contentType,
+        ETag: picture.params.id,
+        'Cache-Control': `private, max-age=${picture.params.cacheDuration}`,
+        'X-Robots-Tag': 'noindex',
+      })
+
+      picture.picture.pipe(res);
+    } else {
+      res.status(HttpStatus.NOT_FOUND).send();
+    }
   }
 }

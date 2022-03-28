@@ -10,6 +10,8 @@ export class FirebaseTokenMiddleware implements NestMiddleware {
   }
 
   private static async validateIdToken(req: Request, res: Response, next: NextFunction) {
+    if (req.baseUrl.startsWith('/members/pictures/')) { next(); return; }
+
     if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) {
       functions.logger.error(
         'No Firebase ID token was passed as a Bearer token in the Authorization header.',
@@ -31,7 +33,7 @@ export class FirebaseTokenMiddleware implements NestMiddleware {
 
     try {
       const decodedIdToken = await admin.auth().verifyIdToken(idToken);
-      if (decodedIdToken.email?.includes('publicissapient')) {
+      if (decodedIdToken.email?.endsWith('@publicissapient.com')) {
         req.body.email = decodedIdToken.email;
         next();
         return;

@@ -14,10 +14,16 @@ import { Gender } from '../model/Gender';
 import { GameType } from '../model/GameType';
 import { Role } from '../model/Role';
 import { Capability } from '../model/Capability';
+import { Readable } from "stream";
+import { PictureRepositorySpi } from "../PictureRepositorySpi";
 
 @Injectable()
 export class MembersService implements MembersApi {
-  constructor(@Inject('MemberRepositorySpi') private memberRepositorySpi: MemberRepositorySpi) {}
+  constructor(
+    @Inject('MemberRepositorySpi') private memberRepositorySpi: MemberRepositorySpi,
+    @Inject('PictureRepositorySpi') private pictureRepositorySpi: PictureRepositorySpi,
+  ) {
+  }
 
   async fetchAll(): Promise<MemberWithPicture[]> {
     return await this.memberRepositorySpi.loadGalleryMembers();
@@ -56,7 +62,7 @@ export class MembersService implements MembersApi {
         firstName: member.firstName,
         lastName: member.lastName,
         gender: member.gender,
-        picture: await this.memberRepositorySpi.generatePrivatePictureUrl(member.picture),
+        picture: `/members/pictures/${member.pictureGallery}`,
         capability: member.capability && Capability[member.capability],
         arrivalDate: member.arrivalDate,
       } as EditableProfileDto;
@@ -102,6 +108,45 @@ export class MembersService implements MembersApi {
       capability: profileDto.capability && Capability[profileDto.capability],
       arrivalDate: profileDto.arrivalDate,
     };
+  }
+
+  private readonly _oneYear = 31536000;
+
+  async getPicture(token: string): Promise<{ picture: Readable; params: { contentType: string; id: string; cacheDuration: number } } | undefined> {
+    let member = await this.memberRepositorySpi.findUserByGameGalleryToken(token);
+    if (!member) {
+      member = await this.memberRepositorySpi.findUserByPictureGalleryToken(token);
+    }
+    if (member) {
+      const picture = await this.pictureRepositorySpi.get(member.picture);
+      return {
+        picture: picture.picture,
+        params: {
+          contentType: picture.contentType,
+          id: token,
+          cacheDuration: this._oneYear,
+        }
+      }
+    }
+    return undefined;
+    // let user = await admin.firestore().collection('members').where('pictureGallery', '==', params.id).limit(1).get();
+    // if (user.docs.length == 0) {
+    //   user = await admin.firestore().collection('members').where('pictureGame', '==', params.id).limit(1).get();
+    // }
+    // if (user.docs.length == 0) {
+    //   res.status(HttpStatus.NOT_FOUND).send();
+    // } else {
+    //   const file = await admin.storage().bucket().file(user.docs[0].get('picture'));
+    //   const metadata = await file.getMetadata();
+    //
+    //   res.set({
+    //     'Content-Type': metadata[0].contentType,
+    //     ETag: params.id,
+    //     'Cache-Control': 'private, max-age=31536000',
+    //   })
+    //
+    //   file.createReadStream().pipe(res);
+    // }
   }
 }
 
