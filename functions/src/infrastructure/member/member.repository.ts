@@ -256,7 +256,11 @@ export class MemberRepository implements MemberRepositorySpi {
     const { id } = await this.membersCollection.add(member);
     if (newProfile.pictureBase64 != undefined) {
       const fileName = await this.addImage(id, newProfile.pictureBase64);
-      await this.membersCollection.doc(id).update({ picture: fileName });
+      await this.membersCollection.doc(id).update({
+        picture: fileName,
+        pictureGallery: uuid.generate(),
+        pictureGame: uuid.generate(),
+      });
     }
     return id;
   }
