@@ -10,6 +10,8 @@ export type Member = StorageMeta & {
   email: string;
   gender: Gender;
   picture?: string;
+  pictureGallery?: string;
+  pictureGame?: string;
   score?: Score;
   role?: Role;
   capability?: Capability;

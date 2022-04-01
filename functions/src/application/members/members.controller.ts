@@ -5,15 +5,22 @@ import {
   HttpCode,
   HttpStatus,
   Inject,
+  Param,
   Post,
   Put,
-  Query,
+  Query, Res,
   UseFilters,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { MembersApi } from '../../domain/MembersApi';
-import { ApiCreatedResponse, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiQuery,
+  ApiResponse
+} from '@nestjs/swagger';
 import { MemberDto } from './model/MemberDto';
 import { MembersDto } from './model/MembersDto';
 import { LeaderboardMemberDto } from './model/LeaderboardMemberDto';
@@ -27,10 +34,12 @@ import {
   NotAllowedExceptionFilter,
 } from './members.http-exception.filter';
 import { GameType } from '../../domain/model/GameType';
+import { Response } from "express";
 
 @Controller('members')
 export class MembersController {
-  constructor(@Inject('MembersApi') private membersApi: MembersApi) {}
+  constructor(@Inject('MembersApi') private membersApi: MembersApi) {
+  }
 
   @Get()
   @ApiCreatedResponse({
@@ -124,5 +133,27 @@ export class MembersController {
   @UseFilters(new MemberNotFoundExceptionFilter())
   async putProfile(@Body() me: ProfileDto) {
     this.membersApi.updateProfile(me);
+  }
+
+  @Get('pictures/:id')
+  @ApiCreatedResponse({
+    description: 'Get member picture by token',
+  })
+  @ApiNotFoundResponse()
+  @ApiInternalServerErrorResponse()
+  async getPicture(@Param() params: { id: string }, @Res() res: Response) {
+    const picture = await this.membersApi.getPicture(params.id);
+    if (picture) {
+      res.set({
+        'Content-Type': picture.params.contentType,
+        ETag: picture.params.id,
+        'Cache-Control': `private, max-age=${picture.params.cacheDuration}`,
+        'X-Robots-Tag': 'noindex',
+      })
+
+      picture.picture.pipe(res);
+    } else {
+      res.status(HttpStatus.NOT_FOUND).send();
+    }
   }
 }

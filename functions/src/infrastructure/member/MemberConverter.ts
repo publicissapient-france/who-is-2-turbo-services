@@ -13,6 +13,8 @@ export class MemberConverter implements FirestoreDataConverter<Member> {
       lastName: snapshot.get('lastName'),
       gender: Gender[snapshot.get('gender') as keyof typeof Gender],
       picture: snapshot.get('picture'),
+      pictureGallery: snapshot.get('pictureGallery'),
+      pictureGame: snapshot.get('pictureGame'),
       score: snapshot.get('score'),
       role: snapshot.get('role'),
       capability: snapshot.get('capability') && Capability[snapshot.get('capability')],
