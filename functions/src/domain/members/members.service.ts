@@ -129,24 +129,6 @@ export class MembersService implements MembersApi {
       }
     }
     return undefined;
-    // let user = await admin.firestore().collection('members').where('pictureGallery', '==', params.id).limit(1).get();
-    // if (user.docs.length == 0) {
-    //   user = await admin.firestore().collection('members').where('pictureGame', '==', params.id).limit(1).get();
-    // }
-    // if (user.docs.length == 0) {
-    //   res.status(HttpStatus.NOT_FOUND).send();
-    // } else {
-    //   const file = await admin.storage().bucket().file(user.docs[0].get('picture'));
-    //   const metadata = await file.getMetadata();
-    //
-    //   res.set({
-    //     'Content-Type': metadata[0].contentType,
-    //     ETag: params.id,
-    //     'Cache-Control': 'private, max-age=31536000',
-    //   })
-    //
-    //   file.createReadStream().pipe(res);
-    // }
   }
 }
 

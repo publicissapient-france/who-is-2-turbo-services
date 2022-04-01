@@ -78,7 +78,6 @@ describe('GameService', () => {
 
   const mockMemberRepo: MemberRepositorySpi = {
     getAllWithPicture: jest.fn(),
-    generatePrivatePictureUrl: jest.fn(),
     loadGalleryMembers: jest.fn(),
     getMemberScore: jest.fn(),
     getRank: jest.fn(),
@@ -89,6 +88,8 @@ describe('GameService', () => {
     updateProfile: jest.fn,
     deleteScores: jest.fn(),
     getMemberRole: jest.fn(),
+    findUserByPictureGalleryToken: jest.fn(),
+    findUserByGameGalleryToken: jest.fn(),
   };
   const memberRepo: Provider<MemberRepositorySpi> = {
     provide: 'MemberRepositorySpi',
@@ -100,12 +101,8 @@ describe('GameService', () => {
       providers: [gameRepo, memberRepo, GameService],
     }).compile();
 
-    (mockMemberRepo.getAllWithPicture as Mock).mockImplementation((size: number) => {
+    (mockMemberRepo.getAllWithPicture as Mock).mockImplementation(() => {
       return [male1, male2, female1, female2];
-    });
-
-    (mockMemberRepo.generatePrivatePictureUrl as Mock).mockImplementation((picName) => {
-      return Promise.resolve(picName);
     });
 
     (mockGameRepo.saveSeries as Mock).mockImplementation((session) => {
@@ -120,7 +117,7 @@ describe('GameService', () => {
   });
 
   it('should generate a series game', async () => {
-    (mockMemberRepo.getAllWithPicture as Mock).mockImplementation((size: number) => {
+    (mockMemberRepo.getAllWithPicture as Mock).mockImplementation(() => {
       return [male1, male2];
     });
 
@@ -153,7 +150,7 @@ describe('GameService', () => {
   });
 
   it('propositions should have same gender as the question', async () => {
-    (mockMemberRepo.getAllWithPicture as Mock).mockImplementation((size: number) => {
+    (mockMemberRepo.getAllWithPicture as Mock).mockImplementation(() => {
       return [male1, male2, female1, female2];
     });
 

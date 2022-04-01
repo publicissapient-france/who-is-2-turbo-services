@@ -6,8 +6,6 @@ import { Role } from './model/Role';
 export interface MemberRepositorySpi {
   getAllWithPicture(): Promise<MemberWithPicture[]>;
 
-  generatePrivatePictureUrl(pictureName: string): Promise<string>;
-
   loadGalleryMembers(): Promise<MemberWithPicture[]>;
 
   getMemberScore(email: string, gameType: GameType): Promise<GameResult | undefined>;

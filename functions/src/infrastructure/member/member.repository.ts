@@ -126,16 +126,6 @@ export class MemberRepository implements MemberRepositorySpi {
     return gallery;
   }
 
-  async generatePrivatePictureUrl(pictureFile: string): Promise<string> {
-    const file = await admin.storage().bucket().file(pictureFile);
-    const [url] = await file.getSignedUrl({
-      version: 'v4',
-      action: 'read',
-      expires: Date.now() + 15 * 60 * 1000,
-    });
-    return url;
-  }
-
   async getMemberScore(email: string, gameType: GameType): Promise<GameResult | undefined> {
     const docs = await this.membersCollection
       .where('email', '==', email)

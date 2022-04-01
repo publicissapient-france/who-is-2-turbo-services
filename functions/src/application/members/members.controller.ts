@@ -4,7 +4,8 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Inject, Param,
+  Inject,
+  Param,
   Post,
   Put,
   Query, Res,
@@ -13,7 +14,13 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { MembersApi } from '../../domain/MembersApi';
-import { ApiCreatedResponse, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiQuery,
+  ApiResponse
+} from '@nestjs/swagger';
 import { MemberDto } from './model/MemberDto';
 import { MembersDto } from './model/MembersDto';
 import { LeaderboardMemberDto } from './model/LeaderboardMemberDto';
@@ -129,12 +136,11 @@ export class MembersController {
   }
 
   @Get('pictures/:id')
-  @HttpCode(HttpStatus.OK)
   @ApiCreatedResponse({
     description: 'Get member picture by token',
   })
-  @ApiResponse({ status: 404, description: 'User\'s picture not found.' })
-  @ApiResponse({ status: 500, description: 'Internal server error.' })
+  @ApiNotFoundResponse()
+  @ApiInternalServerErrorResponse()
   async getPicture(@Param() params: { id: string }, @Res() res: Response) {
     const picture = await this.membersApi.getPicture(params.id);
     if (picture) {

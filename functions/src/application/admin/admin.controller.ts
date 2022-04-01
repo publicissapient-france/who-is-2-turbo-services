@@ -1,17 +1,20 @@
-import { Controller, HttpCode, HttpStatus, Post, Res } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Res
+} from "@nestjs/common";
 import { Response } from "express";
 import * as admin from "firebase-admin";
 import uuid from "short-uuid";
-import { ApiCreatedResponse, ApiResponse } from "@nestjs/swagger";
+import { ApiCreatedResponse, ApiInternalServerErrorResponse } from "@nestjs/swagger";
 
 @Controller('admin')
 export class AdminController {
 
-  @HttpCode(HttpStatus.OK)
   @ApiCreatedResponse({
     description: 'Rotate picture\'s token for all members',
   })
-  @ApiResponse({ status: 500, description: 'Internal server error.' })
+  @ApiInternalServerErrorResponse()
   @Post('resetPictureTokens')
   async resetPictureTokens(@Res() res: Response) {
     const querySnapshot = await admin.firestore().collection('members').get();
