@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Capability } from "../../../domain/model/Capability";
 
 export class MemberDto {
   @ApiProperty()
@@ -9,7 +8,7 @@ export class MemberDto {
   @ApiProperty()
   picture = '';
   @ApiProperty()
-  capability?: Capability = undefined;
+  capability?: String = undefined;
   @ApiProperty()
   arrivalDate?: Date = undefined;
 }

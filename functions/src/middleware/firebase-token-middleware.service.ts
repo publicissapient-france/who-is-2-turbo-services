@@ -33,7 +33,7 @@ export class FirebaseTokenMiddleware implements NestMiddleware {
 
     try {
       const decodedIdToken = await admin.auth().verifyIdToken(idToken);
-      if (decodedIdToken.email?.endsWith('@publicissapient.com')) {
+      if (decodedIdToken.email?.endsWith(process.env.EMAIL_DOMAIN || '@publicissapient.com')) {
         req.body.email = decodedIdToken.email;
         next();
         return;

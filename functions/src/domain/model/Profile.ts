@@ -1,5 +1,4 @@
 import { Gender } from './Gender';
-import { Capability } from "./Capability";
 
 export type Profile = {
   firstName: string;
@@ -7,6 +6,6 @@ export type Profile = {
   email: string;
   gender: Gender;
   pictureBase64?: string;
-  capability?: Capability;
+  capability?: string;
   arrivalDate?: Date;
 };

@@ -42,4 +42,27 @@ curl -H 'Authorization: Bearer <your token>' http://localhost:5001/who-is-2-turb
 ## Security
 TBD
 
+## Troubleshooting
+
+On M1 you may have this error: 
+> Failed to load function definition from source: Failed to generate manifest from function source: Error:
+Something went wrong installing the "sharp" module
+
+It's due to missing x64 binary.
+
+To add them to your local environment in order to publish to Firebase you can use:
+
+```bash
+npm rebuild --platform=darwin --arch=x64 sharp
+```
+
+## Deploy from local environment to Firebase
+
+> You need the Firebase CLI.
+
+```bash
+firebase login
+firebase use <your project>
+firebase deploy --only functions
+```
 

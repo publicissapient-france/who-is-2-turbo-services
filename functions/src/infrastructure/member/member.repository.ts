@@ -18,7 +18,6 @@ import Firestore = firestore.Firestore;
 import CollectionReference = firestore.CollectionReference;
 import FieldValue = firestore.FieldValue;
 import sharp from 'sharp';
-import { Capability } from '../../domain/model/Capability';
 import uuid from "short-uuid";
 
 export class UserNotFoundError {
@@ -76,7 +75,7 @@ export class MemberRepository implements MemberRepositorySpi {
       firstName_unaccent: profile.firstName.normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
       lastName: profile.lastName,
       gender: profile.gender,
-      capability: profile.capability && Capability[profile.capability],
+      capability: profile.capability,
       picture: memberWithPictureDocs.picture,
       arrivalDate: profile.arrivalDate,
     });
@@ -119,7 +118,7 @@ export class MemberRepository implements MemberRepositorySpi {
         firstName,
         lastName,
         picture: `/members/pictures/${pictureGallery}`,
-        capability: capability && Capability[capability],
+        capability: capability,
         arrivalDate,
       } as MemberWithPicture);
     }
@@ -239,7 +238,7 @@ export class MemberRepository implements MemberRepositorySpi {
       lastName: newProfile.lastName,
       email: newProfile.email,
       gender: newProfile.gender,
-      capability: newProfile.capability && Capability[newProfile.capability],
+      capability: newProfile.capability,
       arrivalDate: newProfile.arrivalDate,
     } as MemberWithPicture;
 
