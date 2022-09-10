@@ -1,6 +1,6 @@
 {
   "projects": {
-    "default": "who-is-2-turbo",
+    "ps": "who-is-2-turbo",
     "thiga": "whois-5d8ab"
   },
   "targets": {},
