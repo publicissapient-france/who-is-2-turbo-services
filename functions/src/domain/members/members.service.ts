@@ -13,7 +13,6 @@ import { Profile } from '../model/Profile';
 import { Gender } from '../model/Gender';
 import { GameType } from '../model/GameType';
 import { Role } from '../model/Role';
-import { Capability } from '../model/Capability';
 import { Readable } from "stream";
 import { PictureRepositorySpi } from "../PictureRepositorySpi";
 
@@ -63,7 +62,7 @@ export class MembersService implements MembersApi {
         lastName: member.lastName,
         gender: member.gender,
         picture: `/members/pictures/${member.pictureGallery}`,
-        capability: member.capability && Capability[member.capability],
+        capability: member.capability,
         arrivalDate: member.arrivalDate,
       } as EditableProfileDto;
     } catch (err) {
@@ -105,7 +104,7 @@ export class MembersService implements MembersApi {
       email: profileDto.email,
       gender: Gender[profileDto.gender as keyof typeof Gender],
       pictureBase64: picture64,
-      capability: profileDto.capability && Capability[profileDto.capability],
+      capability: profileDto.capability,
       arrivalDate: profileDto.arrivalDate,
     };
   }
