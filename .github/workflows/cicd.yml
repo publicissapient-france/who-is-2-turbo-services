@@ -7,7 +7,7 @@ defaults:
 on:
   push:
     branches:
-      - main
+      - feature/allow-cors-for-preview-url
       - build/cli
 jobs:
   cicd:
