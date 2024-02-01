@@ -4,11 +4,8 @@ defaults:
   run:
     working-directory: functions
 
-on:
-  push:
-    branches:
-      - main
-      - build/cli
+on: ['push']
+
 jobs:
   cicd:
     name: Build & Deploy
