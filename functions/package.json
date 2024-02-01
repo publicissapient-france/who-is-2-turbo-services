@@ -16,7 +16,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
   },
   "engines": {
-    "node": "14"
+    "node": "20"
   },
   "main": "lib/main.js",
   "dependencies": {
