@@ -4,11 +4,8 @@ defaults:
   run:
     working-directory: functions
 
-on:
-  push:
-    branches:
-      - main
-      - build/cli
+on: ['push']
+
 jobs:
   cicd:
     name: Build & Deploy
@@ -26,6 +23,7 @@ jobs:
         run: npm run build
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
+        if: success() && github.ref == 'refs/heads/main'
         with:
           args: deploy --only functions
         env:
