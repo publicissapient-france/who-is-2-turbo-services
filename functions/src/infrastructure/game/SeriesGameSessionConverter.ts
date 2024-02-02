@@ -1,5 +1,4 @@
-import { firestore } from 'firebase-admin/lib/firestore';
-import FirestoreDataConverter = firestore.FirestoreDataConverter;
+import { FirestoreDataConverter } from 'firebase-admin/firestore';
 import { SeriesGameSession } from '../../domain/model/SeriesGameSession';
 
 export class SeriesGameSessionConverter implements FirestoreDataConverter<SeriesGameSession> {

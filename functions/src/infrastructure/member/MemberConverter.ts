@@ -1,7 +1,6 @@
 import { Member } from '../../domain/model/Member';
-import { firestore } from 'firebase-admin/lib/firestore';
 import { Gender } from '../../domain/model/Gender';
-import FirestoreDataConverter = firestore.FirestoreDataConverter;
+import { FirestoreDataConverter } from 'firebase-admin/firestore';
 
 export class MemberConverter implements FirestoreDataConverter<Member> {
   fromFirestore(snapshot: FirebaseFirestore.QueryDocumentSnapshot): Member {
