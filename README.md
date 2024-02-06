@@ -1,23 +1,37 @@
 # who-is-2-turbo-services
+
 Who Is 2 Turbo Services
 
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=publicissapient-france_who-is-2-turbo-services&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=publicissapient-france_who-is-2-turbo-services)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=publicissapient-france_who-is-2-turbo-services&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=publicissapient-france_who-is-2-turbo-services)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=publicissapient-france_who-is-2-turbo-services&metric=bugs)](https://sonarcloud.io/summary/new_code?id=publicissapient-france_who-is-2-turbo-services)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=publicissapient-france_who-is-2-turbo-services&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=publicissapient-france_who-is-2-turbo-services)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=publicissapient-france_who-is-2-turbo-services&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=publicissapient-france_who-is-2-turbo-services)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=publicissapient-france_who-is-2-turbo-services&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=publicissapient-france_who-is-2-turbo-services)
+
 ## Prerequisite
+
 - Nodejs
-- npm 
-- firebase-cli 
+- npm
+- firebase-cli
 - nestjs-cli
 
-## How to run locally 
+## How to run locally
+
 ### Prerequisites
+
 #### Retrieve a production token
+
 Since the authentication is not mocked locally, you'll need a real token from production.  
 To get it, launch a game session on `https://whois.publicissapient.fr` and retrieve a bearer token from any requests.
 
 #### Add authentication to Firebase for your local to be allowed
+
 Also since the authentication is production one, your calls need to be authenticated to Firebase.
 This is done automatically by `admin.initializeApp();` method that will check your credentials by default ().
 However, you need to pass these credentials. Detailed procedure can be found [here](https://firebase.google.com/docs/admin/setup#initialize-sdk).  
 TL;DR version :
+
 ```manifest
  - Generate a key from [here](https://console.firebase.google.com/u/0/project/who-is-2-turbo/settings/serviceaccounts/adminsdk)
  - Save the key anywhere you want (please, not in the git project...)
@@ -25,26 +39,30 @@ TL;DR version :
 ```
 
 ### Run  it
+
 ```shell script
 cd functions && npm run dev
 ```
 
 ### Curl it
+
 ```shell
 curl -H 'Authorization: Bearer <your token>' http://localhost:5001/who-is-2-turbo/europe-west1/api/members/me
 ```
 
-### Checkout the application 
- - [swagger-ui](http://localhost:5001/who-is-2-turbo/europe-west1/api/swagger/index.html)
-    - Explore `http://localhost:5001/who-is-2-turbo/europe-west1/api/swagger-json`
-- The data located in folder `functions/mock` are loaded at emulator startup. 
-    
+### Checkout the application
+
+- [swagger-ui](http://localhost:5001/who-is-2-turbo/europe-west1/api/swagger/index.html)
+  - Explore `http://localhost:5001/who-is-2-turbo/europe-west1/api/swagger-json`
+- The data located in folder `functions/mock` are loaded at emulator startup.
+
 ## Security
+
 TBD
 
 ## Troubleshooting
 
-On M1 you may have this error: 
+On M1 you may have this error:
 > Failed to load function definition from source: Failed to generate manifest from function source: Error:
 Something went wrong installing the "sharp" module
 
@@ -65,4 +83,3 @@ firebase login
 firebase use <your project>
 firebase deploy --only functions
 ```
-
