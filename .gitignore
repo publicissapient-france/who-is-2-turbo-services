@@ -112,3 +112,4 @@ dist
 
 # nodenv
 .node-version
+functions/.vscode/

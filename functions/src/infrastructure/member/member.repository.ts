@@ -255,7 +255,7 @@ export class MemberRepository implements MemberRepositorySpi {
   }
 
   async addImage(id: string, picture: string): Promise<string> {
-    const contentType = MemberRepository.base64MimeType(picture) || 'image/webp';
+    const contentType = MemberRepository.base64MimeType(picture) ?? 'image/webp';
     const fileName = `${id}.${contentType.split('/')[1]}`;
     const file = await admin.storage().bucket().file(fileName);
     const fileOptions = {
@@ -277,7 +277,7 @@ export class MemberRepository implements MemberRepositorySpi {
   private static base64MimeType(encoded: string): string | undefined {
     let result;
     const mime = encoded.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,.*/);
-    if (mime && mime.length) {
+    if (mime?.length) {
       result = mime[1];
     }
     return result;
