@@ -8,7 +8,7 @@ export class MemberDto {
   @ApiProperty()
   picture = '';
   @ApiProperty()
-  capability?: String = undefined;
+  capability?: string = undefined;
   @ApiProperty()
   arrivalDate?: Date = undefined;
 }

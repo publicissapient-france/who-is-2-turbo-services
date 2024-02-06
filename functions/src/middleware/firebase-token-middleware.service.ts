@@ -12,7 +12,7 @@ export class FirebaseTokenMiddleware implements NestMiddleware {
   private static async validateIdToken(req: Request, res: Response, next: NextFunction) {
     if (req.baseUrl.startsWith('/members/pictures/')) { next(); return; }
 
-    if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) {
+    if (!req.headers.authorization?.startsWith('Bearer ')) {
       functions.logger.error(
         'No Firebase ID token was passed as a Bearer token in the Authorization header.',
         'Make sure you authorize your request by providing the following HTTP header:',
@@ -23,7 +23,7 @@ export class FirebaseTokenMiddleware implements NestMiddleware {
     }
 
     let idToken;
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    if (req.headers.authorization?.startsWith('Bearer ')) {
       idToken = req.headers.authorization.split('Bearer ')[1];
     } else {
       // No token
