@@ -2,6 +2,7 @@
 
 Who Is 2 Turbo Services
 
+[![ci-cd](https://github.com/publicissapient-france/who-is-2-turbo-services/actions/workflows/cicd.yml/badge.svg)](https://github.com/publicissapient-france/who-is-2-turbo-services/actions/workflows/cicd.yml)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=publicissapient-france_who-is-2-turbo-services&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=publicissapient-france_who-is-2-turbo-services)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=publicissapient-france_who-is-2-turbo-services&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=publicissapient-france_who-is-2-turbo-services)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=publicissapient-france_who-is-2-turbo-services&metric=bugs)](https://sonarcloud.io/summary/new_code?id=publicissapient-france_who-is-2-turbo-services)
