@@ -6,6 +6,7 @@
     "prebuild": "rimraf lib",
     "build": "nest build",
     "test": "jest",
+    "test:watch": "npm run test -- --watch",
     "test:coverage": "jest --coverage",
     "start": "node lib/main",
     "start:emulators": "firebase emulators:start --import ./mock",

@@ -12,6 +12,8 @@ const male1: Member = {
   createdAt: new Date(),
   readAt: new Date(),
   picture: 'm1.png',
+  pictureGame: 'm1.png',
+  pictureGallery: 'm1.png',
   id: 'm1',
   lastName: 'Blague',
   firstName: 'Toto',
@@ -23,6 +25,8 @@ const male2: Member = {
   createdAt: new Date(),
   readAt: new Date(),
   picture: 'm2.png',
+  pictureGame: 'm2.png',
+  pictureGallery: 'm2.png',
   id: 'm2',
   lastName: 'tutu',
   firstName: 'Lucien',
@@ -34,6 +38,8 @@ const female1: Member = {
   createdAt: new Date(),
   readAt: new Date(),
   picture: 'f1.png',
+  pictureGame: 'f1.png',
+  pictureGallery: 'f1.png',
   id: 'f1',
   lastName: 'Ranoux',
   firstName: 'Monique',
@@ -45,6 +51,8 @@ const female2: Member = {
   createdAt: new Date(),
   readAt: new Date(),
   picture: 'f2.png',
+  pictureGame: 'f2.png',
+  pictureGallery: 'f2.png',
   id: 'f2',
   lastName: 'La Brouette',
   firstName: 'Gertrude',
@@ -156,6 +164,7 @@ describe('GameService', () => {
 
     const game = await service.generateGameFromGameType(GameType.SERIES_5);
 
+    console.log(game.questions[0]);
     const questionMember = guessMember(game.questions[0].question);
     expect(questionMember).toBeDefined();
     game.questions[0].propositions.forEach((proposition) => {
