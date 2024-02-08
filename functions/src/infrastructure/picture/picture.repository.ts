@@ -18,7 +18,7 @@ export class PictureRepository implements PictureRepositorySpi {
     const metadata = await file.getMetadata();
     return {
       picture: file.createReadStream(),
-      contentType: metadata[0].contentType,
+      contentType: metadata[0].contentType ?? '',
     };
   }
 }
