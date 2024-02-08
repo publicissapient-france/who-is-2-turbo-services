@@ -9,16 +9,18 @@ import {
 } from '../../domain/model/Member';
 import * as admin from 'firebase-admin';
 import { MemberConverter } from './MemberConverter';
-import { firestore } from 'firebase-admin/lib/firestore';
 import { Profile } from '../../domain/model/Profile';
 import { GameType } from '../../domain/model/GameType';
 import { Role } from '../../domain/model/Role';
-import QuerySnapshot = firestore.QuerySnapshot;
-import Firestore = firestore.Firestore;
-import CollectionReference = firestore.CollectionReference;
-import FieldValue = firestore.FieldValue;
+
 import sharp from 'sharp';
-import uuid from "short-uuid";
+import uuid from 'short-uuid';
+import {
+  Firestore,
+  CollectionReference,
+  QuerySnapshot,
+  FieldValue,
+} from 'firebase-admin/firestore';
 
 export class UserNotFoundError {
   readonly message: string;
@@ -107,13 +109,8 @@ export class MemberRepository implements MemberRepositorySpi {
 
     const gallery = [];
     for (const doc of documents.docs) {
-      const {
-        pictureGallery,
-        firstName,
-        lastName,
-        capability,
-        arrivalDate
-      } = doc.data() as MemberWithPicture;
+      const { pictureGallery, firstName, lastName, capability, arrivalDate } =
+        doc.data() as MemberWithPicture;
       gallery.push({
         firstName,
         lastName,
@@ -207,7 +204,7 @@ export class MemberRepository implements MemberRepositorySpi {
     } else return undefined;
   }
 
-  async deleteScoreBatch(members: FirebaseFirestore.QuerySnapshot<Member>): Promise<void> {
+  async deleteScoreBatch(members: QuerySnapshot<Member>): Promise<void> {
     const batchSize = members.size;
     if (batchSize === 0) {
       return;
@@ -292,9 +289,9 @@ export class MemberRepository implements MemberRepositorySpi {
   }
 
   private async findUserByPictureToken(tokenName: string, token: string) {
-    const members = (await this.membersCollection.where(tokenName, '==', token).limit(1).get())
-      .docs
-      .map((member) => member.data() as MemberWithPicture);
+    const members = (
+      await this.membersCollection.where(tokenName, '==', token).limit(1).get()
+    ).docs.map((member) => member.data() as MemberWithPicture);
     if (members.length) {
       return members[0];
     }

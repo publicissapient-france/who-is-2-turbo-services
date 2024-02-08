@@ -21,7 +21,7 @@ const createNestServer = async (expressInstance: Express) => {
       'https://whois.publicissapient.fr',
       'https://whois-5d8ab.web.app',
       'https://who.thiga.co',
-      /^(https:\/\/who-is-2-turbo--preview-(.*)\.web\.app)$/i
+      /^(https:\/\/who-is-2-turbo--preview-(.*)\.web\.app)$/i,
     ],
   });
 

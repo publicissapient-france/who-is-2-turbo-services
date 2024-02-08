@@ -13,32 +13,30 @@ import { Profile } from '../model/Profile';
 import { Gender } from '../model/Gender';
 import { GameType } from '../model/GameType';
 import { Role } from '../model/Role';
-import { Readable } from "stream";
-import { PictureRepositorySpi } from "../PictureRepositorySpi";
+import { Readable } from 'stream';
+import { PictureRepositorySpi } from '../PictureRepositorySpi';
 
 @Injectable()
 export class MembersService implements MembersApi {
   constructor(
     @Inject('MemberRepositorySpi') private memberRepositorySpi: MemberRepositorySpi,
     @Inject('PictureRepositorySpi') private pictureRepositorySpi: PictureRepositorySpi,
-  ) {
-  }
+  ) {}
 
   async fetchAll(): Promise<MemberWithPicture[]> {
     return await this.memberRepositorySpi.loadGalleryMembers();
   }
 
   async fetchLeaderboard(gameType: GameType): Promise<MemberWithGameTypeScore[]> {
-    const membersScore: MemberWithScore[] = await this.memberRepositorySpi.getMembersScores(
-      gameType,
-    );
+    const membersScore: MemberWithScore[] =
+      await this.memberRepositorySpi.getMembersScores(gameType);
     return membersScore.map(
       (member) =>
         ({
           ...member,
           score: member.score[gameType] || 0,
           picture: member.picture,
-        } as MemberWithGameTypeScore),
+        }) as MemberWithGameTypeScore,
     );
   }
 
@@ -111,7 +109,12 @@ export class MembersService implements MembersApi {
 
   private readonly _oneYear = 31536000;
 
-  async getPicture(token: string): Promise<{ picture: Readable; params: { contentType: string; id: string; cacheDuration: number } } | undefined> {
+  async getPicture(
+    token: string,
+  ): Promise<
+    | { picture: Readable; params: { contentType: string; id: string; cacheDuration: number } }
+    | undefined
+  > {
     let member = await this.memberRepositorySpi.findUserByGameGalleryToken(token);
     if (!member) {
       member = await this.memberRepositorySpi.findUserByPictureGalleryToken(token);
@@ -124,8 +127,8 @@ export class MembersService implements MembersApi {
           contentType: picture.contentType,
           id: token,
           cacheDuration: this._oneYear,
-        }
-      }
+        },
+      };
     }
     return undefined;
   }

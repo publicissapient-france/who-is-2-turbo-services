@@ -10,7 +10,10 @@ export class FirebaseTokenMiddleware implements NestMiddleware {
   }
 
   private static async validateIdToken(req: Request, res: Response, next: NextFunction) {
-    if (req.baseUrl.startsWith('/members/pictures/')) { next(); return; }
+    if (req.baseUrl.startsWith('/members/pictures/')) {
+      next();
+      return;
+    }
 
     if (!req.headers.authorization?.startsWith('Bearer ')) {
       functions.logger.error(
