@@ -20,7 +20,9 @@ export class GamesRepository implements GameRepositorySpi {
     const documentSnapshot = await this.gamesCollection.doc(id).get();
     console.log(documentSnapshot);
     console.log('TIME');
-    console.log(new Date().getTime() - (documentSnapshot.createTime?.seconds ?? 0));
+    console.log(new Date().getTime());
+    console.log(documentSnapshot.createTime?.toDate()?.getTime());
+    console.log(new Date().getTime() - (documentSnapshot.createTime?.toDate()?.getTime() ?? 0));
     if (!documentSnapshot.exists) {
       console.log('No such document!', id);
     }
