@@ -1,5 +1,5 @@
-import { Readable } from "stream";
+import { Readable } from 'stream';
 
 export interface PictureRepositorySpi {
-  get(id: string): Promise<{picture: Readable, contentType: string}>;
+  get(id: string): Promise<{ picture: Readable; contentType: string }>;
 }

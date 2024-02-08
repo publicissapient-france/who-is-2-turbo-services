@@ -14,8 +14,13 @@ import { GameType } from '../../domain/model/GameType';
 import { Role } from '../../domain/model/Role';
 
 import sharp from 'sharp';
-import uuid from "short-uuid";
-import { Firestore, CollectionReference, QuerySnapshot, FieldValue } from 'firebase-admin/firestore';
+import uuid from 'short-uuid';
+import {
+  Firestore,
+  CollectionReference,
+  QuerySnapshot,
+  FieldValue,
+} from 'firebase-admin/firestore';
 
 export class UserNotFoundError {
   readonly message: string;
@@ -104,13 +109,8 @@ export class MemberRepository implements MemberRepositorySpi {
 
     const gallery = [];
     for (const doc of documents.docs) {
-      const {
-        pictureGallery,
-        firstName,
-        lastName,
-        capability,
-        arrivalDate
-      } = doc.data() as MemberWithPicture;
+      const { pictureGallery, firstName, lastName, capability, arrivalDate } =
+        doc.data() as MemberWithPicture;
       gallery.push({
         firstName,
         lastName,
@@ -289,9 +289,9 @@ export class MemberRepository implements MemberRepositorySpi {
   }
 
   private async findUserByPictureToken(tokenName: string, token: string) {
-    const members = (await this.membersCollection.where(tokenName, '==', token).limit(1).get())
-      .docs
-      .map((member) => member.data() as MemberWithPicture);
+    const members = (
+      await this.membersCollection.where(tokenName, '==', token).limit(1).get()
+    ).docs.map((member) => member.data() as MemberWithPicture);
     if (members.length) {
       return members[0];
     }

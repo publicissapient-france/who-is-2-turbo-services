@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { GamesRepository } from './game/games.repository';
 import { MemberRepository } from './member/member.repository';
-import { PictureRepository } from "./picture/picture.repository";
+import { PictureRepository } from './picture/picture.repository';
 
 @Module({
   providers: [
@@ -16,13 +16,8 @@ import { PictureRepository } from "./picture/picture.repository";
     {
       provide: 'PictureRepositorySpi',
       useClass: PictureRepository,
-    }
+    },
   ],
-  exports: [
-    'GameRepositorySpi',
-    'MemberRepositorySpi',
-    'PictureRepositorySpi',
-  ],
+  exports: ['GameRepositorySpi', 'MemberRepositorySpi', 'PictureRepositorySpi'],
 })
-export class InfrastructureModule {
-}
+export class InfrastructureModule {}

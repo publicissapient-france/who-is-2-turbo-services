@@ -1,8 +1,8 @@
-import { Injectable } from "@nestjs/common";
-import { PictureRepositorySpi } from "../../domain/PictureRepositorySpi";
-import { Readable } from "stream";
+import { Injectable } from '@nestjs/common';
+import { PictureRepositorySpi } from '../../domain/PictureRepositorySpi';
+import { Readable } from 'stream';
 import * as admin from 'firebase-admin';
-import { storage } from "firebase-admin";
+import { storage } from 'firebase-admin';
 import Storage = storage.Storage;
 
 @Injectable()
@@ -18,7 +18,7 @@ export class PictureRepository implements PictureRepositorySpi {
     const metadata = await file.getMetadata();
     return {
       picture: file.createReadStream(),
-      contentType: metadata[0].contentType
-    }
+      contentType: metadata[0].contentType,
+    };
   }
 }

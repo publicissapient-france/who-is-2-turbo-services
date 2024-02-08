@@ -8,7 +8,8 @@ import {
   Param,
   Post,
   Put,
-  Query, Res,
+  Query,
+  Res,
   UseFilters,
   UsePipes,
   ValidationPipe,
@@ -19,7 +20,7 @@ import {
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiQuery,
-  ApiResponse
+  ApiResponse,
 } from '@nestjs/swagger';
 import { MemberDto } from './model/MemberDto';
 import { MembersDto } from './model/MembersDto';
@@ -34,12 +35,11 @@ import {
   NotAllowedExceptionFilter,
 } from './members.http-exception.filter';
 import { GameType } from '../../domain/model/GameType';
-import { Response } from "express";
+import { Response } from 'express';
 
 @Controller('members')
 export class MembersController {
-  constructor(@Inject('MembersApi') private membersApi: MembersApi) {
-  }
+  constructor(@Inject('MembersApi') private membersApi: MembersApi) {}
 
   @Get()
   @ApiCreatedResponse({
@@ -149,7 +149,7 @@ export class MembersController {
         ETag: picture.params.id,
         'Cache-Control': `private, max-age=${picture.params.cacheDuration}`,
         'X-Robots-Tag': 'noindex',
-      })
+      });
 
       picture.picture.pipe(res);
     } else {

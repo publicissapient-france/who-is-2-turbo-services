@@ -119,7 +119,8 @@ export class GameService implements GameApi {
 
 export const isScoreBetter = (gameResult: GameResult, otherGameResult: GameResult) => {
   const hasBetterCount = gameResult.count > otherGameResult.count;
-  const hasSameCountButBetterTime = gameResult.count === otherGameResult.count && gameResult.time < otherGameResult.time;
+  const hasSameCountButBetterTime =
+    gameResult.count === otherGameResult.count && gameResult.time < otherGameResult.time;
   return hasBetterCount || hasSameCountButBetterTime;
 };
 
