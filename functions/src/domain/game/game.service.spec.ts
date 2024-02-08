@@ -11,7 +11,7 @@ import Mock = jest.Mock;
 const male1: Member = {
   createdAt: new Date(),
   readAt: new Date(),
-  picture: 'm1.png',
+  picture: '/members/pictures/m1.png',
   pictureGame: 'm1.png',
   pictureGallery: 'm1.png',
   id: 'm1',
@@ -24,7 +24,7 @@ const male1: Member = {
 const male2: Member = {
   createdAt: new Date(),
   readAt: new Date(),
-  picture: 'm2.png',
+  picture: '/members/pictures/m2.png',
   pictureGame: 'm2.png',
   pictureGallery: 'm2.png',
   id: 'm2',
@@ -37,7 +37,7 @@ const male2: Member = {
 const female1: Member = {
   createdAt: new Date(),
   readAt: new Date(),
-  picture: 'f1.png',
+  picture: '/members/pictures/f1.png',
   pictureGame: 'f1.png',
   pictureGallery: 'f1.png',
   id: 'f1',
@@ -50,7 +50,7 @@ const female1: Member = {
 const female2: Member = {
   createdAt: new Date(),
   readAt: new Date(),
-  picture: 'f2.png',
+  picture: '/members/pictures/f2.png',
   pictureGame: 'f2.png',
   pictureGallery: 'f2.png',
   id: 'f2',
@@ -134,9 +134,11 @@ describe('GameService', () => {
     console.log(JSON.stringify(game));
 
     expect(game.id).toBe('idGame');
-    expect(game.questions.length).toBe(1);
+    expect(game.questions.length).toBe(2);
     expect(
-      game.questions.find((question) => ['m1.png', 'm2.png'].includes(question.question)),
+      game.questions.find((question) =>
+        ['/members/pictures/m1.png', '/members/pictures/m2.png'].includes(question.question),
+      ),
     ).toBeDefined();
     expect(game.questions[0].propositions.length).toBe(2);
   });
@@ -164,8 +166,8 @@ describe('GameService', () => {
 
     const game = await service.generateGameFromGameType(GameType.SERIES_5);
 
-    console.log(game.questions[0]);
     const questionMember = guessMember(game.questions[0].question);
+
     expect(questionMember).toBeDefined();
     game.questions[0].propositions.forEach((proposition) => {
       expect(findMember(proposition)?.gender).toBe(questionMember?.gender);
