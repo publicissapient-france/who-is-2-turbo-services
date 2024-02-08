@@ -33,7 +33,7 @@
     "firebase-functions": "^4.7.0",
     "install": "^0.13.0",
     "lodash": "^4.17.21",
-    "reflect-metadata": "^0.1.14",
+    "reflect-metadata": "^0.2.0",
     "rxjs": "^7.0.0",
     "sharp": "^0.33.2",
     "short-uuid": "^4.2.2",
