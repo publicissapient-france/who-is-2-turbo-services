@@ -4,7 +4,7 @@ defaults:
   run:
     working-directory: functions
 
-on: ['push']
+on: ["push"]
 
 jobs:
   cicd:
@@ -17,10 +17,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+
       - name: Download dependencies
-        run: npm install
+        run: npm ci
+
       - name: Build application
         run: npm run build
+
+      - name: Test
+        run: npm run test
+
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         if: success() && github.ref == 'refs/heads/main'
