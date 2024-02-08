@@ -29,9 +29,9 @@ jobs:
 
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
-        if: success() && github.ref == 'refs/heads/main'
+        # if: success() && github.ref == 'refs/heads/main'
         with:
           args: deploy --only functions
         env:
-          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
           PROJECT_ID: ps
