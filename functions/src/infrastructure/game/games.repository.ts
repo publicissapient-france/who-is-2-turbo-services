@@ -18,7 +18,7 @@ export class GamesRepository implements GameRepositorySpi {
 
   async fetchSeries(id: string): Promise<SeriesGameSession> {
     const documentSnapshot = await this.gamesCollection.doc(id).get();
-
+    console.log(documentSnapshot);
     if (!documentSnapshot.exists) {
       console.log('No such document!', id);
     }
