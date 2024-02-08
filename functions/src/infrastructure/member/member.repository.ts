@@ -73,9 +73,11 @@ export class MemberRepository implements MemberRepositorySpi {
 
     await this.membersCollection.doc(memberWithPictureDocs.id).update({
       id: memberWithPictureDocs.id,
-      firstName: profile.firstName,
-      firstName_unaccent: profile.firstName.normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
-      lastName: profile.lastName,
+      firstName: this.capitalizeString(profile.firstName),
+      firstName_unaccent: this.capitalizeString(
+        profile.firstName.normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
+      ),
+      lastName: this.capitalizeString(profile.lastName),
       gender: profile.gender,
       capability: profile.capability,
       picture: memberWithPictureDocs.picture,
@@ -153,7 +155,7 @@ export class MemberRepository implements MemberRepositorySpi {
   ): Promise<void> {
     const docs = await this.getMemberByMailDocs(email);
     if (docs.docs.length != 0) {
-      const { id, score } = docs.docs[0].data() as Member;
+      const { id, score } = docs.docs[0].data();
       const updatedScore: Score = score ? { ...score } : {};
       updatedScore[`${gameType}`] = {
         count: gameResult.count,
@@ -167,6 +169,10 @@ export class MemberRepository implements MemberRepositorySpi {
 
   private async getMemberByMailDocs(email: string): Promise<QuerySnapshot<Member>> {
     return await this.membersCollection.where('email', '==', email).get();
+  }
+
+  private capitalizeString(word: string): string {
+    return word.charAt(0).toUpperCase() + word.slice(1);
   }
 
   async getMembersScores(gameType: GameType): Promise<MemberWithScore[]> {
@@ -230,9 +236,11 @@ export class MemberRepository implements MemberRepositorySpi {
     }
 
     const member = {
-      firstName: newProfile.firstName,
-      firstName_unaccent: newProfile.firstName.normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
-      lastName: newProfile.lastName,
+      firstName: this.capitalizeString(newProfile.firstName),
+      firstName_unaccent: this.capitalizeString(
+        newProfile.firstName.normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
+      ),
+      lastName: this.capitalizeString(newProfile.lastName),
       email: newProfile.email,
       gender: newProfile.gender,
       capability: newProfile.capability,
