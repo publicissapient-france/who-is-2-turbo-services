@@ -62,6 +62,7 @@ export class MembersService implements MembersApi {
         picture: `/members/pictures/${member.pictureGallery}`,
         capability: member.capability,
         arrivalDate: member.arrivalDate,
+        role: member.role,
       } as EditableProfileDto;
     } catch (err) {
       if (err instanceof UserNotFoundError) {
