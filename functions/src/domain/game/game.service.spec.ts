@@ -78,6 +78,7 @@ describe('GameService', () => {
     saveSeries: jest.fn(),
     drop: jest.fn(),
     fetchSeries: jest.fn(),
+    deleteGames: jest.fn(),
   };
   const gameRepo: Provider<GameRepositorySpi> = {
     provide: 'GameRepositorySpi',
