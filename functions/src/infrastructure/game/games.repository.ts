@@ -4,9 +4,11 @@ import { Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin';
 import { SeriesGameSessionConverter } from './SeriesGameSessionConverter';
 import { ContentOf } from '../../domain/model/StorageMeta';
+import { DocumentReference } from 'firebase-admin/firestore';
 
 @Injectable()
 export class GamesRepository implements GameRepositorySpi {
+  firebase = admin.firestore();
   gamesCollection = admin
     .firestore()
     .collection('games')
@@ -39,5 +41,29 @@ export class GamesRepository implements GameRepositorySpi {
       readAt: documentSnapshot.readTime?.toDate(),
       solutions: documentSnapshot.get('solutions'),
     };
+  }
+
+  async deleteGames(): Promise<void> {
+    const games = await this.gamesCollection.listDocuments();
+    return this.deleteGamesBatch(games);
+  }
+
+  async deleteGamesBatch(
+    games: DocumentReference<SeriesGameSession, admin.firestore.DocumentData>[],
+  ): Promise<void> {
+    const batchSize = games.length;
+    if (batchSize === 0) {
+      return;
+    }
+
+    const batch = this.firebase.batch();
+    games.forEach((doc) => {
+      batch.delete(doc);
+    });
+    await batch.commit();
+
+    process.nextTick(() => {
+      this.deleteGamesBatch(games);
+    });
   }
 }

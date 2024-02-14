@@ -1,3 +1,4 @@
+import { GameRepositorySpi } from './../GameRepositorySpi';
 import { Inject, Injectable } from '@nestjs/common';
 import { MemberRepositorySpi } from '../MemberRepositorySpi';
 import { MembersApi } from '../MembersApi';
@@ -21,6 +22,7 @@ export class MembersService implements MembersApi {
   constructor(
     @Inject('MemberRepositorySpi') private memberRepositorySpi: MemberRepositorySpi,
     @Inject('PictureRepositorySpi') private pictureRepositorySpi: PictureRepositorySpi,
+    @Inject('GameRepositorySpi') private gameRepositorySpi: GameRepositorySpi,
   ) {}
 
   async fetchAll(): Promise<MemberWithPicture[]> {
@@ -89,6 +91,7 @@ export class MembersService implements MembersApi {
     if (role != Role.ADMIN) {
       throw new NotAllowedException();
     }
+    await this.gameRepositorySpi.deleteGames();
     return await this.memberRepositorySpi.deleteScores();
   }
 
