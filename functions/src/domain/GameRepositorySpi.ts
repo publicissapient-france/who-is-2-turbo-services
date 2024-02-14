@@ -8,5 +8,5 @@ export interface GameRepositorySpi {
 
   drop(id: string): void;
 
-  deleteGames(): void;
+  deleteGames(): Promise<void>;
 }
