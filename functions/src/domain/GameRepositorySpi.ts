@@ -7,4 +7,6 @@ export interface GameRepositorySpi {
   fetchSeries(id: string): Promise<SeriesGameSession>;
 
   drop(id: string): void;
+
+  deleteGames(): Promise<void>;
 }
