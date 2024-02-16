@@ -87,6 +87,9 @@ export class GameService implements GameApi {
   async validateSeriesGame(gameId: string, answers: number[], email: string): Promise<SeriesScore> {
     const game = await this.gameRepositorySpi.fetchSeries(gameId);
     const gameType = game.gameType;
+    console.log('validateSeriesGame');
+    console.log(game);
+    console.log(game.gameType);
     if (isUndefined(gameType) || isUndefined(game.createdAt) || isUndefined(game.readAt)) {
       throw new GameTypeException();
     }
