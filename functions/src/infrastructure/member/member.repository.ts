@@ -125,14 +125,22 @@ export class MemberRepository implements MemberRepositorySpi {
   }
 
   async getMemberScore(email: string, gameType: GameType): Promise<GameResult | undefined> {
+    let gameTypeScore;
+    if (gameType === GameType.SERIES_5) {
+      gameTypeScore = '5';
+    } else if (gameType === GameType.SERIES_20) {
+      gameTypeScore = '20';
+    } else {
+      gameTypeScore = gameType.toString();
+    }
     const docs = await this.membersCollection
       .where('email', '==', email)
-      .where(`score.${gameType}`, '!=', '')
+      .where(`score.${gameTypeScore}`, '!=', '')
       .get();
 
     if (docs.docs.length != 0) {
-      const { score } = docs.docs[0].data() as Member;
-      return score ? score[`${gameType}`] : undefined;
+      const { score } = docs.docs[0].data();
+      return score ? score[`${gameTypeScore}`] : undefined;
     } else return undefined;
   }
 

@@ -70,6 +70,7 @@ export class GameService implements GameApi {
 
     const session = await this.gameRepositorySpi.saveSeries({
       solutions: questions.map((value) => value.solution),
+      gameType: gameType,
     });
 
     return {
@@ -85,7 +86,7 @@ export class GameService implements GameApi {
 
   async validateSeriesGame(gameId: string, answers: number[], email: string): Promise<SeriesScore> {
     const game = await this.gameRepositorySpi.fetchSeries(gameId);
-    const gameType = GameType[GameType[answers.length] as keyof typeof GameType];
+    const gameType = game.gameType;
     if (isUndefined(gameType) || isUndefined(game.createdAt) || isUndefined(game.readAt)) {
       throw new GameTypeException();
     }

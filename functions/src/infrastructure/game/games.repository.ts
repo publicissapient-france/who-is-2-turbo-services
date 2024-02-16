@@ -29,6 +29,7 @@ export class GamesRepository implements GameRepositorySpi {
       createdAt: documentSnapshot.createTime?.toDate(),
       readAt: updatedTime.toDate(),
       solutions: documentSnapshot.get('solutions'),
+      gameType: documentSnapshot.get('gameType'),
     };
   }
 
@@ -40,6 +41,7 @@ export class GamesRepository implements GameRepositorySpi {
       createdAt: documentSnapshot.createTime?.toDate(),
       readAt: documentSnapshot.readTime?.toDate(),
       solutions: documentSnapshot.get('solutions'),
+      gameType: documentSnapshot.get('gameType'),
     };
   }
 
