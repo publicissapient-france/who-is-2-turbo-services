@@ -67,7 +67,8 @@ export class GameService implements GameApi {
           this.generateQuestion(membersToFind, selectedMember, nbPropositionsByQuestion),
         ),
     );
-    console.log(gameType);
+    console.log('saveSeries');
+    console.log(gameType.toString());
     const session = await this.gameRepositorySpi.saveSeries({
       solutions: questions.map((value) => value.solution),
       gameType: gameType,
