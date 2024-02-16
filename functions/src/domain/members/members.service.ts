@@ -34,13 +34,13 @@ export class MembersService implements MembersApi {
       await this.memberRepositorySpi.getMembersScores(gameType);
 
     console.log(gameType.toString());
-    console.log(gameType.toString() === GameType.SERIES_5.toString());
-    console.log(gameType.toString() === GameType.SERIES_20.toString());
+    console.log(gameType.toString() === GameType[GameType.SERIES_5].toString());
+    console.log(gameType.toString() === GameType[GameType.SERIES_20].toString());
 
     let type: number;
-    if (gameType.toString() === GameType.SERIES_5.toString()) {
+    if (gameType.toString() === GameType[GameType.SERIES_5].toString()) {
       type = 5;
-    } else if (gameType.toString() === GameType.SERIES_20.toString()) {
+    } else if (gameType.toString() === GameType[GameType.SERIES_20].toString()) {
       type = 20;
     }
     return membersScore.map(
