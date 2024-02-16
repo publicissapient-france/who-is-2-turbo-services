@@ -39,8 +39,7 @@ export class GameController {
     @Body()
     gameTypeDto: GameTypeDto,
   ): Promise<SeriesGameDto> {
-    const gameType = GameType[gameTypeDto.gameType as keyof typeof GameType];
-    const seriesGame = await this.gameApi.generateGameFromGameType(gameType);
+    const seriesGame = await this.gameApi.generateGameFromGameType(gameTypeDto);
     return {
       id: seriesGame.id,
       questions: seriesGame.questions,
