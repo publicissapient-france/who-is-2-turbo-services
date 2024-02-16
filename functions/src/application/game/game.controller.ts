@@ -8,14 +8,12 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { GameApi } from '../../domain/GameApi';
-import { GameAnswersDto } from './model/GameAnswersDto';
 import { ApiCreatedResponse, ApiResponse } from '@nestjs/swagger';
-import { SeriesScoreDto } from './model/SeriesScoreDto';
-import { SeriesGameDto } from './model/GameSerieDto';
-import { GameTypeDto } from './model/GameTypeDto';
+import { GameApi } from '../../domain/GameApi';
 import { GameTypeExceptionFilter } from './game.http-exception.filter';
-import { GameType } from '../../domain/model/GameType';
+import { GameAnswersDto } from './model/GameAnswersDto';
+import { SeriesGameDto } from './model/GameSerieDto';
+import { SeriesScoreDto } from './model/SeriesScoreDto';
 
 @Controller('games')
 export class GameController {
@@ -37,7 +35,7 @@ export class GameController {
   @UseFilters(GameTypeExceptionFilter)
   async createNewGame(
     @Body()
-    gameTypeDto: GameTypeDto,
+    gameTypeDto: string,
   ): Promise<SeriesGameDto> {
     const seriesGame = await this.gameApi.generateGameFromGameType(gameTypeDto);
     return {
