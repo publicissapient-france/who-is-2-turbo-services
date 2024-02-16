@@ -6,6 +6,7 @@ export class SeriesGameSessionConverter implements FirestoreDataConverter<Series
     return {
       id: snapshot.id,
       solutions: snapshot.get('solutions'),
+      gameType: snapshot.get('gameType'),
       createdAt: snapshot.createTime.toDate(),
     };
   }
