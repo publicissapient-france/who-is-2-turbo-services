@@ -36,25 +36,25 @@ export class GameService implements GameApi {
     let size;
 
     switch (gameType) {
-      case GameType.ALL.toString():
+      case GameType[GameType.ALL].toString():
         membersToFind = allMembersWithPictures;
         size = allMembersWithPictures.length;
         break;
-      case GameType.STRATEGY.toString():
-      case GameType.PRODUCT.toString():
-      case GameType.ENGINEERING.toString():
-      case GameType.EXPERIENCE.toString():
-      case GameType.DATA.toString():
-      case GameType.FINANCE.toString():
+      case GameType[GameType.STRATEGY].toString():
+      case GameType[GameType.PRODUCT].toString():
+      case GameType[GameType.ENGINEERING].toString():
+      case GameType[GameType.EXPERIENCE].toString():
+      case GameType[GameType.DATA].toString():
+      case GameType[GameType.FINANCE].toString():
         membersToFind = allMembersWithPictures.filter(
           (member) => member.capability === gameType.toString(),
         );
         break;
-      case GameType.SERIES_5.toString():
+      case GameType[GameType.SERIES_5].toString():
         size = 5;
         membersToFind = allMembersWithPictures;
         break;
-      case GameType.SERIES_20.toString():
+      case GameType[GameType.SERIES_20].toString():
         size = 20;
         membersToFind = allMembersWithPictures;
         break;
