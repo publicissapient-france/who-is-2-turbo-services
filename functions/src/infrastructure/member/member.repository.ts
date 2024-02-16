@@ -183,7 +183,8 @@ export class MemberRepository implements MemberRepositorySpi {
     return word.charAt(0).toUpperCase() + word.slice(1);
   }
 
-  async getMembersScores(gameType: GameType): Promise<MemberWithScore[]> {
+  async getMembersScores(gameTypeQuery: GameType): Promise<MemberWithScore[]> {
+    const gameType = GameType[gameTypeQuery].toString();
     const members = await this.membersCollection
       .orderBy(`score.${gameType}.count`, 'desc')
       .orderBy(`score.${gameType}.time`, 'asc')
@@ -193,7 +194,7 @@ export class MemberRepository implements MemberRepositorySpi {
       .filter((member) => member.score[`${gameType}`] != undefined);
     const leaderboard = [];
     for (const member of membersScore) {
-      const { firstName, lastName, pictureGallery, score } = member as MemberWithScore;
+      const { firstName, lastName, pictureGallery, score } = member;
       leaderboard.push({
         firstName,
         lastName,
