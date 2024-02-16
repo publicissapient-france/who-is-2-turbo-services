@@ -40,10 +40,6 @@ export class MembersService implements MembersApi {
     }
     const membersScore: MemberWithScore[] = await this.memberRepositorySpi.getMembersScores(type);
 
-    console.log(gameType.toString());
-    console.log(gameType.toString() === GameType[GameType.SERIES_5].toString());
-    console.log(gameType.toString() === GameType[GameType.SERIES_20].toString());
-
     return membersScore.map(
       (member) =>
         ({
