@@ -183,8 +183,7 @@ export class MemberRepository implements MemberRepositorySpi {
     return word.charAt(0).toUpperCase() + word.slice(1);
   }
 
-  async getMembersScores(gameTypeQuery: GameType): Promise<MemberWithScore[]> {
-    const gameType = GameType[gameTypeQuery].toString();
+  async getMembersScores(gameType: string): Promise<MemberWithScore[]> {
     const members = await this.membersCollection
       .orderBy(`score.${gameType}.count`, 'desc')
       .orderBy(`score.${gameType}.time`, 'asc')

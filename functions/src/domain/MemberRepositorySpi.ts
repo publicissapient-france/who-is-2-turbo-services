@@ -14,7 +14,7 @@ export interface MemberRepositorySpi {
 
   updateMemberScore(email: string, score: GameResult, gameType: GameType): void;
 
-  getMembersScores(gameType: GameType): Promise<MemberWithScore[]>;
+  getMembersScores(gameType: string): Promise<MemberWithScore[]>;
 
   addProfile(newProfile: Profile): Promise<string>;
 

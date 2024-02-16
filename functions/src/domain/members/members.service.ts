@@ -30,19 +30,20 @@ export class MembersService implements MembersApi {
   }
 
   async fetchLeaderboard(gameType: GameType): Promise<MemberWithGameTypeScore[]> {
-    const membersScore: MemberWithScore[] =
-      await this.memberRepositorySpi.getMembersScores(gameType);
+    let type: string;
+    if (gameType.toString() === GameType[GameType.SERIES_5].toString()) {
+      type = '5';
+    } else if (gameType.toString() === GameType[GameType.SERIES_20].toString()) {
+      type = '20';
+    } else {
+      type = gameType.toString();
+    }
+    const membersScore: MemberWithScore[] = await this.memberRepositorySpi.getMembersScores(type);
 
     console.log(gameType.toString());
     console.log(gameType.toString() === GameType[GameType.SERIES_5].toString());
     console.log(gameType.toString() === GameType[GameType.SERIES_20].toString());
 
-    let type: number;
-    if (gameType.toString() === GameType[GameType.SERIES_5].toString()) {
-      type = 5;
-    } else if (gameType.toString() === GameType[GameType.SERIES_20].toString()) {
-      type = 20;
-    }
     return membersScore.map(
       (member) =>
         ({
