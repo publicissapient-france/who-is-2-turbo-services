@@ -68,10 +68,10 @@ export class GameService implements GameApi {
         ),
     );
     console.log('saveSeries');
-    console.log(gameType.toString());
+    console.log(GameType[gameType].toString());
     const session = await this.gameRepositorySpi.saveSeries({
       solutions: questions.map((value) => value.solution),
-      gameType: gameType,
+      gameType: GameType[gameType].toString(),
     });
 
     return {
