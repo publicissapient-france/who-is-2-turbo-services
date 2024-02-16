@@ -32,11 +32,20 @@ export class MembersService implements MembersApi {
   async fetchLeaderboard(gameType: GameType): Promise<MemberWithGameTypeScore[]> {
     const membersScore: MemberWithScore[] =
       await this.memberRepositorySpi.getMembersScores(gameType);
+
+    console.log(gameType);
+
+    let type: number;
+    if (gameType === GameType.SERIES_5) {
+      type = 5;
+    } else if (gameType === GameType.SERIES_20) {
+      type = 20;
+    }
     return membersScore.map(
       (member) =>
         ({
           ...member,
-          score: member.score[gameType] || 0,
+          score: member.score[type] || 0,
           picture: member.picture,
         }) as MemberWithGameTypeScore,
     );
