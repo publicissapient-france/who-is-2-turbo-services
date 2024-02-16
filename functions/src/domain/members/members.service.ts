@@ -34,6 +34,8 @@ export class MembersService implements MembersApi {
       await this.memberRepositorySpi.getMembersScores(gameType);
 
     console.log(gameType);
+    console.log(gameType === GameType.SERIES_5);
+    console.log(gameType === GameType.SERIES_20);
 
     let type: number;
     if (gameType === GameType.SERIES_5) {
