@@ -19,7 +19,7 @@ export class GameService implements GameApi {
     private memberRepositorySpi: MemberRepositorySpi,
   ) {}
 
-  async generateGameFromGameType(gameType: string): Promise<SeriesGame> {
+  async generateGameFromGameType(gameType: GameType): Promise<SeriesGame> {
     if (isUndefined(gameType)) {
       throw new GameTypeException();
     }
@@ -27,7 +27,7 @@ export class GameService implements GameApi {
   }
 
   private async generateSeriesGame(
-    gameType: string,
+    gameType: GameType,
     nbPropositionsByQuestion = 4,
   ): Promise<SeriesGame> {
     const allMembersWithPictures = await this.memberRepositorySpi.getAllWithPicture();
@@ -36,31 +36,27 @@ export class GameService implements GameApi {
     let size;
 
     switch (gameType) {
-      case GameType[GameType.ALL].toString():
+      case GameType.ALL:
         membersToFind = allMembersWithPictures;
         size = allMembersWithPictures.length;
         break;
-      case GameType[GameType.STRATEGY].toString():
-      case GameType[GameType.PRODUCT].toString():
-      case GameType[GameType.ENGINEERING].toString():
-      case GameType[GameType.EXPERIENCE].toString():
-      case GameType[GameType.DATA].toString():
-      case GameType[GameType.FINANCE].toString():
+      case GameType.STRATEGY:
+      case GameType.PRODUCT:
+      case GameType.ENGINEERING:
+      case GameType.EXPERIENCE:
+      case GameType.DATA:
+      case GameType.FINANCE:
         membersToFind = allMembersWithPictures.filter(
           (member) => member.capability === gameType.toString(),
         );
         break;
-      case GameType[GameType.SERIES_5].toString():
+      case GameType.SERIES_5:
         size = 5;
         membersToFind = allMembersWithPictures;
         break;
-      case GameType[GameType.SERIES_20].toString():
+      case GameType.SERIES_20:
         size = 20;
         membersToFind = allMembersWithPictures;
-        break;
-      default:
-        membersToFind = allMembersWithPictures;
-        size = 5;
         break;
     }
 

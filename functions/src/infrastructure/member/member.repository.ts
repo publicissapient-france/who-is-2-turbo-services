@@ -124,27 +124,19 @@ export class MemberRepository implements MemberRepositorySpi {
     return gallery;
   }
 
-  async getMemberScore(email: string, gameType: string): Promise<GameResult | undefined> {
-    let gameTypeScore;
-    if (gameType === GameType.SERIES_5.toString()) {
-      gameTypeScore = '5';
-    } else if (gameType === GameType.SERIES_20.toString()) {
-      gameTypeScore = '20';
-    } else {
-      gameTypeScore = gameType.toString();
-    }
+  async getMemberScore(email: string, gameType: GameType): Promise<GameResult | undefined> {
     const docs = await this.membersCollection
       .where('email', '==', email)
-      .where(`score.${gameTypeScore}`, '!=', '')
+      .where(`score.${gameType}`, '!=', '')
       .get();
 
     if (docs.docs.length != 0) {
       const { score } = docs.docs[0].data();
-      return score ? score[`${gameTypeScore}`] : undefined;
+      return score ? score[`${gameType}`] : undefined;
     } else return undefined;
   }
 
-  async getRank(gameResult: GameResult, gameType: string): Promise<number> {
+  async getRank(gameResult: GameResult, gameType: GameType): Promise<number> {
     const membersWithMorePoints = await this.membersCollection
       .where(`score.${gameType}.count`, '>', gameResult.count)
       .get();
@@ -156,7 +148,11 @@ export class MemberRepository implements MemberRepositorySpi {
     return membersWithMorePoints.docs.length + membersWithBetterTime.docs.length + 1;
   }
 
-  async updateMemberScore(email: string, gameResult: GameResult, gameType: string): Promise<void> {
+  async updateMemberScore(
+    email: string,
+    gameResult: GameResult,
+    gameType: GameType,
+  ): Promise<void> {
     const docs = await this.getMemberByMailDocs(email);
     if (docs.docs.length != 0) {
       const { id, score } = docs.docs[0].data();
@@ -179,7 +175,7 @@ export class MemberRepository implements MemberRepositorySpi {
     return word.charAt(0).toUpperCase() + word.slice(1);
   }
 
-  async getMembersScores(gameType: string): Promise<MemberWithScore[]> {
+  async getMembersScores(gameType: GameType): Promise<MemberWithScore[]> {
     const members = await this.membersCollection
       .orderBy(`score.${gameType}.count`, 'desc')
       .orderBy(`score.${gameType}.time`, 'asc')
@@ -209,7 +205,7 @@ export class MemberRepository implements MemberRepositorySpi {
   async getMemberRole(email: string): Promise<Role | undefined> {
     const docs = await this.getMemberByMailDocs(email);
     if (docs.docs.length != 0) {
-      const { role } = docs.docs[0].data() as Member;
+      const { role } = docs.docs[0].data();
       return role;
     } else return undefined;
   }
