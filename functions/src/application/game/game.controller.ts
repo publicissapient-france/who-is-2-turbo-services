@@ -14,6 +14,8 @@ import { GameTypeExceptionFilter } from './game.http-exception.filter';
 import { GameAnswersDto } from './model/GameAnswersDto';
 import { SeriesGameDto } from './model/GameSerieDto';
 import { SeriesScoreDto } from './model/SeriesScoreDto';
+import { GameTypeDto } from './model/GameTypeDto';
+import { GameType } from '../../domain/model/GameType';
 
 @Controller('games')
 export class GameController {
@@ -35,9 +37,10 @@ export class GameController {
   @UseFilters(GameTypeExceptionFilter)
   async createNewGame(
     @Body()
-    gameTypeDto: string,
+    gameTypeDto: GameTypeDto,
   ): Promise<SeriesGameDto> {
-    const seriesGame = await this.gameApi.generateGameFromGameType(gameTypeDto);
+    const gameType = GameType[gameTypeDto.gameType as keyof typeof GameType];
+    const seriesGame = await this.gameApi.generateGameFromGameType(gameType);
     return {
       id: seriesGame.id,
       questions: seriesGame.questions,
