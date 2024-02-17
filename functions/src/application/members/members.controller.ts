@@ -73,8 +73,6 @@ export class MembersController {
   async loadLeaderBoard(
     @Query('gameType') gameTypeQuery = GameType.SERIES_5,
   ): Promise<LeaderboardMemberDto[]> {
-    console.log('loadLeaderBoard');
-    console.log(gameTypeQuery);
     const gameType = (<never>GameType)[gameTypeQuery];
     const leaderboard = await this.membersApi.fetchLeaderboard(gameType);
     return leaderboard.map(({ firstName, lastName, picture, score }) => ({

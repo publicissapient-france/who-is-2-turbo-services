@@ -24,12 +24,12 @@ jobs:
       - name: Build application
         run: npm run build
 
-      #- name: Test
-      #  run: npm run test
+      - name: Test
+        run: npm run test
 
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
-        #if: success() && github.ref == 'refs/heads/main'
+        if: success() && github.ref == 'refs/heads/main'
         with:
           args: deploy --only functions
         env:
