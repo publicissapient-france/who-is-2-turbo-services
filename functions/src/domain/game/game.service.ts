@@ -40,12 +40,10 @@ export class GameService implements GameApi {
         membersToFind = allMembersWithPictures;
         size = allMembersWithPictures.length;
         break;
-      case GameType.STRATEGY:
       case GameType.PRODUCT:
       case GameType.ENGINEERING:
       case GameType.EXPERIENCE:
       case GameType.DATA:
-      case GameType.FINANCE:
         membersToFind = allMembersWithPictures.filter(
           (member) => member.capability === gameType.toString(),
         );
