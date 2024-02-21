@@ -1,6 +1,6 @@
+import { GameType } from './model/GameType';
 import { SeriesGame } from './model/SeriesGame';
 import { SeriesScore } from './model/SeriesScore';
-import { GameType } from './model/GameType';
 
 export interface GameApi {
   generateGameFromGameType(gameType: GameType): Promise<SeriesGame>;

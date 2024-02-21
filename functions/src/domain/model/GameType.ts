@@ -1,4 +1,9 @@
 export enum GameType {
-  SERIES_5 = 5,
-  SERIES_20 = 20,
+  SERIES_5 = '5',
+  SERIES_20 = '20',
+  PRODUCT = 'PRODUCT',
+  ENGINEERING = 'ENGINEERING',
+  EXPERIENCE = 'EXPERIENCE',
+  DATA = 'DATA',
+  ALL = 'ALL',
 }

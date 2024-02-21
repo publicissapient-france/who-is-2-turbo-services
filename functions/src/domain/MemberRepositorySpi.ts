@@ -1,6 +1,6 @@
+import { GameType } from './model/GameType';
 import { MemberWithPicture, MemberWithScore, GameResult } from './model/Member';
 import { Profile } from './model/Profile';
-import { GameType } from './model/GameType';
 import { Role } from './model/Role';
 
 export interface MemberRepositorySpi {

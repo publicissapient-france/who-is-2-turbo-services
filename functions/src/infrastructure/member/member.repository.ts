@@ -131,7 +131,7 @@ export class MemberRepository implements MemberRepositorySpi {
       .get();
 
     if (docs.docs.length != 0) {
-      const { score } = docs.docs[0].data() as Member;
+      const { score } = docs.docs[0].data();
       return score ? score[`${gameType}`] : undefined;
     } else return undefined;
   }
@@ -185,7 +185,7 @@ export class MemberRepository implements MemberRepositorySpi {
       .filter((member) => member.score[`${gameType}`] != undefined);
     const leaderboard = [];
     for (const member of membersScore) {
-      const { firstName, lastName, pictureGallery, score } = member as MemberWithScore;
+      const { firstName, lastName, pictureGallery, score } = member;
       leaderboard.push({
         firstName,
         lastName,
@@ -205,7 +205,7 @@ export class MemberRepository implements MemberRepositorySpi {
   async getMemberRole(email: string): Promise<Role | undefined> {
     const docs = await this.getMemberByMailDocs(email);
     if (docs.docs.length != 0) {
-      const { role } = docs.docs[0].data() as Member;
+      const { role } = docs.docs[0].data();
       return role;
     } else return undefined;
   }

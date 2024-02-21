@@ -71,7 +71,7 @@ export class MembersController {
   @ApiResponse({ status: 500, description: 'Internal server error.' })
   @UsePipes(new ValidationPipe({ transform: true }))
   async loadLeaderBoard(
-    @Query('gameType') gameTypeQuery = GameType[GameType.SERIES_5].toString(),
+    @Query('gameType') gameTypeQuery = GameType.SERIES_5,
   ): Promise<LeaderboardMemberDto[]> {
     const gameType = (<never>GameType)[gameTypeQuery];
     const leaderboard = await this.membersApi.fetchLeaderboard(gameType);

@@ -8,13 +8,13 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { GameApi } from '../../domain/GameApi';
-import { GameAnswersDto } from './model/GameAnswersDto';
 import { ApiCreatedResponse, ApiResponse } from '@nestjs/swagger';
-import { SeriesScoreDto } from './model/SeriesScoreDto';
-import { SeriesGameDto } from './model/GameSerieDto';
-import { GameTypeDto } from './model/GameTypeDto';
+import { GameApi } from '../../domain/GameApi';
 import { GameTypeExceptionFilter } from './game.http-exception.filter';
+import { GameAnswersDto } from './model/GameAnswersDto';
+import { SeriesGameDto } from './model/GameSerieDto';
+import { SeriesScoreDto } from './model/SeriesScoreDto';
+import { GameTypeDto } from './model/GameTypeDto';
 import { GameType } from '../../domain/model/GameType';
 
 @Controller('games')

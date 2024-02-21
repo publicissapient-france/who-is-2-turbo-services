@@ -27,21 +27,49 @@ export class GameService implements GameApi {
   }
 
   private async generateSeriesGame(
-    size: number,
+    gameType: GameType,
     nbPropositionsByQuestion = 4,
   ): Promise<SeriesGame> {
-    const members = await this.memberRepositorySpi.getAllWithPicture();
+    const allMembersWithPictures = await this.memberRepositorySpi.getAllWithPicture();
+
+    let membersToFind: MemberWithPicture[];
+    let size;
+
+    switch (gameType) {
+      case GameType.ALL:
+        membersToFind = allMembersWithPictures;
+        size = allMembersWithPictures.length;
+        break;
+      case GameType.PRODUCT:
+      case GameType.ENGINEERING:
+      case GameType.EXPERIENCE:
+      case GameType.DATA:
+        membersToFind = allMembersWithPictures.filter(
+          (member) => member.capability === gameType.toString(),
+        );
+        size = 5;
+        break;
+      case GameType.SERIES_5:
+        size = 5;
+        membersToFind = allMembersWithPictures;
+        break;
+      case GameType.SERIES_20:
+        size = 20;
+        membersToFind = allMembersWithPictures;
+        break;
+    }
 
     const questions = await Promise.all(
-      shuffle(members)
+      shuffle(membersToFind)
         .slice(0, size)
         .map((selectedMember) =>
-          this.generateQuestion(members, selectedMember, nbPropositionsByQuestion),
+          this.generateQuestion(membersToFind, selectedMember, nbPropositionsByQuestion),
         ),
     );
 
     const session = await this.gameRepositorySpi.saveSeries({
       solutions: questions.map((value) => value.solution),
+      gameType: gameType,
     });
 
     return {
@@ -57,7 +85,7 @@ export class GameService implements GameApi {
 
   async validateSeriesGame(gameId: string, answers: number[], email: string): Promise<SeriesScore> {
     const game = await this.gameRepositorySpi.fetchSeries(gameId);
-    const gameType = GameType[GameType[answers.length] as keyof typeof GameType];
+    const gameType = game.gameType;
     if (isUndefined(gameType) || isUndefined(game.createdAt) || isUndefined(game.readAt)) {
       throw new GameTypeException();
     }

@@ -32,6 +32,7 @@ export class MembersService implements MembersApi {
   async fetchLeaderboard(gameType: GameType): Promise<MemberWithGameTypeScore[]> {
     const membersScore: MemberWithScore[] =
       await this.memberRepositorySpi.getMembersScores(gameType);
+
     return membersScore.map(
       (member) =>
         ({

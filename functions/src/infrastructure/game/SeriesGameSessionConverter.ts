@@ -6,6 +6,7 @@ export class SeriesGameSessionConverter implements FirestoreDataConverter<Series
     return {
       id: snapshot.id,
       solutions: snapshot.get('solutions'),
+      gameType: snapshot.get('gameType'),
       createdAt: snapshot.createTime.toDate(),
     };
   }
@@ -20,7 +21,7 @@ export class SeriesGameSessionConverter implements FirestoreDataConverter<Series
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     options?: FirebaseFirestore.SetOptions,
   ): FirebaseFirestore.DocumentData {
-    const { solutions } = modelObject;
-    return { solutions };
+    const { solutions, gameType } = modelObject;
+    return { solutions, gameType };
   }
 }
